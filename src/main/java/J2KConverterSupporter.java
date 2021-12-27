@@ -1,3 +1,4 @@
+import com.github.javaparser.JavaParser;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
@@ -39,7 +40,9 @@ public class J2KConverterSupporter {
             file = new File(DataStore.pathName);
         else file = new File(args[0]);
         //file = new File(DataStore.pathName);
-        CompilationUnit cu = StaticJavaParser.parse(file);
+
+        JavaParser parser = new JavaParser();
+        CompilationUnit cu = parser.parse(file).getResult().get();
         VoidVisitor<?> visitor = new FirstVisitor();
         cu.accept(visitor, null);
 

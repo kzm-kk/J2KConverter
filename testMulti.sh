@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CP=./javaparser-core-3.16.1.jar:./build/classes/java/main
+CP=./javaparser-core-3.23.1.jar:./build/classes/java/main
 D=/Users/kzm0308/IdeaProjects/J2KConverter/src
 if [ -d $D ]; then
     # 存在する場合

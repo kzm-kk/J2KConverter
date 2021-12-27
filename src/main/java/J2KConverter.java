@@ -1,14 +1,19 @@
+import com.github.javaparser.JavaParser;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.*;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.ast.type.ReferenceType;
+import com.github.javaparser.ast.type.UnionType;
 import com.github.javaparser.ast.visitor.VoidVisitor;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Pattern;
@@ -21,16 +26,32 @@ public class J2KConverter {
 
         File file;
         if(args.length == 0)
-        file = new File("/Users/kzm0308/IdeaProjects/J2KConverter/src/main/java/TrialClass.java");
+        file = new File("/Users/kzm0308/IdeaProjects/J2KConverter/src/main/java/pac3/Class3.java");
 
         else file = new File(args[0]);
         //file = new File(DataStore.pathName);
-        CompilationUnit cu = StaticJavaParser.parse(file);
+        JavaParser parser = new JavaParser();
+        CompilationUnit cu = parser.parse(file).getResult().get();
 
         VoidVisitor<?> visitor = new FirstStepVisitor();
         //VoidVisitor<?> visitor = new DummyVisitor();
         cu.accept(visitor, null);
+/*
+        PrintStream sysOut = System.out;
+        String path_root = "/Users/kzm0308/IdeaProjects/J2KConverter/src/main/java/pac1";
+        if(args.length == 0)
+            path_root = DataStore.pathName;
+        else path_root = args[0];
 
+        //情報収集フェーズ(構文解析&情報切り出し)
+        for(String path:ConvertOutputer.dumpFile(path_root, path_root, 0)) {
+            JavaParser parser = new JavaParser();
+            CompilationUnit cu = parser.parse(new File(path)).getResult().get();
+            System.setOut(new PrintStream(ConvertOutputer.CreateConvertFile(path_root, path)));
+            System.setOut(sysOut);
+            VoidVisitor<?> visitor = new FirstStepVisitor();
+            cu.accept(visitor, null);
+        }*/
     }
 
     private static class FirstStepVisitor extends VoidVisitorAdapter<Void> {
@@ -228,6 +249,31 @@ public class J2KConverter {
             System.out.print("\n");
         }
 
+        @Override
+        public void visit(EnumDeclaration md, Void arg){
+            NodeList<Modifier> modifiers = md.getModifiers();
+            String mod = "";
+            if (modifiers.size() != 0) {
+                for (Modifier modifier : modifiers) {
+                    String tmp = modifier.toString();
+                    if (tmp.equals("public ")) tmp = "";
+                    if (tmp.equals("static ")) tmp = "";
+                    mod = mod.concat(tmp);
+                }
+            }
+            System.out.println(indent + indent4 + mod + "enum class " + md.getNameAsString() + "{");
+            int size = md.getEntries().size();
+            for(int i = 0; i< size; i++){
+                if(i != 0) System.out.print(",\n");
+                System.out.print(indent + indent4 + indent4 + md.getEntry(i));
+            }
+            System.out.print("\n");
+            for(Node member:md.getMembers()){
+                OutClassVisitor visitor = new OutClassVisitor(indent + indent4, classname);
+                member.accept(visitor, null);
+            }
+            System.out.println(indent + indent4 + "}");
+        }
     }
 
     private static class CompanionObjectVisitor extends VoidVisitorAdapter<Void>{
@@ -359,9 +405,11 @@ public class J2KConverter {
                     }
                 }
             } else {
-                if (DataStore.memory_field_info.get(classname).get(name) != null) {
-                    dim = Integer.parseInt(DataStore.memory_field_info.get(classname).get(name).get("dim"));
-                    assign = Boolean.parseBoolean(DataStore.memory_field_info.get(classname).get(name).get("assign"));
+                if(DataStore.memory_method_info.get(classname) != null) {
+                    if (DataStore.memory_field_info.get(classname).get(name) != null) {
+                        dim = Integer.parseInt(DataStore.memory_field_info.get(classname).get(name).get("dim"));
+                        assign = Boolean.parseBoolean(DataStore.memory_field_info.get(classname).get(name).get("assign"));
+                    }
                 }
             }
             if(md.getInitializer().isPresent()) {
@@ -406,47 +454,50 @@ public class J2KConverter {
             else dec = "val";
 
             boolean flagGS = false;
-            LOOP:for(String accessor:DataStore.memory_method_info.get(classname).keySet()) {
-                String targetField = "";
-                boolean flagAC = false;
-                if(DataStore.memory_method_info.get(classname).get(accessor) != null) {
-                    targetField = (String) DataStore.memory_method_info.get(classname).get(accessor).get("field");
-                    flagAC = (boolean) DataStore.memory_method_info.get(classname).get(accessor).get("fix");
-                }
-                if(!targetField.equals(name)) continue;
-                for (String accessor2 : DataStore.memory_method_info.get(classname).keySet()) {
-                    if (accessor.equals(accessor2)) continue;
-                    String targetField2 = "";
-                    if(DataStore.memory_method_info.get(classname).get(accessor2) != null)
-                        targetField2 = (String) DataStore.memory_method_info.get(classname).get(accessor2).get("field");
-                    if (targetField.equals(targetField2)) {
-                        flagGS = flagAC && (boolean) DataStore.memory_method_info.get(classname).get(accessor2).get("fix");
-                        break LOOP;
+            if(DataStore.memory_method_info.get(classname) != null) {
+                LOOP:
+                for (String accessor : DataStore.memory_method_info.get(classname).keySet()) {
+                    String targetField = "";
+                    boolean flagAC = false;
+                    if (DataStore.memory_method_info.get(classname).get(accessor) != null) {
+                        targetField = (String) DataStore.memory_method_info.get(classname).get(accessor).get("field");
+                        flagAC = (boolean) DataStore.memory_method_info.get(classname).get(accessor).get("fix");
+                    }
+                    if (!targetField.equals(name)) continue;
+                    for (String accessor2 : DataStore.memory_method_info.get(classname).keySet()) {
+                        if (accessor.equals(accessor2)) continue;
+                        String targetField2 = "";
+                        if (DataStore.memory_method_info.get(classname).get(accessor2) != null)
+                            targetField2 = (String) DataStore.memory_method_info.get(classname).get(accessor2).get("field");
+                        if (targetField.equals(targetField2)) {
+                            flagGS = flagAC && (boolean) DataStore.memory_method_info.get(classname).get(accessor2).get("fix");
+                            break LOOP;
+                        }
                     }
                 }
-            }
 
-            if(flagGS) mod = "";
-            System.out.println(indent + mod + dec + " " + name + initial);
+                if (flagGS) mod = "";
+                System.out.println(indent + mod + dec + " " + name + initial);
 
-            int lines = 0;
-            boolean flagG = false;
-            boolean flagS = false;
-            String typeUpper = "";
-            for(String methodname:DataStore.memory_method_info.get(classname).keySet()){
-                String property = "";
-                if(DataStore.memory_method_info.get(classname).get(methodname) != null)
-                    property = (String)DataStore.memory_method_info.get(classname).get(methodname).get("field");
-                if(name.equals(property)){
-                    lines = (int)DataStore.memory_method_info.get(classname).get(methodname).get("lines");
-                    if(lines > 1){
-                        typeUpper = md.getTypeAsString().substring(0,1).toUpperCase() + md.getTypeAsString().substring(1);
-                        for(MethodDeclaration methodDeclaration:DataStore.memory_classmethod.get(classname)){
-                            if(methodDeclaration.getNameAsString().equals(methodname)){
-                                flagG = J2KConverterSupporter.search_get(methodDeclaration);
-                                flagS = J2KConverterSupporter.search_set(methodDeclaration);
-                                CustomAccessorConvertor cac = new CustomAccessorConvertor(classname, name, indent + indent4, typeUpper, flagG, flagS);
-                                methodDeclaration.accept(cac, null);
+                int lines = 0;
+                boolean flagG = false;
+                boolean flagS = false;
+                String typeUpper = "";
+                for (String methodname : DataStore.memory_method_info.get(classname).keySet()) {
+                    String property = "";
+                    if (DataStore.memory_method_info.get(classname).get(methodname) != null)
+                        property = (String) DataStore.memory_method_info.get(classname).get(methodname).get("field");
+                    if (name.equals(property)) {
+                        lines = (int) DataStore.memory_method_info.get(classname).get(methodname).get("lines");
+                        if (lines > 1) {
+                            typeUpper = md.getTypeAsString().substring(0, 1).toUpperCase() + md.getTypeAsString().substring(1);
+                            for (MethodDeclaration methodDeclaration : DataStore.memory_classmethod.get(classname)) {
+                                if (methodDeclaration.getNameAsString().equals(methodname)) {
+                                    flagG = J2KConverterSupporter.search_get(methodDeclaration);
+                                    flagS = J2KConverterSupporter.search_set(methodDeclaration);
+                                    CustomAccessorConvertor cac = new CustomAccessorConvertor(classname, name, indent + indent4, typeUpper, flagG, flagS);
+                                    methodDeclaration.accept(cac, null);
+                                }
                             }
                         }
                     }
@@ -503,7 +554,9 @@ public class J2KConverter {
 
         @Override
         public void visit(ReturnStmt md, Void arg){
-            System.out.println(indent + md.toString().replace(";", ""));
+            System.out.print(indent + "return ");
+            InClassVisitor visitor = new InClassVisitor(this.classname, this.methodname, indent, false);
+            md.getExpression().get().accept(visitor, null);
         }
 
         @Override
@@ -519,6 +572,33 @@ public class J2KConverter {
         @Override
         public void visit(UnaryExpr md, Void arg){
             System.out.println(indent + md);
+        }
+
+        @Override
+        public void visit(TryStmt md, Void arg){
+            System.out.print(indent + "try");
+            BlockVisitor visitor = new BlockVisitor(classname, methodname, indent, indent);
+            md.getTryBlock().accept(visitor, null);
+            for(CatchClause catchClause:md.getCatchClauses()){
+                String paramName = catchClause.getParameter().getNameAsString();
+                Parameter parameter = catchClause.getParameter();
+                if(parameter.getType().isUnionType()){
+                    UnionType unionType = (UnionType) parameter.getType();
+                    for(ReferenceType ref:unionType.getElements()){
+                        System.out.print("catch(" + paramName + ": " + ref + ")");
+                        catchClause.getBody().accept(visitor, null);
+                    }
+                } else {
+                    System.out.print("catch(" + paramName + ": " + parameter.getTypeAsString() + ")");
+                    catchClause.getBody().accept(visitor, null);
+                }
+            }
+            if(md.getFinallyBlock().isPresent()) {
+                System.out.print("finally");
+                md.getFinallyBlock().get().accept(visitor, null);
+                System.out.print("\n");
+            }
+
         }
 
         @Override
@@ -628,7 +708,32 @@ public class J2KConverter {
             String selector = md.getSelector().toString();
             System.out.println(indent + "when(" + selector + "){");
             for(SwitchEntry entry:md.getEntries()){
-                SwitchEntryVisitor visitor = new SwitchEntryVisitor(indent + indent4);
+                SwitchEntryVisitor visitor = new SwitchEntryVisitor(indent + indent4, true);
+                entry.accept(visitor, null);
+            }
+            System.out.println(indent + "}");
+        }
+
+        @Override
+        public void visit(DoStmt md, Void arg){
+            String condition = md.getCondition().toString();
+            System.out.print(indent + "do");
+            if (md.getBody().isBlockStmt()) {
+                VoidVisitor<?> visitor = new BlockVisitor(classname, methodname, indent, indent);
+                md.getBody().accept(visitor, null);
+            } else {
+                super.visit(md, arg);
+                System.out.print(indent);
+            }
+            System.out.println("while(" + condition + ")");
+        }
+
+        @Override
+        public void visit(SwitchExpr md, Void arg){
+            String selector = md.getSelector().toString();
+            System.out.println("when(" + selector + "){");
+            for(SwitchEntry entry:md.getEntries()){
+                SwitchEntryVisitor visitor = new SwitchEntryVisitor(indent + indent4, false);
                 entry.accept(visitor, null);
             }
             System.out.println(indent + "}");
@@ -738,8 +843,10 @@ public class J2KConverter {
 
     private static class SwitchEntryVisitor extends VoidVisitorAdapter<Void>{
         String indent = "";
-        private SwitchEntryVisitor(String indent){
+        boolean isStmt = false;
+        private SwitchEntryVisitor(String indent,boolean flag){
             this.indent = indent;
+            this.isStmt = flag;
         }
 
         @Override
@@ -747,11 +854,13 @@ public class J2KConverter {
             String label = "";
             if(md.getLabels().size()!=0) label = md.getLabels().get(0).toString();
             else label = "else";
-            System.out.println(indent + label + " -> " + "{");
+            System.out.print(indent + label + " -> ");
+            if(isStmt)System.out.println("{");
             for(Statement statement:md.getStatements()){
-                System.out.println(indent + indent4 + statement);
+                if(isStmt)System.out.print(indent + indent4);
+                System.out.println(statement);
             }
-            System.out.println(indent + "}");
+            if(isStmt)System.out.println(indent + "}");
         }
 
     }
@@ -855,6 +964,18 @@ public class J2KConverter {
                     }
                 }
             } else assignRight = md.toString();
+        }
+
+        @Override
+        public void visit(ConditionalExpr md, Void arg){
+            String condition = md.getCondition().toString();
+            AssignVisitor trueVisitor = new AssignVisitor(classname, type, dim);
+            md.getThenExpr().accept(trueVisitor, null);
+            String valueTrue = trueVisitor.getAssignRight();
+            AssignVisitor falseVisitor = new AssignVisitor(classname, type, dim);
+            md.getElseExpr().accept(falseVisitor, null);
+            String valueFalse = falseVisitor.getAssignRight();
+            assignRight = "if(" + condition + ")" + valueTrue + " else " + valueFalse;
         }
 
         @Override
@@ -1000,6 +1121,7 @@ public class J2KConverter {
 
     }
 
+    //CAC:CustomAccessorConverter
     private static class InClassVisitor_CAC extends InClassVisitor{
         String targetField = "";
         String param = "";
