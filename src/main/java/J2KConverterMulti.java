@@ -1,3 +1,4 @@
+import com.github.javaparser.ParseResult;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.*;
 import com.github.javaparser.ast.body.*;
@@ -6,48 +7,57 @@ import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.visitor.VoidVisitor;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import com.github.javaparser.utils.SourceRoot;
+import org.checkerframework.checker.units.qual.A;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Pattern;
 
-public class J2KConverter {
+public class J2KConverterMulti {
     static String indent4 = "    ";
     static boolean isJvmStatic = false;
+    private static PrintStream sysOut = System.out;
 
     public static void main(String[] args) throws IOException {
 
-        File file;
+        String path_root = "/Users/kzm0308/IdeaProjects/J2KConverter/src/main/java/pac1";
         if(args.length == 0)
-        file = new File("/Users/kzm0308/IdeaProjects/J2KConverter/src/main/java/TrialClass.java");
+            path_root = DataStore.pathName;
+        else path_root = args[0];
 
-        else file = new File(args[0]);
-        //file = new File(DataStore.pathName);
-        CompilationUnit cu = StaticJavaParser.parse(file);
-
-        VoidVisitor<?> visitor = new FirstStepVisitor();
-        //VoidVisitor<?> visitor = new DummyVisitor();
-        cu.accept(visitor, null);
+        //情報収集フェーズ(構文解析&情報切り出し)
+        for(String path:ConvertOutputer.dumpFile(path_root, path_root, 0)) {
+            CompilationUnit cu = StaticJavaParser.parse(new File(path));
+            System.setOut(new PrintStream(ConvertOutputer.CreateConvertFile(path_root, path)));
+            System.setOut(sysOut);
+            VoidVisitor<?> visitor = new FirstStepVisitor();
+            cu.accept(visitor, null);
+        }
 
     }
 
     private static class FirstStepVisitor extends VoidVisitorAdapter<Void> {
-
-        @Override
-        public void visit(PackageDeclaration md, Void arg){
-            System.out.println(md.toString());
-        }
+        ArrayList<ImportDeclaration> Import_list = new ArrayList<>();
 
         @Override
         public void visit(ImportDeclaration md, Void arg){
-            System.out.println(md.toString());
+            super.visit(md, arg);
+            Import_list.add(md);
+
         }
 
         @Override
         public void visit(ClassOrInterfaceDeclaration md, Void arg){
             //memory_import.put(md.getNameAsString(), Import_list);
+            DataStore.isStaticF = false;
+            DataStore.isStaticM = false;
+            isJvmStatic = false;
             OutClassVisitor visitor = new OutClassVisitor("", md.getNameAsString());
             md.accept(visitor, null);
         }
@@ -60,6 +70,16 @@ public class J2KConverter {
         private OutClassVisitor(String indent, String classname){
             this.indent = indent;
             this.classname = classname;
+        }
+
+        @Override
+        public void visit(PackageDeclaration md, Void arg){
+            System.out.println(md.toString());
+        }
+
+        @Override
+        public void visit(ImportDeclaration md, Void arg){
+            System.out.println(md.toString());
         }
 
         @Override
@@ -262,7 +282,11 @@ public class J2KConverter {
                     System.out.println(indent4 + "@Throws(" + expt + "::class)");
                 }
 
-                boolean isStatic = (boolean)DataStore.memory_method_info.get(classname).get(methodName).get("static");
+                boolean isStatic = false;
+                if(DataStore.memory_method_info.get(classname) != null) {
+                    if(DataStore.memory_method_info.get(classname).get(methodName) != null)
+                    isStatic = (boolean) DataStore.memory_method_info.get(classname).get(methodName).get("static");
+                }
                 if (isStatic) {
                     NodeList<Modifier> modifiers = md.getModifiers();
                     String mod = "";
@@ -631,17 +655,6 @@ public class J2KConverter {
                 SwitchEntryVisitor visitor = new SwitchEntryVisitor(indent + indent4);
                 entry.accept(visitor, null);
             }
-            System.out.println(indent + "}");
-        }
-
-        @Override
-        public void visit(ForEachStmt md, Void arg){
-            String value = md.getVariable().getVariable(0).getNameAsString();
-            String iterable = md.getIterable().toString();
-            System.out.println(indent + iterable+ ".foreach{ " + value + " ->");
-
-            VoidVisitor<?> visitor = new InClassVisitor(classname, methodname, indent+indent4, false);
-            md.getBody().accept(visitor, null);
             System.out.println(indent + "}");
         }
 

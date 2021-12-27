@@ -1,3 +1,4 @@
+import com.github.javaparser.ParseResult;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
@@ -6,45 +7,45 @@ import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
-import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.visitor.GenericVisitorAdapter;
 import com.github.javaparser.ast.visitor.VoidVisitor;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import com.github.javaparser.utils.SourceRoot;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
-public class J2KConverterSupporter {
+public class J2KConverterSupporterMulti {
 
     public static HashMap<String, HashMap<String, String>> memory_field_Tmp = new HashMap<>();
     public static HashMap<String, HashMap<String, Object>> memory_method_Tmp = new HashMap<>();
 
     public static void main(String[] args) throws IOException {
         DataStore.init();
-        /*String path_root = "/Users/kzm0308/IdeaProjects/WarningTool/src";
+
+        String path_root = "/Users/kzm0308/IdeaProjects/J2KConverter/src/main/java/pac1";
+        if(args.length == 0)
+            path_root = DataStore.pathName;
+        else path_root = args[0];
         SourceRoot root = new SourceRoot(Paths.get(path_root));
         List<ParseResult<CompilationUnit>> cu2 = root.tryToParse("");
 
         //情報収集フェーズ(構文解析&情報切り出し)
-        for(int i = 0; i < cu2.size(); i++){
+        for(ParseResult<CompilationUnit> result:cu2){
             VoidVisitor<?> visitor = new FirstVisitor();
-            cu2.get(i).getResult().get().accept(visitor, null);
-        }*/
-
-        File file;
-        if(args.length == 0)
-            file = new File(DataStore.pathName);
-        else file = new File(args[0]);
-        //file = new File(DataStore.pathName);
-        CompilationUnit cu = StaticJavaParser.parse(file);
-        VoidVisitor<?> visitor = new FirstVisitor();
-        cu.accept(visitor, null);
+            result.getResult().get().accept(visitor, null);
+        }
 
         //判断フェーズ(変数のvar/val、get/set判断、変数名/メソッド名の被り)
         for(String classname:DataStore.memory_classname){
+            memory_field_Tmp = new HashMap<>();
+            memory_method_Tmp = new HashMap<>();
             for(FieldDeclaration fd:DataStore.memory_classfield.get(classname)){
                 FieldVisitor fieldVisitor = new FieldVisitor(classname);
                 fd.accept(fieldVisitor, null);
@@ -63,7 +64,9 @@ public class J2KConverterSupporter {
                 md.accept(methodVisitor, null);
             }
             DataStore.memory_method_info.put(classname, memory_method_Tmp);
+        }
 
+        for(String classname:DataStore.memory_classname){
             //デバッグ用の出力
             /*System.out.println("class:" + classname);
             System.out.println("field information");
@@ -75,13 +78,13 @@ public class J2KConverterSupporter {
                 String isStatic = DataStore.memory_field_info.get(classname).get(fieldname).get("static");
                 System.out.println(fieldname + " type:" + type +" dim:" + dim
                         + " assign:" + assign + " nullable:" + nullable + " static:" + isStatic);
-            }*/
-            /*System.out.println("method information");
+            }
+            System.out.println("method information");
             for(String mname:DataStore.memory_method_info.get(classname).keySet()){
                 boolean flag = (boolean)DataStore.memory_method_info.get(classname).get(mname).get("static");
                 boolean flag2 = (boolean)DataStore.memory_method_info.get(classname).get(mname).get("access");
                 System.out.println(mname + " static:" + flag +" access:" + flag2);
-            }*/
+            }
             /*for(String methodname:DataStore.memory_localValue_info.get(classname).keySet()){
                 for(String fieldname:DataStore.memory_localValue_info.get(classname).get(methodname).keySet()){
                     String assign = DataStore.memory_localValue_info.get(classname).get(methodname).get(fieldname).get("assign");
@@ -249,7 +252,7 @@ public class J2KConverterSupporter {
         ArrayList<String> paramList = new ArrayList<>();
 
         public ConstructorVisitor(String name){
-            classname = name;
+            this.classname = name;
 
         }
 
@@ -276,13 +279,35 @@ public class J2KConverterSupporter {
             String value = md.getValue().toString();
             boolean flag = duplicateCheck(target);
 
-            for(String fieldname:DataStore.memory_field_info.get(classname).keySet()){
-                if(target.equals(fieldname)){
-                    if(!flag || scope.equals("this")) {
-                        DataStore.memory_field_info.get(classname).get(fieldname).put("assign", "true");
+            if(DataStore.memory_field_info.get(this.classname) != null) {
 
-                        if (value.equals("null"))
-                            DataStore.memory_field_info.get(classname).get(fieldname).put("nullable", "true");
+                for (String fieldname : DataStore.memory_field_info.get(this.classname).keySet()) {
+                    if (target.equals(fieldname)) {
+                        if (!flag || scope.equals("this")) {
+                            DataStore.memory_field_info.get(this.classname).get(fieldname).put("assign", "true");
+
+                            if (value.equals("null"))
+                                DataStore.memory_field_info.get(this.classname).get(fieldname).put("nullable", "true");
+                        }
+                    }
+
+                }
+
+                String[] scopes = scope.split("\\.");
+                if(scopes.length >= 1){
+                    if(DataStore.memory_field_info.get(this.classname).get(scopes[0]) != null) {
+                        String scopeClass = DataStore.memory_field_info.get(this.classname).get(scopes[0]).get("type");
+                        if (DataStore.memory_field_info.get(scopeClass) != null) {
+                            for (String fieldname : DataStore.memory_field_info.get(scopeClass).keySet()) {
+
+                                if (target.equals(fieldname)) {
+                                    DataStore.memory_field_info.get(scopeClass).get(fieldname).put("assign", "true");
+
+                                    if (value.equals("null"))
+                                        DataStore.memory_field_info.get(scopeClass).get(fieldname).put("nullable", "true");
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -290,9 +315,11 @@ public class J2KConverterSupporter {
         }
 
         private boolean duplicateCheck(String target){
-            for(String fieldname:DataStore.memory_field_info.get(classname).keySet()){
-                for(String local:paramList){
-                    if(fieldname.equals(local) && fieldname.equals(target)) return true;
+            if(DataStore.memory_field_info.get(this.classname) != null) {
+                for (String fieldname : DataStore.memory_field_info.get(this.classname).keySet()) {
+                    for (String local : paramList) {
+                        if (fieldname.equals(local) && fieldname.equals(target)) return true;
+                    }
                 }
             }
             return false;
@@ -425,6 +452,23 @@ public class J2KConverterSupporter {
                     }
                 }
             }
+            String[] scopes = scope.split("\\.");
+            if(scopes.length >= 1){
+                if(DataStore.memory_field_info.get(this.classname).get(scopes[0]) != null) {
+                    String scopeClass = DataStore.memory_field_info.get(this.classname).get(scopes[0]).get("type");
+                    if (DataStore.memory_field_info.get(scopeClass) != null) {
+                        for (String fieldname : DataStore.memory_field_info.get(scopeClass).keySet()) {
+
+                            if (target.equals(fieldname)) {
+                                DataStore.memory_field_info.get(scopeClass).get(fieldname).put("assign", "true");
+
+                                if (value.equals("null"))
+                                    DataStore.memory_field_info.get(scopeClass).get(fieldname).put("nullable", "true");
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         @Override
@@ -458,6 +502,9 @@ public class J2KConverterSupporter {
             for(String fieldname:DataStore.memory_field_info.get(classname).keySet()){
                 for(String local:DataStore.memory_localValue_info.get(classname).get(methodname).keySet()){
                     if(fieldname.equals(local) && fieldname.equals(target)) return true;
+                }
+                for(String param:paramList){
+                    if(fieldname.equals(param) && fieldname.equals(target)) return true;
                 }
             }
             return false;
@@ -506,8 +553,7 @@ public class J2KConverterSupporter {
 
         @Override
         public Boolean visit(AssignExpr md, Void arg){
-            if(md.getTarget().toString().equals(fieldname)) return true;
-            return false;
+            return md.getTarget().toString().equals(fieldname);
         }
     }
 
