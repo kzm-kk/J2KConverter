@@ -165,6 +165,11 @@ public class J2KConverterSupporterMulti {
                 md.accept(visitor, null);
             }
         }
+
+        @Override
+        public void visit(InitializerDeclaration md, Void arg){
+            DataStore.isStaticI = DataStore.isStaticI || md.isStatic();
+        }
     }
 
     private static class FieldVisitor extends VoidVisitorAdapter<Void>{

@@ -1,0 +1,108 @@
+Node
+┣━ArrayCreationLevel(配列の次元)
+┣━CatchClause(try-catch-finallyのcatch)
+┣━CompilationUnit(一番最初のやつ)
+┣━ImportDeclaration(import宣言)
+┣━MemberValuePair
+┣━ModuleDeclaration
+┣━Name
+┣━PackageDeclaration(パッケージ宣言)
+┣━Parameter(パラメータ、仮引数)
+┣━SimpleName(クラスや変数、メソッドとかの予約語以外の名前)
+┣━VariableDeclarator(変数宣言の、修飾子や型を除いた変数部分)
+┃　
+┣━BodyDeclaration
+┃　┣━AnnotationMemberDeclaration
+┃　┣━EnumConstantDeclaration(列挙型の要素1つ1つ)
+┃　┣━FieldDeclaration(フィールド宣言)
+┃　┣━InitializerDeclaration(初期化子)
+┃　┣━CallableDeclaration
+┃　┃　┣━ConstructorDeclaration(コンストラクタ宣言)
+┃　┃　┗━MethodDeclaration(メソッド宣言)
+┃　┗━TypeDeclaration
+┃　　　┣━AnnotationDeclaration
+┃　　　┣━ClassOrInterfaceDeclaration(クラス宣言)
+┃　　　┗━EnumDeclaration(列挙型宣言)
+┃　
+┣━Comment
+┃　┣━BlockComment
+┃　┣━JavadocComment
+┃　┗━LineComment
+┃　
+┣━Expression
+┃　┣━ArrayAccessExpr(配列アクセス)
+┃　┣━ArrayCreationExpr(配列の初期化(要素なし))
+┃　┣━ArrayInitializerExpr(配列の初期化(要素あり))
+┃　┣━AssignExpr(代入記述)
+┃　┣━BinaryExpr(演算・算術記号の入った記述)
+┃　┣━CastExpr(キャスト記述)
+┃　┣━ClassExpr
+┃　┣━ConditionalExpr(三項演算子)
+┃　┣━EnclosedExpr(かっこ)
+┃　┣━FieldAccessExpr(フィールドアクセス記述)
+┃　┣━InstanceOfExpr
+┃　┣━LambdaExpr(ラムダ式)
+┃　┣━MethodCallExpr(メソッド呼び出し)
+┃　┣━MethodReferenceExpr
+┃　┣━NameExpr
+┃　┣━ObjectCreationExpr(インスタンス生成)
+┃　┣━SuperExpr
+┃　┣━ThisExpr
+┃　┣━TypeExpr
+┃　┣━UnaryExpr
+┃　┣━VariableDeclarationExpr(ローカルな変数宣言)
+┃　┣━AnnotationExpr
+┃　┃　┣━MarkerAnnotationExpr
+┃　┃　┣━NormalAnnotationExpr
+┃　┃　┗━SingleMemberAnnotationExpr
+┃　┗━LiteralExpr(様々な値)
+┃　　　┣━BooleanLiteralExpr
+┃　　　┣━NullLiteralExpr
+┃　　　┗━LiteralStringValueExpr
+┃　　　　　┣━CharLiteralExpr
+┃　　　　　┣━DoubleLiteralExpr
+┃　　　　　┣━IntegerLiteralExpr
+┃　　　　　┣━LongLiteralExpr
+┃　　　　　┗━StringLiteralExpr
+┃　
+┣━ModuleStmt
+┃　┣━ModuleExportsStmt
+┃　┣━ModuleOpensStmt
+┃　┣━ModuleProvidesStmt
+┃　┣━ModuleRequiresStmt
+┃　┗━ModuleUsesStmt
+┃　
+┣━Statement
+┃　┣━AssertStmt
+┃　┣━BlockStmt(ブロック文の枠のとこ)
+┃　┣━BreakStmt(breakの記述)
+┃　┣━ContinueStmt(continueの記述)
+┃　┣━DoStmt(do-while文)
+┃　┣━EmptyStmt
+┃　┣━ExplicitConstructorInvocationStmt
+┃　┣━ExpressionStmt(定義以外の様々な表現)
+┃　┣━ForeachStmt(拡張for文)
+┃　┣━ForStmt(for文)
+┃　┣━IfStmt(if文)
+┃　┣━LabeledStmt
+┃　┣━LocalClassDeclarationStmt
+┃　┣━ReturnStmt(returnの記述)
+┃　┣━SwitchEntryStmt(switch文の一つ一つのラベル)
+┃　┣━SwitchStmt(switch文自体)
+┃　┣━SynchronizedStmt
+┃　┣━ThrowStmt
+┃　┣━TryStmt(try-catch-finally)
+┃　┣━UnparsableStmt
+┃　┗━WhileStmt(while文)
+┃　
+┗━Type
+　┣━IntersectionType
+　┣━PrimitiveType
+　┣━UnionType(catchで例外処理をするときの例外のやつ)
+　┣━UnknownType
+　┣━VoidType
+　┣━WildcardType
+　┗━ReferenceType
+　　　┣━ArrayType
+　　　┣━ClassOrInterfaceType
+　　　┗━TypeParameter

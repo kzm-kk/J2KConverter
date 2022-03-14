@@ -9,6 +9,6 @@ public class J2KConverterFullMulti {
         else DataStore.pathName = args[0];
         //System.out.println(args[0]);
         J2KConverterSupporterMulti.main(args);
-        J2KConverter.main(args);
+        J2KConverterMulti.main(args);
     }
 }

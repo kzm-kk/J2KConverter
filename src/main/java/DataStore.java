@@ -11,6 +11,7 @@ import java.util.List;
 public class DataStore {
     public static String pathName;
     public static boolean isStaticF;
+    public static boolean isStaticI;
     public static boolean isStaticM;
     public static ArrayList<String> memory_classlibrary;
     public static HashMap<String, ArrayList<ImportDeclaration>> memory_import;
@@ -36,6 +37,7 @@ public class DataStore {
     public static void init(){
         pathName = "";
         isStaticF = false;
+        isStaticI = false;
         isStaticM = false;
         memory_classlibrary = new ArrayList<>();
         memory_import = new HashMap<>();

@@ -52,11 +52,13 @@ public class Class3 {
         try {
             int score = 76;
             String result = score > 70 ? "OK" : "NG";
+            double scoreD = (double) 56 + 1.7;
             System.out.println("try");
         } catch (NumberFormatException | NullPointerException e){
             System.out.println(e);
         } finally {
             Runnable runner = () -> {
+                System.out.println("before");
                 System.out.println("Hello Lambda!");
             };
             System.out.println("finally");
