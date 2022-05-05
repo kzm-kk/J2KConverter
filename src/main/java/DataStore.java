@@ -1,8 +1,5 @@
 import com.github.javaparser.ast.ImportDeclaration;
-import com.github.javaparser.ast.body.ConstructorDeclaration;
-import com.github.javaparser.ast.body.FieldDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.VariableDeclarator;
+import com.github.javaparser.ast.body.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +19,7 @@ public class DataStore {
     public static HashMap<String, List<MethodDeclaration>> memory_classmethod;
     public static HashMap<String, ArrayList<String>> memory_innerclass;
     public static HashMap<String, List<ConstructorDeclaration>> memory_constructor;
+    public static HashMap<String, List<InitializerDeclaration>> memory_Initializer;
 
     public static HashMap<String, HashMap<String, HashMap<String, String>>> memory_field_info;
     public static HashMap<String, HashMap<String, HashMap<String, HashMap<String, String>>>> memory_localValue_info;
@@ -48,6 +46,7 @@ public class DataStore {
         memory_classmethod = new HashMap<>();
         memory_innerclass = new HashMap<>();
         memory_constructor = new HashMap<>();
+        memory_Initializer = new HashMap<>();
         memory_field_info = new HashMap<>();
         memory_localValue_info = new HashMap<>();
         memory_method_info = new HashMap<>();

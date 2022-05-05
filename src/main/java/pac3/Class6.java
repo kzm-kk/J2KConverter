@@ -31,6 +31,7 @@ public class Class6 {
         list.forEach((s) -> {System.out.println(s);});
 
         // メソッド参照
+        //list.forEach(Consumer { obj: Int? -> print(obj) })
         list.forEach(System.out::print);
     }
 }

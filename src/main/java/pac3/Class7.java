@@ -16,7 +16,7 @@ public class Class7<T extends Number> {
     String str = "";
     String[] strs = new String[3];
 
-    void func(){
+    void func(int... ints){
         list = listInt; // Integer 型の代入を許容
         list = listLong; // Long 型の代入を許容
         list2 = new ArrayList<Object>();

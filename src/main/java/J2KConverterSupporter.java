@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class J2KConverterSupporter {
 
@@ -52,7 +53,24 @@ public class J2KConverterSupporter {
                 FieldVisitor fieldVisitor = new FieldVisitor(classname);
                 fd.accept(fieldVisitor, null);
             }
-            //DataStore.memory_field_info.put(classname, memory_field_Tmp);
+            /*
+            クラスのインスタンス生成時の動きから見る、変数のチェック順番
+            ０：フィールドの初期化
+            １：スーパークラスのstatic初期化子
+            ２：クラスのstatic初期化子
+            ３：スーパークラスの初期化子
+            ４：スーパークラスのコンストラクタ
+            ５：クラスの初期化子
+            ６：クラスのコンストラクタ
+            ７：他の使用箇所
+             */
+
+            if(DataStore.memory_Initializer.get(classname) != null) {
+                for (InitializerDeclaration id : DataStore.memory_Initializer.get(classname)) {
+                    InitializerVisitor initializerVisitor = new InitializerVisitor(classname);
+                    id.accept(initializerVisitor, null);
+                }
+            }
 
             for(ConstructorDeclaration cd:DataStore.memory_constructor.get(classname)){
                 ConstructorVisitor constructorVisitor = new ConstructorVisitor(classname);
@@ -125,9 +143,11 @@ public class J2KConverterSupporter {
         String classname = "";
         ArrayList<FieldDeclaration> fds = new ArrayList<>();
         ArrayList<String> inner_list = new ArrayList<>();
+        List<InitializerDeclaration> initializer_list = new ArrayList<>();
 
         public SomeVisitor(String name){
             classname = name;
+            initializer_list = new ArrayList<>();
         }
 
         @Override
@@ -169,6 +189,9 @@ public class J2KConverterSupporter {
         @Override
         public void visit(InitializerDeclaration md, Void arg){
             DataStore.isStaticI = DataStore.isStaticI || md.isStatic();
+            initializer_list = DataStore.memory_Initializer.get(classname);
+            initializer_list.add(md);
+            DataStore.memory_Initializer.put(classname, initializer_list);
         }
     }
 
@@ -304,6 +327,41 @@ public class J2KConverterSupporter {
                 }
             }
             return false;
+        }
+
+    }
+
+    private static class InitializerVisitor extends VoidVisitorAdapter<Void>{
+        String classname = "";
+
+        public InitializerVisitor(String name){
+            classname = name;
+
+        }
+
+        @Override
+        public void visit(AssignExpr md, Void arg){
+            String str = md.getTarget().toString();
+            String scope = "";
+            if(md.getTarget().isFieldAccessExpr()){
+                FieldAccessExpr fae = (FieldAccessExpr) md.getTarget();
+                scope = fae.getScope().toString();
+                str = fae.getNameAsString();
+            }
+            String target = str;
+            String value = md.getValue().toString();
+
+            for(String fieldname:DataStore.memory_field_info.get(classname).keySet()){
+                if(target.equals(fieldname)){
+                    if(scope.equals("this")) {
+                        DataStore.memory_field_info.get(classname).get(fieldname).put("assign", "true");
+
+                        if (value.equals("null"))
+                            DataStore.memory_field_info.get(classname).get(fieldname).put("nullable", "true");
+                    }
+                }
+
+            }
         }
 
     }

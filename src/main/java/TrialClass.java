@@ -1,3 +1,5 @@
+import java.util.Locale;
+
 public class TrialClass {
     int[][] tmp = new int[3][3];
     int[][] nums = {{1,2,3},{1,2,3},{1,2,3}};
@@ -12,7 +14,7 @@ public class TrialClass {
     }
 
     public static void main(String[] args) {
-        
+        String str = "hello".split("")[0].toUpperCase().toLowerCase().substring(0);
     }
     
     

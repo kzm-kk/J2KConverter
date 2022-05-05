@@ -1,23 +1,20 @@
 import com.github.javaparser.JavaParser;
-import com.github.javaparser.ParseResult;
-import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.*;
 import com.github.javaparser.ast.body.*;
+import com.github.javaparser.ast.comments.BlockComment;
+import com.github.javaparser.ast.comments.JavadocComment;
+import com.github.javaparser.ast.comments.LineComment;
 import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.type.*;
 import com.github.javaparser.ast.visitor.VoidVisitor;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import com.github.javaparser.utils.SourceRoot;
-import org.checkerframework.checker.units.qual.A;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.regex.Pattern;
 
 public class J2KConverterMulti {
@@ -46,7 +43,7 @@ public class J2KConverterMulti {
         JavaParser parser = new JavaParser();
         CompilationUnit cu = parser.parse(file).getResult().get();
 
-        VoidVisitor<?> visitor = new FirstStepVisitor();
+        VoidVisitor<?> visitor = new OutClassVisitor("");
         //VoidVisitor<?> visitor = new DummyVisitor();
         cu.accept(visitor, null);
         
@@ -64,14 +61,18 @@ public class J2KConverterMulti {
             CompilationUnit cu = parser.parse(new File(path)).getResult().get();
             System.setOut(new PrintStream(ConvertOutputer.CreateConvertFile(path_root, path)));
             System.setOut(sysOut);
-            VoidVisitor<?> visitor = new FirstStepVisitor();
+            VoidVisitor<?> visitor = new OutClassVisitor();
             cu.accept(visitor, null);
         }*/
     }
 
-    private static class FirstStepVisitor extends VoidVisitorAdapter<Void> {
+    private static class OutClassVisitor extends VoidVisitorAdapter<Void> {
+        String indent = "";
         String packageName = "";
         ArrayList<String> ImportNameList = new ArrayList<>();
+        public OutClassVisitor(String indent){
+            this.indent = indent;
+        }
 
         @Override
         public void visit(PackageDeclaration md, Void arg){
@@ -79,33 +80,46 @@ public class J2KConverterMulti {
         }
 
         @Override
+        public void visit(AnnotationDeclaration md, Void arg){
+            NodeList<Modifier> modifiers = md.getModifiers();
+            String mod = "";
+            if(modifiers.size() != 0){
+                for(Modifier modifier:modifiers) {
+                    String tmp = modifier.toString();
+                    if (tmp.equals("public ")) tmp = "";
+                    if (tmp.equals("static ")) tmp = "";
+                    mod = mod.concat(tmp);
+                }
+            }
+            String name = md.getNameAsString();
+            setOutputer(mod + "annotation class" + name + "(");
+            String typeParams = "";
+            for(int i = 0; i < md.getMembers().size(); i++) {
+                if(i > 0) setOutputer(", ");
+                AnnotationMemberDeclaration AMD = (AnnotationMemberDeclaration) md.getMember(i);
+                setOutputer("val " + AMD.getNameAsString() + ": ");
+                TypeVisitor typeVisitor = new TypeVisitor();
+                AMD.getType().accept(typeVisitor, null);
+            }
+            setOutputerln(typeParams + ")");
+        }
+
+        @Override
         public void visit(ImportDeclaration md, Void arg){
             ImportNameList.add(md.getNameAsString());
         }
 
-        @Override
+        /*@Override
         public void visit(ClassOrInterfaceDeclaration md, Void arg){
             if(!packageName.equals(""))setOutputerln("package " + packageName + "\n");
             for(String ImportName:ImportNameList){
                 setOutputerln("import " + ImportName);
             }
-            OutClassVisitor visitor = new OutClassVisitor("", md.getNameAsString());
+            InClassVisitor visitor = new InClassVisitor("", md.getNameAsString(), false);
             md.accept(visitor, null);
-        }
-
-    }
-
-    private static class OutClassVisitor extends VoidVisitorAdapter<Void>{
-        String indent = "";
-        String classname = "";
-        private OutClassVisitor(String indent, String classname){
-            this.indent = indent;
-            this.classname = classname;
-        }
-
+        }*/
         @Override
         public void visit(ClassOrInterfaceDeclaration md, Void arg){
-            if(md.getNameAsString().equals(classname)) {
                 if(!isJvmStatic){
                     if(DataStore.isStaticF || DataStore.isStaticM || DataStore.isStaticI) {
                         setOutputerln("import kotlin.jvm.JvmStatic");
@@ -165,17 +179,123 @@ public class J2KConverterMulti {
                 isCompanion = isCompanion || DataStore.isStaticI;
                 if (isCompanion) {
                     setOutputerln(indent + indent4 + "companion object{");
-                    CompanionObjectVisitor visitor = new CompanionObjectVisitor(indent + indent4, classname);
+                    for(BodyDeclaration<?> bodyDeclaration : md.getMembers()) {
+                        InClassVisitor CompanionVisitor = new InClassVisitor(indent + indent4, md.getNameAsString(), true);
+                        bodyDeclaration.accept(CompanionVisitor, null);
+                    }
+                    setOutputerln("\n" + indent + indent4 + "}");
+                }
+            for(BodyDeclaration<?> bodyDeclaration : md.getMembers()) {
+                InClassVisitor CompanionVisitor = new InClassVisitor(indent, md.getNameAsString(), false);
+                bodyDeclaration.accept(CompanionVisitor, null);
+            }
+                setOutputerln(indent + "}");
+
+        }
+
+    }
+
+    private static class InClassVisitor extends VoidVisitorAdapter<Void>{
+        String indent = "";
+        String classname = "";
+        boolean isCompanionConvert = false;
+        private InClassVisitor(String indent, String classname, boolean isCompanionConvert){
+            this.indent = indent;
+            this.classname = classname;
+            this.isCompanionConvert = isCompanionConvert;
+        }
+
+        /*@Override
+        public void visit(ClassOrInterfaceDeclaration md, Void arg){
+            if(md.getNameAsString().equals(classname) && !isCompanionConvert) {
+                if(!isJvmStatic){
+                    if(DataStore.isStaticF || DataStore.isStaticM || DataStore.isStaticI) {
+                        setOutputerln("import kotlin.jvm.JvmStatic");
+                        isJvmStatic = true;
+                        setOutputer("\n");
+                    }
+                }
+                NodeList<Modifier> modifiers = md.getModifiers();
+                String mod = "";
+                if(modifiers.size() != 0){
+                    for(Modifier modifier:modifiers) {
+                        String tmp = modifier.toString();
+                        if (tmp.equals("public ")) tmp = "";
+                        if (tmp.equals("static ")) tmp = "";
+                        mod = mod.concat(tmp);
+                    }
+                }
+                String classname = md.getNameAsString();
+                String CorI = "class";
+                if(md.isInterface()) CorI = "interface";
+                setOutputer(indent + mod + CorI + " " + classname);
+                String typeParams = "";
+                boolean isDia = false;
+                if(md.getTypeParameters().size() != 0){
+                    isDia = true;
+                    TypeParameter TP = md.getTypeParameter(0);
+                    typeParams = "<" + TP.getNameAsString() + " : " + TP.getTypeBound().get(0) + "?" + ">";
+                }
+                String extend = "";
+                int sizeExIm = 0;
+                if(md.getExtendedTypes().size() != 0) {
+                    extend = md.getExtendedTypes().get(0).toString();
+                    sizeExIm += md.getExtendedTypes().size();
+                }
+                String implement = "";
+                if(md.getImplementedTypes().size() != 0){
+                    if(sizeExIm != 0) extend = extend.concat(", ");
+                    for(ClassOrInterfaceType typeIm:md.getImplementedTypes()){
+                        implement = implement.concat(typeIm.getNameAsString() + ", ");
+                        sizeExIm++;
+                    }
+                    implement = implement.substring(0, implement.length() - 2);
+                }
+                if(isDia) setOutputer(typeParams);
+                if(sizeExIm != 0)
+                    setOutputer(":" + extend + implement);
+                setOutputerln("{");
+                boolean isCompanion = false;
+                for(String field:DataStore.memory_field_info.get(classname).keySet()){
+                    isCompanion = Boolean.parseBoolean(DataStore.memory_field_info.get(classname).get(field).get("static"));
+                    if(isCompanion) break;
+                }
+                for(String method:DataStore.memory_method_info.get(classname).keySet()){
+                    if(isCompanion) break;
+                    isCompanion = (boolean)DataStore.memory_method_info.get(classname).get(method).get("static");
+                }
+                isCompanion = isCompanion || DataStore.isStaticI;
+                if (isCompanion && !isCompanionConvert) {
+                    setOutputerln(indent + indent4 + "companion object{");
+                    InClassVisitor visitor = new InClassVisitor(indent + indent4, md.getNameAsString(), true);
                     md.accept(visitor, null);
                     setOutputerln("\n" + indent + indent4 + "}");
                 }
                 super.visit(md, arg);
                 setOutputerln(indent + "}");
+            } else if(isCompanionConvert){
+                super.visit(md, arg);
             } else {
-                OutClassVisitor visitor = new OutClassVisitor(indent + indent4, md.getNameAsString());
+                InClassVisitor visitor = new InClassVisitor(indent + indent4, md.getNameAsString(), false);
                 md.accept(visitor, null);
             }
 
+        }*/
+
+        @Override
+        public void visit(ClassOrInterfaceDeclaration md, Void arg){
+            NodeList<Modifier> modifiers = new NodeList<>();;
+            boolean isStatic = false;
+            if(md.getModifiers().size() != 0) {
+                modifiers = md.getModifiers();
+                for(Modifier modifier:modifiers){
+                    if(modifier.toString().equals("static ")) isStatic = true;
+                }
+            }
+            if(isStatic == isCompanionConvert) {
+                OutClassVisitor visitor = new OutClassVisitor(indent + indent4);
+                md.accept(visitor, null);
+            }
         }
 
         @Override
@@ -203,7 +323,7 @@ public class J2KConverterMulti {
                 boolean isStatic = false;
                 if(DataStore.memory_method_info.get(classname) !=null)
                     isStatic = (boolean)DataStore.memory_method_info.get(classname).get(methodName).get("static");
-                if(!isStatic) {
+                if(isStatic == isCompanionConvert) {
                     if (md.getThrownExceptions().size() != 0) {
                         String expt = md.getThrownException(0).toString();
                         setOutputerln(indent4 + "@Throws(" + expt + "::class)");
@@ -215,14 +335,23 @@ public class J2KConverterMulti {
                             String tmp = modifier.toString();
                             if (tmp.equals("public ")) tmp = "";
                             if (tmp.equals("static ")) tmp = "";
+                            if (tmp.equals("synchronized ")) setOutputerln("@Synchronized");
                             mod = mod.concat(tmp);
                         }
                     }
                     String override = "";
-                    if (md.getAnnotations().size() != 0) override = md.getAnnotation(0).toString();
-                    if (override.equals("@Override")) override = "override";
+                    if (md.getAnnotations().size() != 0) {
+                        for(int i = 0;i < md.getAnnotations().size();i++){
+                            if (md.getAnnotation(i).getNameAsString().equals("Override")) {
+                                override = "override";
+                            } else {
+                                AnnotationVisitor annotationVisitor = new AnnotationVisitor(classname, indent);
+                                md.getAnnotation(i).accept(annotationVisitor, null);
+                            }
+                        }
+                    }
                     setOutputer(indent + indent4 + override + mod + "fun " + methodName + "(");
-                    String allParam = "";
+                    /*String allParam = "";
                     for (int i = 0; i < md.getParameters().size(); i++) {
                         if (i != 0) allParam = allParam.concat(", ");
                         Parameter param = md.getParameter(i);
@@ -233,7 +362,12 @@ public class J2KConverterMulti {
                         }
                         allParam = allParam.concat(paramName + paramType);
                     }
-                    setOutputer(allParam + ")");
+                    setOutputer(allParam + ")");*/
+                    for (int i = 0; i < md.getParameters().size(); i++) {
+                        if (i != 0) setOutputer(", ");
+                        ParameterConvert(md.getParameter(i));
+                    }
+                    setOutputer(")");
                     if (!md.getType().isVoidType()) setOutputer(": ");
                     TypeVisitor Tvisitor = new TypeVisitor();
                     md.getType().accept(Tvisitor, null);
@@ -241,7 +375,7 @@ public class J2KConverterMulti {
                     if (!md.getTypeAsString().equals("void"))
                         type = ": " + md.getTypeAsString().substring(0, 1).toUpperCase() + md.getTypeAsString().substring(1);
                     setOutputer(type);*/
-                    VoidVisitor<?> visitor = new BlockVisitor(classname, methodName, indent + indent4, indent + indent4);
+                    VoidVisitor<?> visitor = new MakeBlockVisitor(classname, methodName, indent + indent4, indent + indent4);
                     md.accept(visitor, null);
                     setOutputer("\n");
                 }
@@ -258,7 +392,7 @@ public class J2KConverterMulti {
                     if(modifier.toString().equals("static ")) isStatic = true;
                 }
             }
-            if(!isStatic) {
+            if(isStatic == isCompanionConvert) {
                 VariableVisitor visitor = new VariableVisitor(classname, "", false, indent + indent4, modifiers);
                 md.accept(visitor, null);
                 setOutputer("\n");
@@ -267,135 +401,6 @@ public class J2KConverterMulti {
 
         @Override
         public void visit(ConstructorDeclaration md, Void arg){
-            setOutputer(indent + indent4 + md.getNameAsString() + "(");
-            String allParam = "";
-            for(int i = 0;i < md.getParameters().size(); i++) {
-                if(i != 0) allParam = allParam.concat(", ");
-                Parameter param = md.getParameter(i);
-                String paramName = param.getNameAsString();
-                String paramType = ": " + param.getTypeAsString().substring(0,1).toUpperCase() + param.getTypeAsString().substring(1);
-                if (param.getType().isArrayType()) {
-                    paramType = ": Array<" + param.getType().toArrayType().get().getComponentType() + ">";
-                }
-                allParam = allParam.concat(paramName + paramType);
-            }
-            setOutputer(allParam + ")");
-            VoidVisitor<?> visitor = new BlockVisitor(classname, "",indent + indent4, indent + indent4);
-            md.accept(visitor, null);
-            setOutputer("\n");
-        }
-
-        @Override
-        public void visit(EnumDeclaration md, Void arg){
-            NodeList<Modifier> modifiers = md.getModifiers();
-            String mod = "";
-            if (modifiers.size() != 0) {
-                for (Modifier modifier : modifiers) {
-                    String tmp = modifier.toString();
-                    if (tmp.equals("public ")) tmp = "";
-                    if (tmp.equals("static ")) tmp = "";
-                    mod = mod.concat(tmp);
-                }
-            }
-            setOutputerln(indent + indent4 + mod + "enum class " + md.getNameAsString() + "{");
-            int size = md.getEntries().size();
-            for(int i = 0; i< size; i++){
-                if(i != 0) setOutputer(",\n");
-                setOutputer(indent + indent4 + indent4 + md.getEntry(i));
-            }
-            setOutputer("\n");
-            for(Node member:md.getMembers()){
-                OutClassVisitor visitor = new OutClassVisitor(indent + indent4, classname);
-                member.accept(visitor, null);
-            }
-            setOutputerln(indent + indent4 + "}");
-        }
-
-        @Override
-        public void visit(InitializerDeclaration md, Void arg){
-            if(!md.isStatic()) {
-                setOutputer(indent + indent4 + "init");
-                BlockVisitor visitor = new BlockVisitor(classname, "",indent + indent4, indent + indent4);
-                md.getBody().accept(visitor, null);
-                setOutputer("\n");
-            }
-        }
-    }
-
-    private static class CompanionObjectVisitor extends VoidVisitorAdapter<Void>{
-        String indent = "";
-        String classname = "";
-        private CompanionObjectVisitor(String indent, String classname){
-            this.indent = indent;
-            this.classname = classname;
-        }
-
-        @Override
-        public void visit(MethodDeclaration md, Void arg){
-            String methodName = md.getNameAsString();
-            boolean flag = false;
-            LOOP:for(String accessor:DataStore.memory_method_info.get(classname).keySet()){
-                if(!(boolean)DataStore.memory_method_info.get(classname).get(accessor).get("access")) break;
-                if(methodName.equals(accessor)){
-                    String targetField = (String)DataStore.memory_method_info.get(classname).get(methodName).get("field");
-                    for(String accessor2:DataStore.memory_method_info.get(classname).keySet()){
-                        if(accessor.equals(accessor2)) continue;
-                        String targetField2 = (String)DataStore.memory_method_info.get(classname).get(accessor2).get("field");
-                        if(targetField.equals(targetField2)) {
-                            flag = true;
-                            break LOOP;
-                        }
-                    }
-                }
-            }
-            if(!flag) {
-                if (md.getThrownExceptions().size() != 0) {
-                    String expt = md.getThrownException(0).toString();
-                    setOutputerln(indent4 + "@Throws(" + expt + "::class)");
-                }
-
-                boolean isStatic = (boolean)DataStore.memory_method_info.get(classname).get(methodName).get("static");
-                if (isStatic) {
-                    NodeList<Modifier> modifiers = md.getModifiers();
-                    String mod = "";
-                    if(modifiers.size() != 0){
-                        for(Modifier modifier:modifiers) {
-                            String tmp = modifier.toString();
-                            if (tmp.equals("public ")) tmp = "";
-                            if (tmp.equals("static ")) tmp = "";
-                            mod = mod.concat(tmp);
-                        }
-                    }
-                    String override = "";
-                    if (md.getAnnotations().size() != 0) override = md.getAnnotation(0).toString();
-                    if (override.equals("@Override")) override = "override";
-                    setOutputerln(indent + indent4 + "@JvmStatic");
-                    setOutputer(indent + indent4 + override + mod + "fun " + methodName + "(");
-                    String allParam = "";
-                    for (int i = 0; i < md.getParameters().size(); i++) {
-                        if (i != 0) allParam = allParam.concat(", ");
-                        Parameter param = md.getParameter(i);
-                        String paramName = param.getNameAsString();
-                        String paramType = ": " + param.getTypeAsString().substring(0, 1).toUpperCase() + param.getTypeAsString().substring(1);
-                        if (param.getType().isArrayType()) {
-                            paramType = ": Array<" + param.getType().toArrayType().get().getComponentType() + ">";
-                        }
-                        allParam = allParam.concat(paramName + paramType);
-                    }
-                    setOutputer(allParam + ")");
-                    String type = "";
-                    if (!md.getTypeAsString().equals("void"))
-                        type = ": " + md.getTypeAsString().substring(0, 1).toUpperCase() + md.getTypeAsString().substring(1);
-                    setOutputer(type);
-                    VoidVisitor<?> visitor = new BlockVisitor(classname, methodName, indent + indent4, indent + indent4);
-                    md.accept(visitor, null);
-                    setOutputer("\n");
-                }
-            }
-        }
-
-        @Override
-        public void visit(FieldDeclaration md, Void arg){
             NodeList<Modifier> modifiers = new NodeList<>();;
             boolean isStatic = false;
             if(md.getModifiers().size() != 0) {
@@ -404,22 +409,149 @@ public class J2KConverterMulti {
                     if(modifier.toString().equals("static ")) isStatic = true;
                 }
             }
-            if(isStatic) {
-                setOutputerln(indent + indent4 + "@JvmField");
-                VariableVisitor visitor = new VariableVisitor(classname, "", false, indent + indent4, modifiers);
+            if(isStatic == isCompanionConvert) {
+                setOutputer(indent + indent4 + "constructor(");
+                /*String allParam = "";
+                for (int i = 0; i < md.getParameters().size(); i++) {
+                    if (i != 0) allParam = allParam.concat(", ");
+                    Parameter param = md.getParameter(i);
+                    String paramName = param.getNameAsString();
+                    String paramType = ": " + param.getTypeAsString().substring(0, 1).toUpperCase() + param.getTypeAsString().substring(1);
+                    if (param.getType().isArrayType()) {
+                        paramType = ": Array<" + param.getType().toArrayType().get().getComponentType() + ">";
+                    }
+                    allParam = allParam.concat(paramName + paramType);
+                }
+                setOutputer(allParam + ")");*/
+                for (int i = 0; i < md.getParameters().size(); i++) {
+                    if (i != 0) setOutputer(", ");
+                    ParameterConvert(md.getParameter(i));
+                }
+                setOutputer(")");
+                VoidVisitor<?> visitor = new MakeBlockVisitor(classname, "", indent + indent4, indent + indent4);
                 md.accept(visitor, null);
                 setOutputer("\n");
             }
         }
 
         @Override
-        public void visit(InitializerDeclaration md, Void arg){
-            if(md.isStatic()) {
-                setOutputer(indent + indent4 + "init");
-                BlockVisitor visitor = new BlockVisitor(classname, "",indent + indent4, indent + indent4);
-                md.getBody().accept(visitor, null);
+        public void visit(EnumDeclaration md, Void arg){
+            NodeList<Modifier> modifiers = md.getModifiers();
+            String mod = "";
+            boolean isStatic = false;
+            if (modifiers.size() != 0) {
+                for (Modifier modifier : modifiers) {
+                    String tmp = modifier.toString();
+                    if (tmp.equals("public ")) tmp = "";
+                    if (tmp.equals("static ")) {
+                        tmp = "";
+                        isStatic = true;
+                    }
+                    mod = mod.concat(tmp);
+                }
+            }
+            if(isStatic == isCompanionConvert) {
+                setOutputerln(indent + indent4 + mod + "enum class " + md.getNameAsString() + "{");
+                int size = md.getEntries().size();
+                for (int i = 0; i < size; i++) {
+                    if (i != 0) setOutputer(",\n");
+                    setOutputer(indent + indent4 + indent4 + md.getEntry(i));
+                }
+                setOutputer("\n");
+                for (Node member : md.getMembers()) {
+                    InClassVisitor visitor = new InClassVisitor(indent + indent4, classname, false);
+                    member.accept(visitor, null);
+                }
+                setOutputerln(indent + indent4 + "}");
             }
         }
+
+        @Override
+        public void visit(InitializerDeclaration md, Void arg){
+            if(md.isStatic() == isCompanionConvert) {
+                setOutputer(indent + indent4 + "init");
+                MakeBlockVisitor visitor = new MakeBlockVisitor(classname, "",indent + indent4, indent + indent4);
+                md.getBody().accept(visitor, null);
+                setOutputer("\n");
+            }
+        }
+    }
+
+    private static class AnnotationVisitor extends VoidVisitorAdapter<Void>{
+        String classname = "";
+        String indent = "";
+        public AnnotationVisitor(String classname, String indent){
+            this.classname = classname;
+            this.indent = indent;
+        }
+
+        @Override
+        public void visit(MarkerAnnotationExpr md, Void arg){
+            if(!md.getNameAsString().equals("Override"))
+                setOutputerln(indent + md.toString());
+        }
+
+        @Override
+        public void visit(NormalAnnotationExpr md, Void arg){
+            int loopSize = 1;
+            NodeList<Expression> memValue = new NodeList<>();
+            String ktAnnotation = "";
+            for(MemberValuePair memberValuePair:md.getPairs()){
+                String MVPstr = memberValuePair.getNameAsString() + " = ";
+                if(memberValuePair.getValue().isArrayInitializerExpr()) {
+                    loopSize = memberValuePair.getValue().asArrayInitializerExpr().getValues().size();
+                    memValue = memberValuePair.getValue().asArrayInitializerExpr().getValues();
+                } else {
+                    memValue.add(memberValuePair.getValue());
+                }
+                MVPstr = MVPstr + "[";
+                for(int i = 0; i < loopSize; i++){
+                    if(i > 0) MVPstr = MVPstr + ", ";
+                    MVPstr = MVPstr + AnnotationConverter(memValue.get(i));
+                }
+                ktAnnotation = ktAnnotation + MVPstr + "], ";
+            }
+            setOutputerln(indent + "@" + md.getNameAsString() + "(" + ktAnnotation.substring(0, ktAnnotation.length() - 2 ) + ")");
+
+        }
+
+        @Override
+        public void visit(SingleMemberAnnotationExpr md, Void arg){
+            int loopSize = 1;
+            NodeList<Expression> memValue = new NodeList<>();
+            String ktAnnotation = "";
+            if(md.getMemberValue().isArrayInitializerExpr()) {
+                loopSize = md.getMemberValue().asArrayInitializerExpr().getValues().size();
+                memValue = md.getMemberValue().asArrayInitializerExpr().getValues();
+            } else {
+                memValue.add(md.getMemberValue());
+            }
+            for(int i = 0; i < loopSize; i++){
+                if(i > 0) ktAnnotation = ktAnnotation + ", ";
+                ktAnnotation = ktAnnotation + AnnotationConverter(memValue.get(i));
+            }
+            setOutputerln(indent + "@" + md.getNameAsString() + "(" + ktAnnotation + ")");
+
+        }
+
+        public String AnnotationConverter(Expression md){
+            if(md.isNameExpr()){
+                if(md.asNameExpr().getNameAsString().equals("METHOD"))
+                    return "AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER";
+                else if(md.asNameExpr().getNameAsString().equals("TYPE"))
+                    return "AnnotationTarget.ANNOTATION_CLASS, AnnotationTarget.CLASS";
+                else return md.toString();
+            } else if(md.isFieldAccessExpr()){
+                if(md.asFieldAccessExpr().getNameAsString().equals("METHOD"))
+                    return "AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER";
+                else if(md.asNameExpr().getNameAsString().equals("TYPE"))
+                    return "AnnotationTarget.ANNOTATION_CLASS, AnnotationTarget.CLASS";
+                else if(md.asFieldAccessExpr().getScope().equals("ElementType"))
+                    return "AnnotationTarget." + md.asFieldAccessExpr().getName();
+                else return md.toString();
+            } else return md.toString();
+        }
+
     }
 
     private static class VariableVisitor extends VoidVisitorAdapter<Void>{
@@ -539,7 +671,7 @@ public class J2KConverterMulti {
                 setOutputer(initial);
                 if(isLambda) {
                     md.getInitializer().get().accept(visitor, null);
-                    //BlockVisitor visitor2 = new BlockVisitor(classname, methodname, indent, indent);
+                    //MakeBlockVisitor visitor2 = new MakeBlockVisitor(classname, methodname, indent, indent);
                     //LambdaExpr lambdaExpr = md.getInitializer().get().asLambdaExpr();
                     //lambdaExpr.getBody().accept(visitor2, null);
                 }
@@ -572,12 +704,12 @@ public class J2KConverterMulti {
 
     }
 
-    private static class BlockVisitor extends VoidVisitorAdapter<Void>{
+    private static class MakeBlockVisitor extends VoidVisitorAdapter<Void>{
         String classname = "";
         String methodname = "";
         String indent = "";
         String indentBefore = "";
-        private BlockVisitor(String classname, String methodname, String indent, String indentBefore){
+        private MakeBlockVisitor(String classname, String methodname, String indent, String indentBefore){
             this.classname = classname;
             this.methodname = methodname;
             this.indent = indent;
@@ -586,15 +718,39 @@ public class J2KConverterMulti {
 
         @Override
         public void visit(BlockStmt md, Void arg){
+            if(md.getStatement(0).isExplicitConstructorInvocationStmt()){
+                setOutputer(":");
+                ECISconvert(md.getStatement(0).asExplicitConstructorInvocationStmt());
+            }
             setOutputerln("{");
-            VoidVisitor<?> visitor = new InClassVisitor(classname, methodname,indent + indent4, false);
+            VoidVisitor<?> visitor = new InBlockVisitor(classname, methodname,indent + indent4, false);
             md.accept(visitor, null);
+            /*for(int i = 0; i < md.getChildNodes().size(); i++){
+                VoidVisitor<?> visitor = new InBlockVisitor(classname, methodname,indent + indent4, false);
+                md.getChildNodes().get(i).accept(visitor, null);
+            }*/
             setOutputer(indentBefore + "}");
+        }
+
+        //ECIS = ExplicitConstructorInvocationStmt
+        private void ECISconvert(ExplicitConstructorInvocationStmt ECIS){
+            String outEnclosing = "";
+            if(ECIS.isThis()) outEnclosing = "this";
+            else outEnclosing = "super";
+            setOutputer(indent + outEnclosing + "(");
+            if(ECIS.getArguments().size() != 0){
+                for(int i = 0;i < ECIS.getArguments().size();i++){
+                    if(i != 0)setOutputer(",");
+                    AssignVisitor visitor = new AssignVisitor(classname, indent, "", 0);
+                    ECIS.getArgument(i).accept(visitor, null);
+                }
+            }
+            setOutputer(")");
         }
 
     }
 
-    private static class InClassVisitor extends VoidVisitorAdapter<Void>{
+    private static class InBlockVisitor extends VoidVisitorAdapter<Void>{
         String classname = "";
         String methodname = "";
         String indent = "";
@@ -602,14 +758,14 @@ public class J2KConverterMulti {
         boolean isConvertFor = true;
         boolean isWhile = false;
         boolean isLambda = false;
-        private InClassVisitor(String classname, String methodname, String indent, boolean flag){
+        private InBlockVisitor(String classname, String methodname, String indent, boolean flag){
             this.classname = classname;
             this.methodname = methodname;
             this.indent = indent;
             this.isElseIf = flag;
         }
 
-        private InClassVisitor(String classname, String methodname, String indent, boolean flag, boolean isWhile){
+        private InBlockVisitor(String classname, String methodname, String indent, boolean flag, boolean isWhile){
             this.classname = classname;
             this.methodname = methodname;
             this.indent = indent;
@@ -617,27 +773,52 @@ public class J2KConverterMulti {
             this.isWhile = isWhile;
         }
 
-        private InClassVisitor(String classname, String indent, boolean isLambda){
+        private InBlockVisitor(String classname, String indent, boolean isLambda){
             this.classname = classname;
             this.indent = indent;
             this.isLambda = isLambda;
         }
 
         @Override
+        public void visit(LineComment md, Void arg){
+            setOutputerln(indent + md.toString());
+        }
+
+        @Override
+        public void visit(JavadocComment md, Void arg){
+            setOutputerln(indent + md.toString());
+        }
+
+        @Override
+        public void visit(BlockComment md, Void arg){
+            setOutputerln(indent + md.toString());
+        }
+
+        @Override
+        public void visit(LabeledStmt md, Void arg){
+            setOutputer(md.getLabel().toString().replace(":", "@"));
+            super.visit(md, arg);
+        }
+
+        @Override
         public void visit(ContinueStmt md, Void arg){
-            setOutputerln(md.toString().replace(";",""));
+            String label = "";
+            if(md.getLabel().isPresent()) label = "@" + md.getLabel().get().toString();
+            setOutputerln("continue" + label);
         }
 
         @Override
         public void visit(BreakStmt md, Void arg){
-            setOutputerln(md.toString().replace(";",""));
+            String label = "";
+            if(md.getLabel().isPresent()) label = "@" + md.getLabel().get().toString();
+            setOutputerln("break" + label);
         }
 
         @Override
         public void visit(ReturnStmt md, Void arg){
             if(isLambda) setOutputer(indent);
             else setOutputer(indent + "return ");
-            //InClassVisitor visitor = new InClassVisitor(this.classname, this.methodname, indent, false);
+            //InBlockVisitor visitor = new InBlockVisitor(this.classname, this.methodname, indent, false);
             AssignVisitor visitor = new AssignVisitor(this.classname, indent + indent4, "", 0);
             md.getExpression().get().accept(visitor, null);
             setOutputer("\n");
@@ -662,9 +843,33 @@ public class J2KConverterMulti {
         }
 
         @Override
+        public void visit(LocalClassDeclarationStmt md, Void arg){
+            OutClassVisitor outClassVisitor = new OutClassVisitor(indent);
+            md.getClassDeclaration().accept(outClassVisitor, null);
+        }
+
+        @Override
+        public void visit(SynchronizedStmt md, Void arg){
+            setOutputer("synchronized(");
+            setOutputer(md.getExpression().toString());
+            setOutputer(")");
+            MakeBlockVisitor visitor = new MakeBlockVisitor(classname, methodname, indent, indent);
+            md.getBody().accept(visitor, null);
+        }
+
+        @Override
+        public void visit(AssertStmt md, Void arg){
+            setOutputer("assert(" + md.getCheck() + ")");
+            if (md.getMessage().isPresent()) {
+                setOutputer(" {" + md.getMessage().get() + "}");
+            }
+            setOutputer("\n");
+        }
+
+        @Override
         public void visit(TryStmt md, Void arg){
             setOutputer(indent + "try");
-            BlockVisitor visitor = new BlockVisitor(classname, methodname, indent, indent);
+            MakeBlockVisitor visitor = new MakeBlockVisitor(classname, methodname, indent, indent);
             md.getTryBlock().accept(visitor, null);
             for(CatchClause catchClause:md.getCatchClauses()){
                 String paramName = catchClause.getParameter().getNameAsString();
@@ -703,7 +908,7 @@ public class J2KConverterMulti {
             String condition = md.getCondition().toString();
             setOutputer(indent + "while(" + condition + ")");
             if (md.getBody().isBlockStmt()) {
-                VoidVisitor<?> visitor = new BlockVisitor(classname, methodname, indent, indent);
+                VoidVisitor<?> visitor = new MakeBlockVisitor(classname, methodname, indent, indent);
                 md.getBody().accept(visitor, null);
                 setOutputer("\n");
             } else super.visit(md, arg);
@@ -715,18 +920,18 @@ public class J2KConverterMulti {
             String condition = md.getCondition().toString();
             if(isElseIf) setOutputer("if(" + condition + ")");
             else setOutputer(indent + "if(" + condition + ")");
-            VoidVisitor<?> visitor = new BlockVisitor(classname, "", indent, indent);
+            VoidVisitor<?> visitor = new MakeBlockVisitor(classname, "", indent, indent);
             if(md.getThenStmt().isBlockStmt()) {
                 md.getThenStmt().accept(visitor, null);
                 isIndent = true;
             } else {
-                visitor = new InClassVisitor(classname,methodname, " ", false);
+                visitor = new InBlockVisitor(classname,methodname, " ", false);
                 md.getThenStmt().accept(visitor,null);
             }
             if(md.getElseStmt().isPresent()) {
                 if(isIndent) setOutputer(" else ");
                 else setOutputer(indent + "else");
-                if(md.getElseStmt().get().isIfStmt()) visitor = new InClassVisitor(classname, methodname, indent, true);
+                if(md.getElseStmt().get().isIfStmt()) visitor = new InBlockVisitor(classname, methodname, indent, true);
                 md.getElseStmt().get().accept(visitor, null);
             }
             setOutputer("\n");
@@ -762,7 +967,7 @@ public class J2KConverterMulti {
             String condition = md.getCondition().toString();
             setOutputer(indent + "do");
             if (md.getBody().isBlockStmt()) {
-                VoidVisitor<?> visitor = new BlockVisitor(classname, methodname, indent, indent);
+                VoidVisitor<?> visitor = new MakeBlockVisitor(classname, methodname, indent, indent);
                 md.getBody().accept(visitor, null);
             } else {
                 super.visit(md, arg);
@@ -788,7 +993,7 @@ public class J2KConverterMulti {
             String iterable = md.getIterable().toString();
             setOutputerln(indent + iterable+ ".foreach{ " + value + " ->");
 
-            VoidVisitor<?> visitor = new InClassVisitor(classname, "", indent+indent4, false);
+            VoidVisitor<?> visitor = new InBlockVisitor(classname, "", indent+indent4, false);
             md.getBody().accept(visitor, null);
             setOutputerln(indent + "}");
         }
@@ -810,7 +1015,7 @@ public class J2KConverterMulti {
 
             //setOutputer(indent + "for(");
             for(Expression initial:md.getInitialization()){
-                InClassVisitor visitor = new InClassVisitor(classname, methodname, indent, false, true);
+                InBlockVisitor visitor = new InBlockVisitor(classname, methodname, indent, false, true);
                 initial.accept(visitor,null);
             }
             setOutputer(indent + "while(");
@@ -821,7 +1026,7 @@ public class J2KConverterMulti {
             setOutputer(")");
             setOutputerln("{");
             if (md.getBody().isBlockStmt()) {
-                VoidVisitor<?> visitor = new InClassVisitor(classname, methodname, indent + indent4, false);
+                VoidVisitor<?> visitor = new InBlockVisitor(classname, methodname, indent + indent4, false);
                 md.getBody().accept(visitor, null);
             } else super.visit(md, arg);
             for(Expression update:md.getUpdate()){
@@ -994,7 +1199,7 @@ public class J2KConverterMulti {
             }
             if(md.getAnonymousClassBody().isPresent()){
                 setOutputerln(" object: " + name + "(" + argument + ")" + "{");
-                OutClassVisitor visitor = new OutClassVisitor(indent, name);
+                InClassVisitor visitor = new InClassVisitor(indent, name, false);
                 for(BodyDeclaration bd:md.getAnonymousClassBody().get()){
                     bd.accept(visitor, null);
                 }
@@ -1102,7 +1307,7 @@ public class J2KConverterMulti {
             if(md.getParameters().size() != 0){
                 /*for(int i = 0;i < md.getParameters().size();i++){
                     if(i != 0) setOutputer(", ");
-                    InClassVisitor paramVisitor = new InClassVisitor(classname, "", indent + indent4, false);
+                    InBlockVisitor paramVisitor = new InBlockVisitor(classname, "", indent + indent4, false);
                     md.getParameter(i).accept(paramVisitor, null);
                     //setOutputer(md.getParameter(i).toString());
                 }*/
@@ -1124,14 +1329,23 @@ public class J2KConverterMulti {
             if(allowFlag) setOutputer(" -> ");
             setOutputer("\n");
 
-            VoidVisitor<?> visitor = new InClassVisitor(classname, indent + indent4, true);
+            VoidVisitor<?> visitor = new InBlockVisitor(classname, indent + indent4, true);
             md.getBody().accept(visitor, null);
             setOutputer(indent + "}");
         }
 
         @Override
         public void visit(ArrayAccessExpr md, Void arg){
-            setOutputer(md.toString());
+            AssignVisitor visitor = new AssignVisitor(classname, indent, type, dim);
+            md.getName().accept(visitor, null);
+            setOutputer("[" + md.getIndex() + "]");
+        }
+
+        @Override
+        public void visit(FieldAccessExpr md, Void arg){
+            AssignVisitor visitor = new AssignVisitor(classname, indent, type, dim);
+            md.getScope().accept(visitor, null);
+            setOutputer("." + md.getNameAsString());
         }
 
         @Override
@@ -1140,7 +1354,12 @@ public class J2KConverterMulti {
         }
 
         @Override
-        public void visit(FieldAccessExpr md, Void arg){
+        public void visit(SuperExpr md, Void arg){
+            setOutputer(md.toString());
+        }
+
+        @Override
+        public void visit(ThisExpr md, Void arg){
             setOutputer(md.toString());
         }
 
@@ -1178,7 +1397,6 @@ public class J2KConverterMulti {
         public void visit(LongLiteralExpr md, Void arg){
             setOutputer(md.toString());
         }
-//LiteralStringValueExpr
 
         public boolean isPrimitiveArray(String type){
             String str = type.replace("[]","");
@@ -1199,7 +1417,6 @@ public class J2KConverterMulti {
 
     private static class TypeVisitor extends VoidVisitorAdapter<Void>{
         String initialValue = "";
-
 
         @Override//参照型はここ
         public void visit(ClassOrInterfaceType md, Void arg){
@@ -1248,6 +1465,10 @@ public class J2KConverterMulti {
         }
     }
 
+    private static class ParameterVistor extends VoidVisitorAdapter<Void>{
+
+    }
+
     private static class CustomAccessorConvertor extends VoidVisitorAdapter<Void>{
         String classname = "";
         String targetField = "";
@@ -1289,7 +1510,7 @@ public class J2KConverterMulti {
     }
 
     //CAC:CustomAccessorConverter
-    private static class InClassVisitor_CAC extends InClassVisitor {
+    private static class InClassVisitor_CAC extends InBlockVisitor {
         String targetField = "";
         String param = "";
 
@@ -1344,6 +1565,13 @@ public class J2KConverterMulti {
             case "UNSIGNED_RIGHT_SHIFT" -> " >>> ";
             default -> "";
         };
+    }
+
+    public static void ParameterConvert(Parameter parameter){
+        if(parameter.isVarArgs()) setOutputer("vararg ");
+        setOutputer(parameter.getNameAsString() + ": ");
+        TypeVisitor Tvisitor = new TypeVisitor();
+        parameter.getType().accept(Tvisitor, null);
     }
 
 }

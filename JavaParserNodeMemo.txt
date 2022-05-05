@@ -3,7 +3,7 @@ Node
 ┣━CatchClause(try-catch-finallyのcatch)
 ┣━CompilationUnit(一番最初のやつ)
 ┣━ImportDeclaration(import宣言)
-┣━MemberValuePair
+┣━MemberValuePair(アノテーションの値代入のうち、assignのような形式を取るもの)
 ┣━ModuleDeclaration
 ┣━Name
 ┣━PackageDeclaration(パッケージ宣言)
@@ -12,7 +12,7 @@ Node
 ┣━VariableDeclarator(変数宣言の、修飾子や型を除いた変数部分)
 ┃　
 ┣━BodyDeclaration
-┃　┣━AnnotationMemberDeclaration
+┃　┣━AnnotationMemberDeclaration(アノテーションの持つ要素の宣言)
 ┃　┣━EnumConstantDeclaration(列挙型の要素1つ1つ)
 ┃　┣━FieldDeclaration(フィールド宣言)
 ┃　┣━InitializerDeclaration(初期化子)
@@ -20,7 +20,7 @@ Node
 ┃　┃　┣━ConstructorDeclaration(コンストラクタ宣言)
 ┃　┃　┗━MethodDeclaration(メソッド宣言)
 ┃　┗━TypeDeclaration
-┃　　　┣━AnnotationDeclaration
+┃　　　┣━AnnotationDeclaration(アノテーション宣言)
 ┃　　　┣━ClassOrInterfaceDeclaration(クラス宣言)
 ┃　　　┗━EnumDeclaration(列挙型宣言)
 ┃　
@@ -46,15 +46,15 @@ Node
 ┃　┣━MethodReferenceExpr
 ┃　┣━NameExpr
 ┃　┣━ObjectCreationExpr(インスタンス生成)
-┃　┣━SuperExpr
-┃　┣━ThisExpr
+┃　┣━SuperExpr(Fieldとかの呼び出しのsuperの部分)
+┃　┣━ThisExpr(Fieldとかの呼び出しのthisの部分)
 ┃　┣━TypeExpr
-┃　┣━UnaryExpr
+┃　┣━UnaryExpr(インクリメントやデクリメント)
 ┃　┣━VariableDeclarationExpr(ローカルな変数宣言)
 ┃　┣━AnnotationExpr
-┃　┃　┣━MarkerAnnotationExpr
-┃　┃　┣━NormalAnnotationExpr
-┃　┃　┗━SingleMemberAnnotationExpr
+┃　┃　┣━MarkerAnnotationExpr(要素なしアノテーション)
+┃　┃　┣━NormalAnnotationExpr(要素一つ以上で、代入式のような形式で与えられるもの)
+┃　┃　┗━SingleMemberAnnotationExpr(要素一つで、代入される値だけ書かれたもの)
 ┃　┗━LiteralExpr(様々な値)
 ┃　　　┣━BooleanLiteralExpr
 ┃　　　┣━NullLiteralExpr
@@ -73,23 +73,23 @@ Node
 ┃　┗━ModuleUsesStmt
 ┃　
 ┣━Statement
-┃　┣━AssertStmt
+┃　┣━AssertStmt(assert文)
 ┃　┣━BlockStmt(ブロック文の枠のとこ)
 ┃　┣━BreakStmt(breakの記述)
 ┃　┣━ContinueStmt(continueの記述)
 ┃　┣━DoStmt(do-while文)
-┃　┣━EmptyStmt
-┃　┣━ExplicitConstructorInvocationStmt
+┃　┣━EmptyStmt(if文とかで何も書いてない時)
+┃　┣━ExplicitConstructorInvocationStmt(明示的コンストラクタ呼び出し)
 ┃　┣━ExpressionStmt(定義以外の様々な表現)
 ┃　┣━ForeachStmt(拡張for文)
 ┃　┣━ForStmt(for文)
 ┃　┣━IfStmt(if文)
-┃　┣━LabeledStmt
-┃　┣━LocalClassDeclarationStmt
+┃　┣━LabeledStmt(ラベル)
+┃　┣━LocalClassDeclarationStmt(ローカルクラス宣言)
 ┃　┣━ReturnStmt(returnの記述)
 ┃　┣━SwitchEntryStmt(switch文の一つ一つのラベル)
 ┃　┣━SwitchStmt(switch文自体)
-┃　┣━SynchronizedStmt
+┃　┣━SynchronizedStmt(Synchronizedブロック)
 ┃　┣━ThrowStmt
 ┃　┣━TryStmt(try-catch-finally)
 ┃　┣━UnparsableStmt
@@ -97,12 +97,12 @@ Node
 ┃　
 ┗━Type
 　┣━IntersectionType
-　┣━PrimitiveType
+　┣━PrimitiveType(プリミティブ型、型データのノードを取るときに遭遇)
 　┣━UnionType(catchで例外処理をするときの例外のやつ)
 　┣━UnknownType
-　┣━VoidType
-　┣━WildcardType
+　┣━VoidType(voidのこと)
+　┣━WildcardType(ワイルドカード)
 　┗━ReferenceType
-　　　┣━ArrayType
-　　　┣━ClassOrInterfaceType
+　　　┣━ArrayType(配列型、型データのノードを取る時に遭遇)
+　　　┣━ClassOrInterfaceType(参照型の大部分これ)
 　　　┗━TypeParameter
