@@ -8,7 +8,7 @@ public class TrialClass {
     String[][] stt = new String[3][3];
     int[][][] numnum = {{{1,2,3},{1,2,3},{1,2,3}},{{1,2,3},{1,2,3},{1,2,3}}};
     static int vals = 100;
-    
+
     static void Sfunc(){
         vals = 500;
     }
@@ -16,9 +16,9 @@ public class TrialClass {
     public static void main(String[] args) {
         String str = "hello".split("")[0].toUpperCase().toLowerCase().substring(0);
     }
-    
-    
-    
+
+
+
     public void func(){
 
         int num = 0;
@@ -33,7 +33,7 @@ public class TrialClass {
             str = "2";
         }
     }
-    
+
     public static class TMPO{
         static int numI = 0;
         double numD = 0;

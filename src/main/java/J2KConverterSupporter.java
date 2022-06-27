@@ -1,15 +1,11 @@
 import com.github.javaparser.JavaParser;
-import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.*;
-import com.github.javaparser.ast.expr.AssignExpr;
-import com.github.javaparser.ast.expr.FieldAccessExpr;
-import com.github.javaparser.ast.expr.VariableDeclarationExpr;
-import com.github.javaparser.ast.stmt.ReturnStmt;
-import com.github.javaparser.ast.visitor.GenericVisitorAdapter;
+import com.github.javaparser.ast.expr.*;
+import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.visitor.VoidVisitor;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
@@ -53,6 +49,8 @@ public class J2KConverterSupporter {
                 FieldVisitor fieldVisitor = new FieldVisitor(classname);
                 fd.accept(fieldVisitor, null);
             }
+
+            DataStore.memory_field_info.put(classname, memory_field_Tmp);
             /*
             クラスのインスタンス生成時の動きから見る、変数のチェック順番
             ０：フィールドの初期化
@@ -66,12 +64,28 @@ public class J2KConverterSupporter {
              */
 
             if(DataStore.memory_Initializer.get(classname) != null) {
+                //static初期化子チェック
                 for (InitializerDeclaration id : DataStore.memory_Initializer.get(classname)) {
                     InitializerVisitor initializerVisitor = new InitializerVisitor(classname);
+                    for(AnnotationExpr annotationExpr:id.getAnnotations()){
+                        if(annotationExpr.getNameAsString().equals("static")) {
+                            id.accept(initializerVisitor, null);
+                            break;
+                        }
+                    }
+                }
+                //通常の初期化子チェック
+                NonStatic:for (InitializerDeclaration id : DataStore.memory_Initializer.get(classname)) {
+                    InitializerVisitor initializerVisitor = new InitializerVisitor(classname);
+                    for(AnnotationExpr annotationExpr:id.getAnnotations()){
+                        if(annotationExpr.getNameAsString().equals("static"))
+                            continue NonStatic;
+                    }
                     id.accept(initializerVisitor, null);
                 }
             }
 
+            //コンストラクタチェック
             for(ConstructorDeclaration cd:DataStore.memory_constructor.get(classname)){
                 ConstructorVisitor constructorVisitor = new ConstructorVisitor(classname);
                 cd.accept(constructorVisitor, null);
@@ -86,38 +100,55 @@ public class J2KConverterSupporter {
             DataStore.memory_method_info.put(classname, memory_method_Tmp);
 
             //デバッグ用の出力
-            /*System.out.println("class:" + classname);
-            System.out.println("field information");
-            for(String fieldname:DataStore.memory_field_info.get(classname).keySet()){
-                String type = DataStore.memory_field_info.get(classname).get(fieldname).get("type");
-                String dim = DataStore.memory_field_info.get(classname).get(fieldname).get("dim");
-                String assign = DataStore.memory_field_info.get(classname).get(fieldname).get("assign");
-                String nullable = DataStore.memory_field_info.get(classname).get(fieldname).get("nullable");
-                String isStatic = DataStore.memory_field_info.get(classname).get(fieldname).get("static");
-                System.out.println(fieldname + " type:" + type +" dim:" + dim
-                        + " assign:" + assign + " nullable:" + nullable + " static:" + isStatic);
-            }*/
-            /*System.out.println("method information");
-            for(String mname:DataStore.memory_method_info.get(classname).keySet()){
-                boolean flag = (boolean)DataStore.memory_method_info.get(classname).get(mname).get("static");
-                boolean flag2 = (boolean)DataStore.memory_method_info.get(classname).get(mname).get("access");
-                System.out.println(mname + " static:" + flag +" access:" + flag2);
-            }*/
-            /*for(String methodname:DataStore.memory_localValue_info.get(classname).keySet()){
-                for(String fieldname:DataStore.memory_localValue_info.get(classname).get(methodname).keySet()){
-                    String assign = DataStore.memory_localValue_info.get(classname).get(methodname).get(fieldname).get("assign");
-                    String nullable = DataStore.memory_localValue_info.get(classname).get(methodname).get(fieldname).get("nullable");
-                    System.out.println(fieldname + " " + assign + " " + nullable);
-                }
-            }*/
+            OutputFieldInfo(classname);
+            OutputMethodInfo(classname);
         }
-
-        //変換フェーズ
 
         for(String name:DataStore.memory_classlibrary){
             System.out.println(name);
         }
 
+    }
+
+    //デバッグ用の出力メソッド
+
+    private static void OutputFieldInfo(String classname){
+        System.out.println("field information:" + classname);
+        for(String fieldname:DataStore.memory_field_info.get(classname).keySet()){
+            String type = DataStore.memory_field_info.get(classname).get(fieldname).get("type");
+            String dim = DataStore.memory_field_info.get(classname).get(fieldname).get("dim");
+            String assign = DataStore.memory_field_info.get(classname).get(fieldname).get("assign");
+            String nullable = DataStore.memory_field_info.get(classname).get(fieldname).get("nullable");
+            String isStatic = DataStore.memory_field_info.get(classname).get(fieldname).get("static");
+            String initializable = DataStore.memory_field_info.get(classname).get(fieldname).get("initializable");
+            String formerRW = DataStore.memory_field_info.get(classname).get(fieldname).get("formerRW");
+            System.out.println(fieldname + " type:" + type +" dim:" + dim
+                    + " assign:" + assign + " nullable:" + nullable + " static:" + isStatic
+                    + " initializable:" + initializable + " formerRW:" + formerRW);
+        }
+    }
+    private static void OutputMethodInfo(String classname){
+        System.out.println("method information:" + classname);
+        for(String mname:DataStore.memory_method_info.get(classname).keySet()){
+            boolean flag = (boolean)DataStore.memory_method_info.get(classname).get(mname).get("static");
+            boolean flag2 = (boolean)DataStore.memory_method_info.get(classname).get(mname).get("access");
+            boolean flag3 = (boolean)DataStore.memory_method_info.get(classname).get(mname).get("fix");
+            String field = (String)DataStore.memory_method_info.get(classname).get(mname).get("field");
+            int lines = (int)DataStore.memory_method_info.get(classname).get(mname).get("lines");
+            boolean flag4 = (boolean)DataStore.memory_method_info.get(classname).get(mname).get("nullable");
+            System.out.println(mname + " static:" + flag +" access:" + flag2 + " fix:" + flag3
+                    + " field:" + field + " lines:" + lines + " nullable:" + flag4);
+        }
+        System.out.println("method local information");
+        if(DataStore.memory_localValue_info.get(classname) != null) {
+            for (String methodname : DataStore.memory_localValue_info.get(classname).keySet()) {
+                for (String fieldname : DataStore.memory_localValue_info.get(classname).get(methodname).keySet()) {
+                    String assign = DataStore.memory_localValue_info.get(classname).get(methodname).get(fieldname).get("assign");
+                    String nullable = DataStore.memory_localValue_info.get(classname).get(methodname).get(fieldname).get("nullable");
+                    System.out.println(fieldname + " " + assign + " " + nullable);
+                }
+            }
+        }
     }
 
     //FirstVisitor,SomeVisitor:情報収集用のvisitor
@@ -189,9 +220,12 @@ public class J2KConverterSupporter {
         @Override
         public void visit(InitializerDeclaration md, Void arg){
             DataStore.isStaticI = DataStore.isStaticI || md.isStatic();
-            initializer_list = DataStore.memory_Initializer.get(classname);
-            initializer_list.add(md);
-            DataStore.memory_Initializer.put(classname, initializer_list);
+            List<InitializerDeclaration> initializer_list
+                    = DataStore.memory_Initializer.get(classname);
+            if(initializer_list != null)
+                this.initializer_list = initializer_list;
+            this.initializer_list.add(md);
+            DataStore.memory_Initializer.put(classname, this.initializer_list);
         }
     }
 
@@ -231,22 +265,13 @@ public class J2KConverterSupporter {
             String dim = "0";
             String assign = "false";
             String nullable = "false";
+            String initializable = "true";
+            String formerRW = "";
 
             if(md.getInitializer().isEmpty()) {
-                boolean flag = true;
-                CheckConstructor checker = new CheckConstructor(classname, fieldname);
-
-                if(DataStore.memory_constructor.get(classname) != null) {
-                    for(ConstructorDeclaration cd:DataStore.memory_constructor.get(classname)){
-                        flag = cd.accept(checker, null);
-                        if(!flag){
-                            assign = "true";
-                            nullable = "true";
-                            break;
-                        }
-                    }
-                }
-            }
+                initializable = "false";
+                //formerRW = "R";
+            } else formerRW = "W";
 
             if(md.getType().isArrayType()){
                 int dimNum = type.length();
@@ -269,6 +294,8 @@ public class J2KConverterSupporter {
             data.put("dim", dim);
             data.put("assign", assign);
             data.put("nullable", nullable);
+            data.put("initializable", initializable);
+            data.put("formerRW", formerRW);
 
             memory_field_Tmp.put(fieldname, data);
 
@@ -281,87 +308,33 @@ public class J2KConverterSupporter {
 
         public ConstructorVisitor(String name){
             classname = name;
-
         }
 
         @Override
         public void visit(ConstructorDeclaration md, Void arg){
-
             for(Parameter tmp:md.getParameters()){
                 paramList.add(tmp.getNameAsString());
             }
 
-            super.visit(md, arg);
-        }
-
-        @Override
-        public void visit(AssignExpr md, Void arg){
-            String str = md.getTarget().toString();
-            String scope = "";
-            if(md.getTarget().isFieldAccessExpr()){
-                FieldAccessExpr fae = (FieldAccessExpr) md.getTarget();
-                scope = fae.getScope().toString();
-                str = fae.getNameAsString();
-            }
-            String target = str;
-            String value = md.getValue().toString();
-            boolean flag = duplicateCheck(target);
-
-            for(String fieldname:DataStore.memory_field_info.get(classname).keySet()){
-                if(target.equals(fieldname)){
-                    if(!flag || scope.equals("this")) {
-                        DataStore.memory_field_info.get(classname).get(fieldname).put("assign", "true");
-
-                        if (value.equals("null"))
-                            DataStore.memory_field_info.get(classname).get(fieldname).put("nullable", "true");
-                    }
-                }
-
-            }
-        }
-
-        private boolean duplicateCheck(String target){
-            for(String fieldname:DataStore.memory_field_info.get(classname).keySet()){
-                for(String local:paramList){
-                    if(fieldname.equals(local) && fieldname.equals(target)) return true;
-                }
-            }
-            return false;
+            InBlockVisitorS visitor = new InBlockVisitorS(classname, paramList);
+            md.getBody().accept(visitor, null);
         }
 
     }
 
+    //動作的にはなくてもいいけど読みやすくするためにあえてVisitorを入れてます
     private static class InitializerVisitor extends VoidVisitorAdapter<Void>{
         String classname = "";
 
         public InitializerVisitor(String name){
             classname = name;
-
         }
 
         @Override
-        public void visit(AssignExpr md, Void arg){
-            String str = md.getTarget().toString();
-            String scope = "";
-            if(md.getTarget().isFieldAccessExpr()){
-                FieldAccessExpr fae = (FieldAccessExpr) md.getTarget();
-                scope = fae.getScope().toString();
-                str = fae.getNameAsString();
-            }
-            String target = str;
-            String value = md.getValue().toString();
+        public void visit(InitializerDeclaration md, Void arg){
 
-            for(String fieldname:DataStore.memory_field_info.get(classname).keySet()){
-                if(target.equals(fieldname)){
-                    if(scope.equals("this")) {
-                        DataStore.memory_field_info.get(classname).get(fieldname).put("assign", "true");
-
-                        if (value.equals("null"))
-                            DataStore.memory_field_info.get(classname).get(fieldname).put("nullable", "true");
-                    }
-                }
-
-            }
+            InBlockVisitorS visitor = new InBlockVisitorS(classname);
+            md.getBody().accept(visitor, null);
         }
 
     }
@@ -413,9 +386,62 @@ public class J2KConverterSupporter {
                 DataStore.memory_localValue_info.get(classname).put(methodname, new HashMap<>());
             }
 
-            super.visit(md, arg);
+            boolean isReturnNull = false;
+            if(md.getBody().isPresent()) {
+                InBlockVisitorS visitor = new InBlockVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList);
+                md.getBody().get().accept(visitor, null);
+                fieldname = visitor.getFieldname();
+                isFixableG = visitor.getIsFixableG();
+                isFixableS = visitor.getIsFixableS();
+                isReturnNull = visitor.getIsReturnNull();
+            }
 
-            setData(isFixableS||isFixableG, fieldname);
+            setData(isFixableS||isFixableG, fieldname, isReturnNull);
+        }
+
+        private void setData(boolean flag, String fieldname, boolean isReturnNull){
+            HashMap<String, Object> tmpHash = new HashMap<>();
+            tmpHash.put("static", isStatic);
+            tmpHash.put("access", (isAccessorCheckG || isAccessorCheckS));
+            tmpHash.put("fix", flag);
+            tmpHash.put("field", fieldname);
+            tmpHash.put("lines", numLine);
+            tmpHash.put("nullable", isReturnNull);
+            memory_method_Tmp.put(methodname, tmpHash);
+        }
+
+    }
+
+    public static class InBlockVisitorS extends VoidVisitorAdapter<Void>{
+        String classname = "";
+        String methodname = "";
+        private String fieldname = "";
+        private boolean isAccessorCheckG = false;
+        private boolean isAccessorCheckS = false;
+        private boolean isFixableG = false;
+        private boolean isFixableS = false;
+        private boolean isReturnNull = false;
+        ArrayList<String> paramList = new ArrayList<>();
+
+        //Method用のコンストラクタ
+        public InBlockVisitorS
+                (String classname, String methodname,
+                 boolean isAccessorCheckG, boolean isAccessorCheckS, ArrayList<String> paramList){
+            this.classname = classname;
+            this.methodname = methodname;
+            this.isAccessorCheckG = isAccessorCheckG;
+            this.isAccessorCheckS = isAccessorCheckS;
+            this.paramList = paramList;
+        }
+
+        //Constructor用のコンストラクタ
+        public InBlockVisitorS(String classname, ArrayList<String> paramList){
+            this(classname, "", false, false, paramList);
+        }
+
+        //Initializer用のコンストラクタ
+        public InBlockVisitorS(String classname){
+            this(classname, "", false, false, new ArrayList<String>());
         }
 
         @Override
@@ -446,92 +472,411 @@ public class J2KConverterSupporter {
             data.put("nullable", nullable);
 
             DataStore.memory_localValue_info.get(classname).get(methodname).put(fieldname, data);
-
-
         }
 
         @Override
         public void visit(AssignExpr md, Void arg){
-            String str = md.getTarget().toString();
-            String scope = "";
-            if(md.getTarget().isFieldAccessExpr()){
-                FieldAccessExpr fae = (FieldAccessExpr) md.getTarget();
-                scope = fae.getScope().toString();
-                str = fae.getNameAsString();
-            }
-            String target = str;
+            //式の右側の解析
+            AssignVisitorS valueVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false);
+            md.getValue().accept(valueVisitor, null);
+
+            //式の左側の解析
             String value = md.getValue().toString();
-            boolean flag = duplicateCheck(target);
 
-            for(String local:DataStore.memory_localValue_info.get(classname).get(methodname).keySet()){
-                if(target.equals(local)){
-                    DataStore.memory_localValue_info.get(classname).get(methodname).get(local).put("assign", "true");
-                    if (value.equals("null"))
-                        DataStore.memory_localValue_info.get(classname).get(methodname).get(local).put("nullable", "true");
-                }
+            //代入以外のAssign文の場合、一度値を参照してから代入するので、先にReadのチェック
+            if (!md.getOperator().toString().equals("ASSIGN")) {
+                AssignVisitorS targetVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false, value);
+                md.getTarget().accept(targetVisitor, null);
+            }
+            AssignVisitorS targetVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, true, value);
+            md.getTarget().accept(targetVisitor, null);
+            isFixableS = targetVisitor.getIsFixableS();
+            fieldname = targetVisitor.getFieldname();
+        }
+
+        @Override
+        public void visit(ReturnStmt md, Void arg){
+            if(md.getExpression().isPresent()) {
+                AssignVisitorS visitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false);
+                md.getExpression().get().accept(visitor, null);
+                isFixableG = visitor.getIsFixableG();
+                fieldname = visitor.getFieldname();
+                isReturnNull = visitor.getIsReturnNull();
+            }
+        }
+
+        @Override
+        public void visit(MethodCallExpr md, Void arg){
+            //メソッド呼び出しの引数に使われているかどうかを確認
+            //ここでは何もせず、visitorに明け渡す
+            AssignVisitorS visitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false);
+            md.accept(visitor, null);
+
+        }
+
+        @Override
+        public void visit(DoStmt md, Void arg){
+            //do-whileのconditionにあたる部分の読み込み変数のチェックとブロック文内部の確認
+
+            //conditionチェック
+            AssignVisitorS conditionVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false);
+            md.getCondition().accept(conditionVisitor, null);
+
+            //内部チェック
+            AssignVisitorS bodyVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false);
+            md.getBody().accept(bodyVisitor, null);
+        }
+
+        @Override
+        public void visit(WhileStmt md, Void arg){
+            //whileのconditionにあたる部分の読み込み変数のチェックとブロック文内部の確認
+
+            //conditionチェック
+            AssignVisitorS conditionVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false);
+            md.getCondition().accept(conditionVisitor, null);
+
+            //内部チェック
+            AssignVisitorS bodyVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false);
+            md.getBody().accept(bodyVisitor, null);
+        }
+
+        @Override
+        public void visit(ForStmt md, Void arg){
+            //forのinitial, compare, updateにあたる部分の読み込み変数のチェックとブロック文内部の確認
+
+            //initialチェック
+            for(Expression expression:md.getInitialization()) {
+                AssignVisitorS initVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, true);
+                expression.accept(initVisitor, null);
             }
 
-            for(String fieldname:DataStore.memory_field_info.get(classname).keySet()){
-                if(target.equals(fieldname)){
-                    if(!flag || scope.equals("this")) {
-                        DataStore.memory_field_info.get(classname).get(fieldname).put("assign", "true");
+            //compareチェック
+            if(md.getCompare().isPresent()) {
+                AssignVisitorS compareVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false);
+                md.getCompare().get().accept(compareVisitor, null);
+            }
 
-                        if (value.equals("null"))
-                            DataStore.memory_field_info.get(classname).get(fieldname).put("nullable", "true");
-                    }
-                }
+            //updateチェック
+            for(Expression expression:md.getUpdate()){
+                AssignVisitorS updateVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false);
+                expression.accept(updateVisitor, null);
+            }
 
-                if(isAccessorCheckS){
-                    for(String paramName: paramList){
-                        if(target.equals(fieldname) && value.equals(paramName)){
-                            isFixableS = true;
-                            this.fieldname = fieldname;
-                            //setData(isFixableS, fieldname);
-                        }
-                    }
+            //内部チェック
+            if(md.getBody().isBlockStmt()){
+                InBlockVisitorS inBlockVisitor = new InBlockVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList);
+                md.getBody().accept(inBlockVisitor, null);
+            } else {
+                AssignVisitorS inVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false);
+                md.getBody().accept(inVisitor, null);
+            }
+
+        }
+
+        @Override
+        public void visit(ForEachStmt md, Void arg){
+            //foreachのiterableにあたる部分の読み込み変数のチェックとブロック文内部の確認
+        }
+
+        @Override
+        public void visit(IfStmt md, Void arg){
+            //ifのconditionにあたる部分の読み込み変数のチェックとブロック文内部の確認
+
+            //conditionチェック
+            AssignVisitorS conditionVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false);
+            md.getCondition().accept(conditionVisitor, null);
+
+            //内部チェック
+            if(md.getThenStmt().isBlockStmt()){
+                InBlockVisitorS thenBlockVisitor = new InBlockVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList);
+                md.getThenStmt().accept(thenBlockVisitor, null);
+            } else {
+                AssignVisitorS thenVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false);
+                md.getThenStmt().accept(thenVisitor, null);
+            }
+
+            //elseチェック
+            if(md.getElseStmt().isPresent()){
+                if(md.getElseStmt().get().isIfStmt()){
+                    InBlockVisitorS elseIfVisitor = new InBlockVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList);
+                    md.getElseStmt().get().accept(elseIfVisitor, null);
+                } else {
+                    AssignVisitorS elseVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false);
+                    md.getElseStmt().get().accept(elseVisitor, null);
                 }
             }
         }
 
         @Override
-        public void visit(ReturnStmt md, Void arg){
-            if(isAccessorCheckG){
+        public void visit(SwitchStmt md, Void arg){
+            //switchのselectorにあたる部分の読み込み変数のチェックとブロック文内部の確認
+            AssignVisitorS selectorVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false);
+            md.getSelector().accept(selectorVisitor, null);
+
+            for(SwitchEntry entry:md.getEntries()){
+                for(Statement statement:entry.getStatements()){
+                    InBlockVisitorS statementVisitor = new InBlockVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList);
+                    statement.accept(statementVisitor, null);
+                }
+            }
+
+        }
+
+        @Override
+        public void visit(SwitchExpr md, Void arg){
+            //switchのselectorにあたる部分の読み込み変数のチェックとブロック文内部の確認
+            AssignVisitorS selectorVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false);
+            md.getSelector().accept(selectorVisitor, null);
+
+            for(SwitchEntry entry:md.getEntries()){
+                for(Statement statement:entry.getStatements()){
+                    InBlockVisitorS statementVisitor = new InBlockVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList);
+                    statement.accept(statementVisitor, null);
+                }
+            }
+        }
+
+        public String getFieldname(){
+            return this.fieldname;
+        }
+
+        public boolean getIsFixableG(){
+            return this.isFixableG;
+        }
+
+        public boolean getIsFixableS(){
+            return this.isFixableS;
+        }
+
+        public boolean getIsReturnNull(){
+            return this.isReturnNull;
+        }
+
+    }
+
+    public static class AssignVisitorS extends VoidVisitorAdapter<Void> {
+        String classname = "";
+        String methodname = "";
+        private String fieldname = "";
+        private boolean isAccessorCheckG = false;
+        private boolean isAccessorCheckS = false;
+        private boolean isFixableG = false;
+        private boolean isFixableS = false;
+        ArrayList<String> paramList = new ArrayList<>();
+        private boolean isWriteCheck = false;
+        private String nullCheckValue = "";
+        private boolean isReturnNull = false;
+
+        public AssignVisitorS
+        (String classname, String methodname,
+         boolean isAccessorCheckG, boolean isAccessorCheckS, ArrayList<String> paramList, boolean flag, String value) {
+            this.classname = classname;
+            this.methodname = methodname;
+            this.isAccessorCheckG = isAccessorCheckG;
+            this.isAccessorCheckS = isAccessorCheckS;
+            this.paramList = paramList;
+            this.isWriteCheck = flag;
+            this.nullCheckValue = value;
+        }
+
+        public AssignVisitorS
+                (String classname, String methodname,
+                 boolean isAccessorCheckG, boolean isAccessorCheckS, ArrayList<String> paramList, boolean flag) {
+            this(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, flag, "");
+        }
+
+        @Override
+        public void visit(BlockStmt md, Void arg){
+            for(Statement statement:md.getStatements()){
+                AssignVisitorS visitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, isWriteCheck, nullCheckValue);
+                statement.accept(visitor, null);
+            }
+        }
+
+        @Override
+        public void visit(BinaryExpr md, Void arg){
+            //計算式に使われている変数の確認
+            //最左分岐なので左側解析
+            AssignVisitorS leftVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, isWriteCheck, nullCheckValue);
+            md.getLeft().accept(leftVisitor, null);
+
+            //右側解析
+            AssignVisitorS rightVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, isWriteCheck, nullCheckValue);
+            md.getRight().accept(rightVisitor, null);
+        }
+
+        @Override
+        public void visit(UnaryExpr md, Void arg){
+            AssignVisitorS visitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false);
+            md.getExpression().accept(visitor, null);
+        }
+
+        @Override
+        public void visit(EnclosedExpr md, Void arg){
+            super.visit(md, arg);
+        }
+
+        @Override
+        public void visit(CastExpr md, Void arg){
+            super.visit(md, arg);
+        }
+
+        @Override
+        public void visit(MethodCallExpr md, Void arg){
+            //メソッド呼び出しの引数を確認
+            if(md.getArguments().size() != 0){
+                for(Expression expression:md.getArguments()){
+                    AssignVisitorS visitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false);
+                    expression.accept(visitor, null);
+                }
+            }
+        }
+
+
+        @Override
+        public void visit(ObjectCreationExpr md, Void arg){
+            //インスタンス生成に必要な引数の部分の解析
+        }
+
+        @Override
+        public void visit(ArrayInitializerExpr md, Void arg){
+            //要素ありの配列初期化の際の、要素の解析
+        }
+
+        @Override
+        public void visit(NameExpr md, Void arg){
+            //変数(スコープなし)の確認
+            if(isWriteCheck) variableWriteCheck("", md.getNameAsString(), nullCheckValue);
+            else variableReadCheck("", md.getNameAsString());
+        }
+
+        @Override
+        public void visit(FieldAccessExpr md, Void arg){
+            //変数の直接参照の確認、計算式とかからもこっちに飛んでくる
+            if(isWriteCheck) variableWriteCheck(md.getScope().toString(), md.getNameAsString(), nullCheckValue);
+            else variableReadCheck(md.getScope().toString(), md.getNameAsString());
+        }
+
+        @Override
+        public void visit(NullLiteralExpr md, Void arg){
+            isReturnNull = true;
+        }
+
+        private void variableReadCheck(String scope, String target){
+            boolean duplicateFlag = duplicateCheck(target);
+
+            if(DataStore.memory_localValue_info.get(classname) != null) {
+                if (DataStore.memory_localValue_info.get(classname).get(methodname) != null) {
+                    for(String local:DataStore.memory_localValue_info.get(classname).get(methodname).keySet()){
+                        if(target.equals(local)){
+                            if (DataStore.memory_localValue_info.get(classname).get(fieldname).get(methodname).get("formerRW").equals("R")
+                                    && DataStore.memory_localValue_info.get(classname).get(fieldname).get(methodname).get("initializable").equals("false"))
+                                DataStore.memory_localValue_info.get(classname).get(fieldname).get(methodname).put("nullable", "true");
+
+                            if(DataStore.memory_localValue_info.get(classname).get(fieldname).get(methodname).get("nullable").equals("true"))
+                                isReturnNull = true;
+                        }
+                    }
+                }
+            }
+
+            if(DataStore.memory_field_info.get(classname) != null) {
                 for(String fieldname:DataStore.memory_field_info.get(classname).keySet()){
-                    if(md.getExpression().isPresent()){
-                        String str = md.getExpression().get().toString().replace("this.", "");
-                        if (str.equals(fieldname)) {
-                            isFixableG = true;
-                            this.fieldname = fieldname;
-                            //setData(isFixableG, fieldname);
+                    if(target.equals(fieldname)){
+                        if(!duplicateFlag || scope.equals("this")) {
+                            if (DataStore.memory_field_info.get(classname).get(fieldname).get("formerRW").equals("")
+                                    && DataStore.memory_field_info.get(classname).get(fieldname).get("initializable").equals("false")
+                                    && DataStore.memory_field_info.get(classname).get(fieldname).get("assign").equals("false") ) {
+                                DataStore.memory_field_info.get(classname).get(fieldname).put("formerRW", "R");
+                                DataStore.memory_field_info.get(classname).get(fieldname).put("nullable", "true");
+                            }
+
+                            if(DataStore.memory_field_info.get(classname).get(fieldname).get("nullable").equals("true"))
+                                isReturnNull = true;
+
+                            if (isAccessorCheckG) {
+                                isFixableG = true;
+                                this.fieldname = fieldname;
+                            }
                         }
                     }
                 }
             }
         }
 
-        private void setData(boolean flag, String fieldname){
-            HashMap<String, Object> tmpHash = new HashMap<>();
-            tmpHash.put("static", isStatic);
-            tmpHash.put("access", (isAccessorCheckG || isAccessorCheckS));
-            tmpHash.put("fix", flag);
-            tmpHash.put("field", fieldname);
-            tmpHash.put("lines", numLine);
-            //System.out.println(methodname + " " + flag + " " + numLine + " " + fieldname);
-            memory_method_Tmp.put(methodname, tmpHash);
+        private void variableWriteCheck(String scope, String target, String value){
+            boolean duplicateFlag = duplicateCheck(target);
+
+            if(DataStore.memory_localValue_info.get(classname) != null) {
+                if (DataStore.memory_localValue_info.get(classname).get(methodname) != null) {
+                    for (String local : DataStore.memory_localValue_info.get(classname).get(methodname).keySet()) {
+                        if (target.equals(local)) {
+                            DataStore.memory_localValue_info.get(classname).get(methodname).get(local).put("assign", "true");
+                            if (value.equals("null"))
+                                DataStore.memory_localValue_info.get(classname).get(methodname).get(local).put("nullable", "true");
+                        }
+                    }
+                }
+            }
+
+            if(DataStore.memory_field_info.get(classname) != null) {
+                for (String fieldname : DataStore.memory_field_info.get(classname).keySet()) {
+                    if (target.equals(fieldname)) {
+                        if (!duplicateFlag || scope.equals("this")) {
+                            DataStore.memory_field_info.get(classname).get(fieldname).put("assign", "true");
+
+                            if (DataStore.memory_field_info.get(classname).get(fieldname).get("formerRW").equals("")
+                                    && DataStore.memory_field_info.get(classname).get(fieldname).get("initializable").equals("false")) {
+                                DataStore.memory_field_info.get(classname).get(fieldname).put("formerRW", "W");
+                            }
+
+                            if (value.equals("null"))
+                                DataStore.memory_field_info.get(classname).get(fieldname).put("nullable", "true");
+
+                            if (isAccessorCheckS) {
+                                for (String paramName : paramList) {
+                                    if (value.equals(paramName)) {
+                                        isFixableS = true;
+                                        this.fieldname = fieldname;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         private boolean duplicateCheck(String target){
-            for(String fieldname:DataStore.memory_field_info.get(classname).keySet()){
-                for(String local:DataStore.memory_localValue_info.get(classname).get(methodname).keySet()){
-                    if(fieldname.equals(local) && fieldname.equals(target)) return true;
+            if(DataStore.memory_field_info.get(this.classname) != null) {
+                for (String fieldname : DataStore.memory_field_info.get(this.classname).keySet()) {
+                    for (String local : paramList) {
+                        if (fieldname.equals(local) && fieldname.equals(target)) return true;
+                    }
                 }
             }
             return false;
         }
 
+        public String getFieldname(){
+            return this.fieldname;
+        }
+
+        public boolean getIsFixableG(){
+            return this.isFixableG;
+        }
+
+        public boolean getIsFixableS(){
+            return this.isFixableS;
+        }
+
+        public boolean getIsReturnNull(){
+            return this.isReturnNull;
+        }
+
     }
 
-    public static boolean search_get(MethodDeclaration detail){
+        public static boolean search_get(MethodDeclaration detail){
         String methodname = detail.getNameAsString();
         boolean flag = false;
 
@@ -559,22 +904,6 @@ public class J2KConverterSupporter {
             }
         }
         return flag;
-    }
-
-    public static class CheckConstructor extends GenericVisitorAdapter<Boolean,Void> {
-        String classname = "";
-        String fieldname = "";
-
-        public CheckConstructor(String classname, String fieldname) {
-            this.classname = classname;
-            this.fieldname = fieldname;
-        }
-
-        @Override
-        public Boolean visit(AssignExpr md, Void arg){
-            if(md.getTarget().toString().equals(fieldname)) return true;
-            return false;
-        }
     }
 
 }

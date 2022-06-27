@@ -24,6 +24,7 @@ public class DataStore {
     public static HashMap<String, HashMap<String, HashMap<String, String>>> memory_field_info;
     public static HashMap<String, HashMap<String, HashMap<String, HashMap<String, String>>>> memory_localValue_info;
     //name:名前、type:型、dim:配列の深さなければ0、assign:代入の有無、nullable:nullになり得るか？ static:staticか否か
+    //initializable:初期値の有無、formerRW:ReadとWriteどちらが先(former)か
     public static HashMap<String, HashMap<String, HashMap<String, Object>>> memory_method_info;
     //name:名前
     //static:staticか否か
@@ -31,6 +32,7 @@ public class DataStore {
     //fix:get/setだとして、暗黙的なアクセサもしくはそのカスタムアクセサに直せるか否か
     //field:どのフィールドのアクセサか
     //lines:メソッドの中身の行数。2以上ならfixがtrueでカスタムアクセサにできる可能性がある
+    //nullable:メソッドの返り値がnullになり得るか
 
     public static void init(){
         pathName = "";

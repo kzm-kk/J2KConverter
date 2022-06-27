@@ -36,7 +36,7 @@ public class J2KConverter {
 
         File file;
         if(args.length == 0)
-            file = new File("/Users/kzm0308/IdeaProjects/J2KConverter/src/main/java/pac3/Class4.java");
+            file = new File("/Users/kzm0308/IdeaProjects/J2KConverter/src/main/java/pac3/Class10.java");
 
         else file = new File(args[0]);
         //file = new File(DataStore.pathName);
@@ -726,7 +726,7 @@ public class J2KConverter {
             VoidVisitor<?> visitor = new InBlockVisitor(classname, methodname,indent + indent4, false);
             md.accept(visitor, null);
             /*for(int i = 0; i < md.getChildNodes().size(); i++){
-                VoidVisitor<?> visitor = new InBlockVisitor(classname, methodname,indent + indent4, false);
+                VoidVisitor<?> visitor = new InBlockVisitorS(classname, methodname,indent + indent4, false);
                 md.getChildNodes().get(i).accept(visitor, null);
             }*/
             setOutputer(indentBefore + "}");
@@ -818,7 +818,7 @@ public class J2KConverter {
         public void visit(ReturnStmt md, Void arg){
             if(isLambda) setOutputer(indent);
             else setOutputer(indent + "return ");
-            //InBlockVisitor visitor = new InBlockVisitor(this.classname, this.methodname, indent, false);
+            //InBlockVisitorS visitor = new InBlockVisitorS(this.classname, this.methodname, indent, false);
             AssignVisitor visitor = new AssignVisitor(this.classname, indent + indent4, "", 0);
             md.getExpression().get().accept(visitor, null);
             setOutputer("\n");
@@ -1307,7 +1307,7 @@ public class J2KConverter {
             if(md.getParameters().size() != 0){
                 /*for(int i = 0;i < md.getParameters().size();i++){
                     if(i != 0) setOutputer(", ");
-                    InBlockVisitor paramVisitor = new InBlockVisitor(classname, "", indent + indent4, false);
+                    InBlockVisitorS paramVisitor = new InBlockVisitorS(classname, "", indent + indent4, false);
                     md.getParameter(i).accept(paramVisitor, null);
                     //setOutputer(md.getParameter(i).toString());
                 }*/
