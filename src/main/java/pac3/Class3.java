@@ -23,14 +23,16 @@ public class Class3 {
     }
 
     public enum Fruits {
-        Banana(0),
-        Orange(1),
-        Apple(2);
+        Banana(0,2),
+        Orange(1,3),
+        Apple(2,4);
 
-        private int id; // フィールドの定義
+        private int id;
+        private Integer id2;// フィールドの定義
 
-        private Fruits(int id) { // コンストラクタの定義
+        private Fruits(int id, Integer id2) { // コンストラクタの定義
             this.id = id;
+            this.id2 = id2;
         }
 
     }

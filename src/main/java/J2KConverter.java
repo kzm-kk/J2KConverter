@@ -36,7 +36,7 @@ public class J2KConverter {
 
         File file;
         if(args.length == 0)
-            file = new File("/Users/kzm0308/IdeaProjects/J2KConverter/src/main/java/pac3/Class10.java");
+            file = new File("/Users/kzm0308/IdeaProjects/J2KConverter/src/main/java/pac3/Class9.java");
 
         else file = new File(args[0]);
         //file = new File(DataStore.pathName);
@@ -896,7 +896,7 @@ public class J2KConverter {
         @Override
         public void visit(AssignExpr md, Void arg){
             String target = md.getTarget().toString();
-            String arithmeticOperator = SignOperator(md.getOperator().toString());
+            String arithmeticOperator = AssignOperator(md.getOperator().name());
             setOutputer(indent + target + arithmeticOperator);
             AssignVisitor visitor = new AssignVisitor("");
             md.getValue().accept(visitor, null);
@@ -1278,7 +1278,7 @@ public class J2KConverter {
         public void visit(BinaryExpr md, Void arg){
             AssignVisitor visitor = new AssignVisitor(classname, indent, type, dim);
             md.getLeft().accept(visitor, null);
-            String arithmeticOperator = SignOperator(md.getOperator().name());
+            String arithmeticOperator = BinaryOperator(md.getOperator().name());
             setOutputer(arithmeticOperator);
             visitor = new AssignVisitor(classname, indent, type, dim);
             md.getRight().accept(visitor, null);
@@ -1524,7 +1524,7 @@ public class J2KConverter {
         public void visit(AssignExpr md, Void arg){
             String target = md.getTarget().toString();
             if(target.equals(targetField) || target.equals("this."+targetField)) target = "field";
-            String arithmeticOperator = SignOperator(md.getOperator().toString());
+            String arithmeticOperator = BinaryOperator(md.getOperator().toString());
             setOutputer(indent + target + " " + arithmeticOperator + " ");
             AssignVisitor visitor = new AssignVisitor("");
             md.getValue().accept(visitor, null);
@@ -1541,7 +1541,7 @@ public class J2KConverter {
 
     }
 
-    public static String SignOperator(String operator){
+    public static String BinaryOperator(String operator){
         return switch (operator) {
             case "ASSIGN" -> " = ";
             case "PLUS" -> " + ";
@@ -1563,6 +1563,24 @@ public class J2KConverter {
             case "LEFT_SHIFT" -> " << ";
             case "SIGNED_RIGHT_SHIFT" -> " >> ";
             case "UNSIGNED_RIGHT_SHIFT" -> " >>> ";
+            default -> "";
+        };
+    }
+
+    public static String AssignOperator(String operator){
+        return switch (operator) {
+            case "ASSIGN" -> " = ";
+            case "PLUS" -> " += ";
+            case "MINUS" -> " -= ";
+            case "MULTIPLY" -> " *= ";
+            case "DIVIDE" -> " /= ";
+            case "BINARY_OR" -> " |= ";
+            case "BINARY_AND" -> " &= ";
+            case "XOR" -> " ^= ";
+            case "REMAINDER" -> " %= ";
+            case "LEFT_SHIFT" -> " <<= ";
+            case "SIGNED_RIGHT_SHIFT" -> " >>= ";
+            case "UNSIGNED_RIGHT_SHIFT" -> " >>>= ";
             default -> "";
         };
     }

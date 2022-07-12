@@ -42,7 +42,7 @@ public class ConvertOutputer {
                 if(!name.equals("outkt")) {
                     String newPath = path + "/" + name;
                     String newConvertPath = convertPath + "/" + name;
-                    CreateDir(newConvertPath);
+                    //CreateDir(newConvertPath);
                     ArrayList<String> tmpList = dumpFile(newPath, newConvertPath, level + 1);
                     filePathList.addAll(tmpList);
                 }

@@ -1,3 +1,4 @@
+import com.github.javaparser.Range;
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.body.*;
 
@@ -13,6 +14,7 @@ public class DataStore {
     public static ArrayList<String> memory_classlibrary;
     public static HashMap<String, ArrayList<ImportDeclaration>> memory_import;
     public static ArrayList<String> memory_classname;
+    public static ArrayList<String> memory_enum;
     public static HashMap<String, String> memory_extend;
     public static HashMap<String, ArrayList<String>> memory_implement;
     public static HashMap<String, ArrayList<FieldDeclaration>> memory_classfield;
@@ -22,7 +24,7 @@ public class DataStore {
     public static HashMap<String, List<InitializerDeclaration>> memory_Initializer;
 
     public static HashMap<String, HashMap<String, HashMap<String, String>>> memory_field_info;
-    public static HashMap<String, HashMap<String, HashMap<String, HashMap<String, String>>>> memory_localValue_info;
+    public static HashMap<String, HashMap<Range, HashMap<String, HashMap<String, String>>>> memory_localValue_info;
     //name:名前、type:型、dim:配列の深さなければ0、assign:代入の有無、nullable:nullになり得るか？ static:staticか否か
     //initializable:初期値の有無、formerRW:ReadとWriteどちらが先(former)か
     public static HashMap<String, HashMap<String, HashMap<String, Object>>> memory_method_info;
@@ -33,6 +35,8 @@ public class DataStore {
     //field:どのフィールドのアクセサか
     //lines:メソッドの中身の行数。2以上ならfixがtrueでカスタムアクセサにできる可能性がある
     //nullable:メソッドの返り値がnullになり得るか
+    //type:メソッドの返り値
+    //range:このメソッドの記述範囲、localvalueを引き出すために使う
 
     public static void init(){
         pathName = "";
@@ -42,6 +46,7 @@ public class DataStore {
         memory_classlibrary = new ArrayList<>();
         memory_import = new HashMap<>();
         memory_classname = new ArrayList<>();
+        memory_enum = new ArrayList<>();
         memory_extend = new HashMap<>();
         memory_implement = new HashMap<>();
         memory_classfield = new HashMap<>();

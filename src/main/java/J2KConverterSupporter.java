@@ -1,4 +1,5 @@
 import com.github.javaparser.JavaParser;
+import com.github.javaparser.Range;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.Modifier;
@@ -100,8 +101,8 @@ public class J2KConverterSupporter {
             DataStore.memory_method_info.put(classname, memory_method_Tmp);
 
             //デバッグ用の出力
-            OutputFieldInfo(classname);
-            OutputMethodInfo(classname);
+            //OutputFieldInfo(classname);
+            //OutputMethodInfo(classname);
         }
 
         for(String name:DataStore.memory_classlibrary){
@@ -136,16 +137,17 @@ public class J2KConverterSupporter {
             String field = (String)DataStore.memory_method_info.get(classname).get(mname).get("field");
             int lines = (int)DataStore.memory_method_info.get(classname).get(mname).get("lines");
             boolean flag4 = (boolean)DataStore.memory_method_info.get(classname).get(mname).get("nullable");
+            String type = (String)DataStore.memory_method_info.get(classname).get(mname).get("type");
             System.out.println(mname + " static:" + flag +" access:" + flag2 + " fix:" + flag3
-                    + " field:" + field + " lines:" + lines + " nullable:" + flag4);
+                    + " field:" + field + " lines:" + lines + " nullable:" + flag4 + " type:" + type);
         }
         System.out.println("method local information");
         if(DataStore.memory_localValue_info.get(classname) != null) {
-            for (String methodname : DataStore.memory_localValue_info.get(classname).keySet()) {
-                for (String fieldname : DataStore.memory_localValue_info.get(classname).get(methodname).keySet()) {
-                    String assign = DataStore.memory_localValue_info.get(classname).get(methodname).get(fieldname).get("assign");
-                    String nullable = DataStore.memory_localValue_info.get(classname).get(methodname).get(fieldname).get("nullable");
-                    System.out.println(fieldname + " " + assign + " " + nullable);
+            for (Range range : DataStore.memory_localValue_info.get(classname).keySet()) {
+                for (String fieldname : DataStore.memory_localValue_info.get(classname).get(range).keySet()) {
+                    String assign = DataStore.memory_localValue_info.get(classname).get(range).get(fieldname).get("assign");
+                    String nullable = DataStore.memory_localValue_info.get(classname).get(range).get(fieldname).get("nullable");
+                    System.out.println(fieldname + " assign:" + assign + " nullable:" + nullable);
                 }
             }
         }
@@ -316,7 +318,10 @@ public class J2KConverterSupporter {
                 paramList.add(tmp.getNameAsString());
             }
 
-            InBlockVisitorS visitor = new InBlockVisitorS(classname, paramList);
+            Range range = md.getRange().get();
+            initLocalValueList(classname, range);
+
+            InBlockVisitorS visitor = new InBlockVisitorS(classname, range, paramList);
             md.getBody().accept(visitor, null);
         }
 
@@ -332,8 +337,10 @@ public class J2KConverterSupporter {
 
         @Override
         public void visit(InitializerDeclaration md, Void arg){
+            Range range = md.getRange().get();
+            initLocalValueList(classname, range);
 
-            InBlockVisitorS visitor = new InBlockVisitorS(classname);
+            InBlockVisitorS visitor = new InBlockVisitorS(classname, range);
             md.getBody().accept(visitor, null);
         }
 
@@ -349,6 +356,7 @@ public class J2KConverterSupporter {
         boolean isFixableG = false;
         boolean isFixableS = false;
         int numLine = 0;
+        String type = "";
         ArrayList<String> paramList = new ArrayList<>();
         HashMap<String, HashMap<String, String>> memory_local_Tmp = new HashMap<>();
 
@@ -363,6 +371,7 @@ public class J2KConverterSupporter {
             isAccessorCheckG = search_get(md);
             isAccessorCheckS = search_set(md);
             methodname = md.getNameAsString();
+            Range range = md.getRange().get();
 
             for(Parameter param:md.getParameters()){
                 paramList.add(param.getNameAsString());
@@ -376,19 +385,18 @@ public class J2KConverterSupporter {
                 }
             }
 
+            if(md.getType().isArrayType()){
+                type = type.replace("[]", "").concat("-array");
+            }
+
             if(md.getBody().isPresent())
                 numLine = md.getBody().get().getChildNodes().size();
 
-            if(DataStore.memory_localValue_info.get(classname) == null) {
-                DataStore.memory_localValue_info.put(classname, new HashMap<>());
-            }
-            if (DataStore.memory_localValue_info.get(classname).get(methodname) == null){
-                DataStore.memory_localValue_info.get(classname).put(methodname, new HashMap<>());
-            }
+            initLocalValueList(classname, range);
 
             boolean isReturnNull = false;
             if(md.getBody().isPresent()) {
-                InBlockVisitorS visitor = new InBlockVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList);
+                InBlockVisitorS visitor = new InBlockVisitorS(classname, methodname, range, isAccessorCheckG, isAccessorCheckS, paramList);
                 md.getBody().get().accept(visitor, null);
                 fieldname = visitor.getFieldname();
                 isFixableG = visitor.getIsFixableG();
@@ -396,10 +404,10 @@ public class J2KConverterSupporter {
                 isReturnNull = visitor.getIsReturnNull();
             }
 
-            setData(isFixableS||isFixableG, fieldname, isReturnNull);
+            setData(isFixableS||isFixableG, fieldname, range, isReturnNull);
         }
 
-        private void setData(boolean flag, String fieldname, boolean isReturnNull){
+        private void setData(boolean flag, String fieldname, Range range, boolean isReturnNull){
             HashMap<String, Object> tmpHash = new HashMap<>();
             tmpHash.put("static", isStatic);
             tmpHash.put("access", (isAccessorCheckG || isAccessorCheckS));
@@ -407,6 +415,8 @@ public class J2KConverterSupporter {
             tmpHash.put("field", fieldname);
             tmpHash.put("lines", numLine);
             tmpHash.put("nullable", isReturnNull);
+            tmpHash.put("type", type);
+            tmpHash.put("range", range);
             memory_method_Tmp.put(methodname, tmpHash);
         }
 
@@ -415,6 +425,7 @@ public class J2KConverterSupporter {
     public static class InBlockVisitorS extends VoidVisitorAdapter<Void>{
         String classname = "";
         String methodname = "";
+        Range range = null;
         private String fieldname = "";
         private boolean isAccessorCheckG = false;
         private boolean isAccessorCheckS = false;
@@ -425,23 +436,24 @@ public class J2KConverterSupporter {
 
         //Method用のコンストラクタ
         public InBlockVisitorS
-                (String classname, String methodname,
-                 boolean isAccessorCheckG, boolean isAccessorCheckS, ArrayList<String> paramList){
+        (String classname, String methodname, Range range,
+         boolean isAccessorCheckG, boolean isAccessorCheckS, ArrayList<String> paramList){
             this.classname = classname;
             this.methodname = methodname;
+            this.range = range;
             this.isAccessorCheckG = isAccessorCheckG;
             this.isAccessorCheckS = isAccessorCheckS;
             this.paramList = paramList;
         }
 
         //Constructor用のコンストラクタ
-        public InBlockVisitorS(String classname, ArrayList<String> paramList){
-            this(classname, "", false, false, paramList);
+        public InBlockVisitorS(String classname, Range range, ArrayList<String> paramList){
+            this(classname, "", range, false, false, paramList);
         }
 
         //Initializer用のコンストラクタ
-        public InBlockVisitorS(String classname){
-            this(classname, "", false, false, new ArrayList<String>());
+        public InBlockVisitorS(String classname, Range range){
+            this(classname, "", range, false, false, new ArrayList<String>());
         }
 
         @Override
@@ -471,13 +483,13 @@ public class J2KConverterSupporter {
             data.put("assign", assign);
             data.put("nullable", nullable);
 
-            DataStore.memory_localValue_info.get(classname).get(methodname).put(fieldname, data);
+            DataStore.memory_localValue_info.get(classname).get(range).put(fieldname, data);
         }
 
         @Override
         public void visit(AssignExpr md, Void arg){
             //式の右側の解析
-            AssignVisitorS valueVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false);
+            AssignVisitorS valueVisitor = new AssignVisitorS(classname, methodname, range, isAccessorCheckG, isAccessorCheckS, paramList, false);
             md.getValue().accept(valueVisitor, null);
 
             //式の左側の解析
@@ -485,10 +497,10 @@ public class J2KConverterSupporter {
 
             //代入以外のAssign文の場合、一度値を参照してから代入するので、先にReadのチェック
             if (!md.getOperator().toString().equals("ASSIGN")) {
-                AssignVisitorS targetVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false, value);
+                AssignVisitorS targetVisitor = new AssignVisitorS(classname, methodname, range, isAccessorCheckG, isAccessorCheckS, paramList, false, value);
                 md.getTarget().accept(targetVisitor, null);
             }
-            AssignVisitorS targetVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, true, value);
+            AssignVisitorS targetVisitor = new AssignVisitorS(classname, methodname, range, isAccessorCheckG, isAccessorCheckS, paramList, true, value);
             md.getTarget().accept(targetVisitor, null);
             isFixableS = targetVisitor.getIsFixableS();
             fieldname = targetVisitor.getFieldname();
@@ -497,7 +509,7 @@ public class J2KConverterSupporter {
         @Override
         public void visit(ReturnStmt md, Void arg){
             if(md.getExpression().isPresent()) {
-                AssignVisitorS visitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false);
+                AssignVisitorS visitor = new AssignVisitorS(classname, methodname, range, isAccessorCheckG, isAccessorCheckS, paramList, false);
                 md.getExpression().get().accept(visitor, null);
                 isFixableG = visitor.getIsFixableG();
                 fieldname = visitor.getFieldname();
@@ -509,7 +521,7 @@ public class J2KConverterSupporter {
         public void visit(MethodCallExpr md, Void arg){
             //メソッド呼び出しの引数に使われているかどうかを確認
             //ここでは何もせず、visitorに明け渡す
-            AssignVisitorS visitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false);
+            AssignVisitorS visitor = new AssignVisitorS(classname, methodname, range, isAccessorCheckG, isAccessorCheckS, paramList, false);
             md.accept(visitor, null);
 
         }
@@ -519,11 +531,11 @@ public class J2KConverterSupporter {
             //do-whileのconditionにあたる部分の読み込み変数のチェックとブロック文内部の確認
 
             //conditionチェック
-            AssignVisitorS conditionVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false);
+            AssignVisitorS conditionVisitor = new AssignVisitorS(classname, methodname, range, isAccessorCheckG, isAccessorCheckS, paramList, false);
             md.getCondition().accept(conditionVisitor, null);
 
             //内部チェック
-            AssignVisitorS bodyVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false);
+            AssignVisitorS bodyVisitor = new AssignVisitorS(classname, methodname, range, isAccessorCheckG, isAccessorCheckS, paramList, false);
             md.getBody().accept(bodyVisitor, null);
         }
 
@@ -532,11 +544,11 @@ public class J2KConverterSupporter {
             //whileのconditionにあたる部分の読み込み変数のチェックとブロック文内部の確認
 
             //conditionチェック
-            AssignVisitorS conditionVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false);
+            AssignVisitorS conditionVisitor = new AssignVisitorS(classname, methodname, range, isAccessorCheckG, isAccessorCheckS, paramList, false);
             md.getCondition().accept(conditionVisitor, null);
 
             //内部チェック
-            AssignVisitorS bodyVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false);
+            AssignVisitorS bodyVisitor = new AssignVisitorS(classname, methodname, range, isAccessorCheckG, isAccessorCheckS, paramList, false);
             md.getBody().accept(bodyVisitor, null);
         }
 
@@ -546,28 +558,28 @@ public class J2KConverterSupporter {
 
             //initialチェック
             for(Expression expression:md.getInitialization()) {
-                AssignVisitorS initVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, true);
+                AssignVisitorS initVisitor = new AssignVisitorS(classname, methodname, range, isAccessorCheckG, isAccessorCheckS, paramList, true);
                 expression.accept(initVisitor, null);
             }
 
             //compareチェック
             if(md.getCompare().isPresent()) {
-                AssignVisitorS compareVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false);
+                AssignVisitorS compareVisitor = new AssignVisitorS(classname, methodname, range, isAccessorCheckG, isAccessorCheckS, paramList, false);
                 md.getCompare().get().accept(compareVisitor, null);
             }
 
             //updateチェック
             for(Expression expression:md.getUpdate()){
-                AssignVisitorS updateVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false);
+                AssignVisitorS updateVisitor = new AssignVisitorS(classname, methodname, range, isAccessorCheckG, isAccessorCheckS, paramList, false);
                 expression.accept(updateVisitor, null);
             }
 
             //内部チェック
             if(md.getBody().isBlockStmt()){
-                InBlockVisitorS inBlockVisitor = new InBlockVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList);
+                InBlockVisitorS inBlockVisitor = new InBlockVisitorS(classname, methodname, range, isAccessorCheckG, isAccessorCheckS, paramList);
                 md.getBody().accept(inBlockVisitor, null);
             } else {
-                AssignVisitorS inVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false);
+                AssignVisitorS inVisitor = new AssignVisitorS(classname, methodname, range, isAccessorCheckG, isAccessorCheckS, paramList, false);
                 md.getBody().accept(inVisitor, null);
             }
 
@@ -583,25 +595,25 @@ public class J2KConverterSupporter {
             //ifのconditionにあたる部分の読み込み変数のチェックとブロック文内部の確認
 
             //conditionチェック
-            AssignVisitorS conditionVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false);
+            AssignVisitorS conditionVisitor = new AssignVisitorS(classname, methodname, range, isAccessorCheckG, isAccessorCheckS, paramList, false);
             md.getCondition().accept(conditionVisitor, null);
 
             //内部チェック
             if(md.getThenStmt().isBlockStmt()){
-                InBlockVisitorS thenBlockVisitor = new InBlockVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList);
+                InBlockVisitorS thenBlockVisitor = new InBlockVisitorS(classname, methodname, range, isAccessorCheckG, isAccessorCheckS, paramList);
                 md.getThenStmt().accept(thenBlockVisitor, null);
             } else {
-                AssignVisitorS thenVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false);
+                AssignVisitorS thenVisitor = new AssignVisitorS(classname, methodname, range, isAccessorCheckG, isAccessorCheckS, paramList, false);
                 md.getThenStmt().accept(thenVisitor, null);
             }
 
             //elseチェック
             if(md.getElseStmt().isPresent()){
                 if(md.getElseStmt().get().isIfStmt()){
-                    InBlockVisitorS elseIfVisitor = new InBlockVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList);
+                    InBlockVisitorS elseIfVisitor = new InBlockVisitorS(classname, methodname, range, isAccessorCheckG, isAccessorCheckS, paramList);
                     md.getElseStmt().get().accept(elseIfVisitor, null);
                 } else {
-                    AssignVisitorS elseVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false);
+                    AssignVisitorS elseVisitor = new AssignVisitorS(classname, methodname, range, isAccessorCheckG, isAccessorCheckS, paramList, false);
                     md.getElseStmt().get().accept(elseVisitor, null);
                 }
             }
@@ -610,12 +622,12 @@ public class J2KConverterSupporter {
         @Override
         public void visit(SwitchStmt md, Void arg){
             //switchのselectorにあたる部分の読み込み変数のチェックとブロック文内部の確認
-            AssignVisitorS selectorVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false);
+            AssignVisitorS selectorVisitor = new AssignVisitorS(classname, methodname, range, isAccessorCheckG, isAccessorCheckS, paramList, false);
             md.getSelector().accept(selectorVisitor, null);
 
             for(SwitchEntry entry:md.getEntries()){
                 for(Statement statement:entry.getStatements()){
-                    InBlockVisitorS statementVisitor = new InBlockVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList);
+                    InBlockVisitorS statementVisitor = new InBlockVisitorS(classname, methodname, range, isAccessorCheckG, isAccessorCheckS, paramList);
                     statement.accept(statementVisitor, null);
                 }
             }
@@ -625,12 +637,12 @@ public class J2KConverterSupporter {
         @Override
         public void visit(SwitchExpr md, Void arg){
             //switchのselectorにあたる部分の読み込み変数のチェックとブロック文内部の確認
-            AssignVisitorS selectorVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false);
+            AssignVisitorS selectorVisitor = new AssignVisitorS(classname, methodname, range, isAccessorCheckG, isAccessorCheckS, paramList, false);
             md.getSelector().accept(selectorVisitor, null);
 
             for(SwitchEntry entry:md.getEntries()){
                 for(Statement statement:entry.getStatements()){
-                    InBlockVisitorS statementVisitor = new InBlockVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList);
+                    InBlockVisitorS statementVisitor = new InBlockVisitorS(classname, methodname, range, isAccessorCheckG, isAccessorCheckS, paramList);
                     statement.accept(statementVisitor, null);
                 }
             }
@@ -657,6 +669,7 @@ public class J2KConverterSupporter {
     public static class AssignVisitorS extends VoidVisitorAdapter<Void> {
         String classname = "";
         String methodname = "";
+        Range range = null;
         private String fieldname = "";
         private boolean isAccessorCheckG = false;
         private boolean isAccessorCheckS = false;
@@ -668,10 +681,11 @@ public class J2KConverterSupporter {
         private boolean isReturnNull = false;
 
         public AssignVisitorS
-        (String classname, String methodname,
+        (String classname, String methodname, Range range, 
          boolean isAccessorCheckG, boolean isAccessorCheckS, ArrayList<String> paramList, boolean flag, String value) {
             this.classname = classname;
             this.methodname = methodname;
+            this.range = range;
             this.isAccessorCheckG = isAccessorCheckG;
             this.isAccessorCheckS = isAccessorCheckS;
             this.paramList = paramList;
@@ -680,15 +694,15 @@ public class J2KConverterSupporter {
         }
 
         public AssignVisitorS
-                (String classname, String methodname,
+                (String classname, String methodname, Range range,
                  boolean isAccessorCheckG, boolean isAccessorCheckS, ArrayList<String> paramList, boolean flag) {
-            this(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, flag, "");
+            this(classname, methodname, range, isAccessorCheckG, isAccessorCheckS, paramList, flag, "");
         }
 
         @Override
         public void visit(BlockStmt md, Void arg){
             for(Statement statement:md.getStatements()){
-                AssignVisitorS visitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, isWriteCheck, nullCheckValue);
+                AssignVisitorS visitor = new AssignVisitorS(classname, methodname, range, isAccessorCheckG, isAccessorCheckS, paramList, isWriteCheck, nullCheckValue);
                 statement.accept(visitor, null);
             }
         }
@@ -697,17 +711,17 @@ public class J2KConverterSupporter {
         public void visit(BinaryExpr md, Void arg){
             //計算式に使われている変数の確認
             //最左分岐なので左側解析
-            AssignVisitorS leftVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, isWriteCheck, nullCheckValue);
+            AssignVisitorS leftVisitor = new AssignVisitorS(classname, methodname, range, isAccessorCheckG, isAccessorCheckS, paramList, isWriteCheck, nullCheckValue);
             md.getLeft().accept(leftVisitor, null);
 
             //右側解析
-            AssignVisitorS rightVisitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, isWriteCheck, nullCheckValue);
+            AssignVisitorS rightVisitor = new AssignVisitorS(classname, methodname, range, isAccessorCheckG, isAccessorCheckS, paramList, isWriteCheck, nullCheckValue);
             md.getRight().accept(rightVisitor, null);
         }
 
         @Override
         public void visit(UnaryExpr md, Void arg){
-            AssignVisitorS visitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false);
+            AssignVisitorS visitor = new AssignVisitorS(classname, methodname, range, isAccessorCheckG, isAccessorCheckS, paramList, false);
             md.getExpression().accept(visitor, null);
         }
 
@@ -726,7 +740,7 @@ public class J2KConverterSupporter {
             //メソッド呼び出しの引数を確認
             if(md.getArguments().size() != 0){
                 for(Expression expression:md.getArguments()){
-                    AssignVisitorS visitor = new AssignVisitorS(classname, methodname, isAccessorCheckG, isAccessorCheckS, paramList, false);
+                    AssignVisitorS visitor = new AssignVisitorS(classname, methodname, range, isAccessorCheckG, isAccessorCheckS, paramList, false);
                     expression.accept(visitor, null);
                 }
             }
@@ -766,8 +780,8 @@ public class J2KConverterSupporter {
             boolean duplicateFlag = duplicateCheck(target);
 
             if(DataStore.memory_localValue_info.get(classname) != null) {
-                if (DataStore.memory_localValue_info.get(classname).get(methodname) != null) {
-                    for(String local:DataStore.memory_localValue_info.get(classname).get(methodname).keySet()){
+                if (DataStore.memory_localValue_info.get(classname).get(range) != null) {
+                    for(String local:DataStore.memory_localValue_info.get(classname).get(range).keySet()){
                         if(target.equals(local)){
                             if (DataStore.memory_localValue_info.get(classname).get(fieldname).get(methodname).get("formerRW").equals("R")
                                     && DataStore.memory_localValue_info.get(classname).get(fieldname).get(methodname).get("initializable").equals("false"))
@@ -808,12 +822,12 @@ public class J2KConverterSupporter {
             boolean duplicateFlag = duplicateCheck(target);
 
             if(DataStore.memory_localValue_info.get(classname) != null) {
-                if (DataStore.memory_localValue_info.get(classname).get(methodname) != null) {
-                    for (String local : DataStore.memory_localValue_info.get(classname).get(methodname).keySet()) {
+                if (DataStore.memory_localValue_info.get(classname).get(range) != null) {
+                    for (String local : DataStore.memory_localValue_info.get(classname).get(range).keySet()) {
                         if (target.equals(local)) {
-                            DataStore.memory_localValue_info.get(classname).get(methodname).get(local).put("assign", "true");
+                            DataStore.memory_localValue_info.get(classname).get(range).get(local).put("assign", "true");
                             if (value.equals("null"))
-                                DataStore.memory_localValue_info.get(classname).get(methodname).get(local).put("nullable", "true");
+                                DataStore.memory_localValue_info.get(classname).get(range).get(local).put("nullable", "true");
                         }
                     }
                 }
@@ -876,7 +890,16 @@ public class J2KConverterSupporter {
 
     }
 
-        public static boolean search_get(MethodDeclaration detail){
+    public static void initLocalValueList(String classname, Range range){
+        if(DataStore.memory_localValue_info.get(classname) == null) {
+            DataStore.memory_localValue_info.put(classname, new HashMap<>());
+        }
+        if (DataStore.memory_localValue_info.get(classname).get(range) == null){
+            DataStore.memory_localValue_info.get(classname).put(range, new HashMap<>());
+        }
+    }
+
+    public static boolean search_get(MethodDeclaration detail){
         String methodname = detail.getNameAsString();
         boolean flag = false;
 
