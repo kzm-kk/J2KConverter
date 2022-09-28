@@ -1,8 +1,9 @@
 package pac3;
 
+import pac4.pac.TrialClass;
+
 public class Class10 {
-    int num = 0;
-    int num2 = 0;
+    int num = 0, num2 = 0;
     String str = null;
 
     public void func(){
@@ -23,10 +24,17 @@ public class Class10 {
                 num2 = 0;
                 break;
         }
+
+        TrialClass tc = new TrialClass();
+
     }
 
     public int plus1(){
         return num + 1;
+    }
+
+    public String retStr(){
+        return "moji";
     }
 
 }

@@ -25,6 +25,13 @@ public class Class9 extends Class8{
     }
 
     public static void func(){
+         if(true){
+
+        } else if(false){
+             if(true);
+         } else {
+             if(false);
+         }
         assert num > 0;
     }
 }

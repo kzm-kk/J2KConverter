@@ -176,7 +176,7 @@ public class J2KConverterSupporter {
         String classname = "";
         ArrayList<FieldDeclaration> fds = new ArrayList<>();
         ArrayList<String> inner_list = new ArrayList<>();
-        List<InitializerDeclaration> initializer_list = new ArrayList<>();
+        ArrayList<InitializerDeclaration> initializer_list = new ArrayList<>();
 
         public SomeVisitor(String name){
             classname = name;
@@ -222,7 +222,7 @@ public class J2KConverterSupporter {
         @Override
         public void visit(InitializerDeclaration md, Void arg){
             DataStore.isStaticI = DataStore.isStaticI || md.isStatic();
-            List<InitializerDeclaration> initializer_list
+            ArrayList<InitializerDeclaration> initializer_list
                     = DataStore.memory_Initializer.get(classname);
             if(initializer_list != null)
                 this.initializer_list = initializer_list;
