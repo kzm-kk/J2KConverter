@@ -1,17 +1,27 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 
 public class ConvertOutputer {
 
     public static String convertDirName = "/outkt";
 
+    public static void ConvertAction(String rootPath, String path){
+        try{
+            CreateDir(rootPath + convertDirName);
+            System.setOut(new PrintStream(ConvertOutputer.CreateConvertFile(rootPath, path)));
+        }catch (IOException e){
+            System.out.println("convert failed:" + e.getMessage());
+        }
+    }
+
     public static void CreateDir(String path){
+        System.setOut(System.out);
         File file = new File(path);
-        if(!file.exists()){
+        if(!file.exists()){//ディレクトリが存在しない時
             file.mkdir();
+            System.out.println("directory created");
+        } else {//ディレクトリが既にある時
+            //System.out.println("directory already exist");
         }
     }
 

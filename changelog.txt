@@ -58,7 +58,7 @@ System.out.print系の出力先をファイルに変更
 自動変換できない記述・JavaParserが例外を返す記述の発見
 ver0.3制作開始
 2022/01/04
-javaparserライブラリバージョン変更3.16.1→3.23.1
+JavaParserライブラリバージョン変更3.16.1→3.23.1
 Kotlinバージョン変更1.5.30→1.6.0
 Kotlinコンパイル系統バージョン変更1.8→15
 parserをStaticJavaParserからJavaParserに変更
@@ -87,7 +87,7 @@ argumentの変換機能の変更に着手
 binaryExpr(記号で足された記述)の解析→argumentの変換機能の変更で対応できそう
 2022/02/09
 operator(演算記号)の文字列⇨記号変換のためのメソッドSignOperator実装
-MethodCallExprの変換の統一化(InClassVisitorとAssignvisitorにそれぞれ存在していたものをAssignVisitor側に集約)
+MethodCallExprの変換の統一化(InClassVisitorとAssignVisitorにそれぞれ存在していたものをAssignVisitor側に集約)
 2022/02/14
 BinaryExprにおける演算記号データの取得方法の改善(getOperator().toString()→getOperator().name())
 MethodCallExprのscope部分の変換方法変更
@@ -105,7 +105,7 @@ MethodCallExprのscope部分の変換方法変更
 上記に伴いコードの整理開始
 2022/03/03
 出力方法の変更に伴うコードの整理→完了、変数assignRight消去
-for文の変換をwhile文になるように変更(後々whileにするかforにするか決める)
+for文の変換をwhile文になるように変更(後々 whileにするかforにするか決める)
 2022/03/04
 ラムダ式変換のためのコード改良(省略なしなら変換可能)
 初期化子のstaticに対応(Datastore.isStaticIでフラグ管理)
@@ -206,23 +206,23 @@ FieldDeclaration, MethodDeclarationのみ、最初に構文木を解析する際
 2022/07/19
 三つ組データを作るクラスTriplets, 2つのデータをkeyに、1つのデータをvalueにして扱うTwinKeyDataListを作成
 2022/07/20
-最初の解析・情報収集部分(J2KConverterSupporterMulti line47)までの動作確認済み、出力問題なし
+最初の解析・情報収集部分(J2KConverterSupporter line47)までの動作確認済み、出力問題なし
 InBlockVisitorSまでの範囲で、新しい保存形式に対応する仕組みを実装。AssignVisitorS以下の階層に関しては後日
 2022/07/22
 変数の定義場所を探るための機能を作成(同一スコープや上位のスコープ、同一ファイル内まで)
 上記の機能のうち、同一ディレクトリ内のプログラムからも探れるように
 2022/07/25
 AssignVisitorS以下の階層における新しい保存形式に対応する仕組みを実装
-BlockInfomationの情報の保持方法を変更。木形式になるように
+BlockInformationの情報の保持方法を変更。木形式になるように
 それにより、保存する際のシステム面に変更が必要に
 2022/07/27
-BlockInfomationのdequeを作ることにより、クラスから現在のスコープまでの流れを保存し、遡ることで保存できるように
+BlockInformationのdequeを作ることにより、クラスから現在のスコープまでの流れを保存し、遡ることで保存できるように
 １回目の解析の際に解析する範囲を追加。全ブロック文のローカルな変数定義までを保存するように
 上記に伴い、コンストラクタ、初期化子などの１回目の解析を行うXXXFirstVisitorを追加
 2022/08/01
 elseifの扱いを構文木準拠のstructureに決定。今後、スコープ構造を記録するstructureは全て構文木準拠に
 2022/08/02
-上記の構文木準拠のstructureに伴い、else、switchのBlockInfomationを常に生成するように表示
+上記の構文木準拠のstructureに伴い、else、switchのBlockInformationを常に生成するように表示
 2回目の解析実行込みでのJ2KConverterSupporterMulti新保存様式の動作出力に成功
 (一連の解析に成功しているみたいなのでおそらく3回目も成功すると予想)
 2022/08/05
@@ -236,7 +236,7 @@ InClassVisitor_CACをInBlockVisitor_CACに名称変更
 一部出力がおかしなところに対応
 09/12の未対応にローカルクラス追加
 2022/09/16
-ClassInfomationにそのクラスがstaticなものを含むか否かのboolean変数isContainStaticを追加
+ClassInformationにそのクラスがstaticなものを含むか否かのboolean変数isContainStaticを追加
 companion objectの出力に対応
 型出力のvisitorの中身修正
 2022/09/21
@@ -245,9 +245,75 @@ companion objectの出力に対応
 ２回目解析以降のデータの保存方法の変更
 無名クラス、ローカルクラス、ラムダ式への対応
 動作確認
+2022/09/28
+ver0.7開発完了、ver0.8開発開始
+2022/10/03
+ArrayInitializerExpr、ObjectCreationExprの解析追加
+2022/10/04
+無名クラスの変換の仕組みの改良
+2022/10/07
+プログラムの整理(詳細は以下)
+DataStoreから旧バージョンの情報保存系変数を削除
+それに伴い単一変換版プログラムを削除
+加えて、Multiとついていたプログラム(J2KConverterMulti, J2KConverterSupporterMulti, J2KConverterFullMulti)の名称からMultiを削除
+debugするために旧J2KConverterからVisitorを削除し、空のvisitorを持ったASTViewerを作成
+2022/10/18
+GoogleSamplesのプロジェクト18個を用いたテストとそれによる修正
+2022/10/25
+ConverterSupporterのlambdaExprとConverterのSwitchStmt,SwitchExprに修正、lambdaExprは修正完了
+ConverterSupporterのSwitchStmtとSwitchExprを修正、完了
+2022/10/31
+ConverterSupporterのMethodCallExpr修正、 InBlockFirstVisitorとInBlockSecondVisitorにSynchronizedStmt追加
+GoogleSamples18プロジェクト全て出力可能に
+InitializerSecondVisitor、ConstructorSecondVisitorに匿名クラスの情報解析用の仕組み追加
+ThrowStmtの解析機能追加
+2022/11/01
+InstanceOf修飾子の変換・解析機能追加
+UnaryExprの解析機能変更、伴って各Stmtのcondition, update, compareの変換機能も変更
+labelの出力タイミングを変更、それに伴ってlabelが出力される可能性のあるStmtの冒頭のインデントの付け方を変更
+lambda式の時のreturn記述の出力を変更
+2022/11/07
+ConverterSupporterのアルゴリズムを変更
+2022/11/08
+MethodReferenceExprの変換機能をコメントアウトによってオミット
+2022/11/10
+ConverterSupporterの出力を確認、想定と違う箇所が見られたので、再度アルゴリズム修正
+2022/11/11
+ConverterSupporterのアルゴリズム変更、常にクラス直下から解析中のブロックまでの情報群を保持するように
+解析終了後、常に最新の情報になるように保存する仕組みを追加
+2022/11/14
+BaseInformationにstaticであるどうかを記したisStaticとkotlinでprivateなものにするかを決めるisKotlinPrivateを追加
+伴って、BlockInformationとFieldInformationからisStaticを削除
+2022/11/15
+if文の変換時に起きていたvisitorの設定ミスを修正
+1回目の情報解析の際に、switchExpr、ObjectCreationExprなど、Assign文の右辺に記述出来る情報の取得ミスを修正
+あるクラスが記述されたファイルの場所を特定する機能searchCI_FromImportを作成(機能のみ作成、解析機能には組み込んでいない)
+変数の型と初期化の際の型が違う時、初期化の型に揃える仕組みを作成開始
+上記に伴い、変数情報FieldInformationに、代入される型を記した変数valueTypeを追加
+コードの整理
+2022/11/21
+変数などがオーバーライドされるか否かに関連する変数isOverrideを追加、isOpenをBaseInformationに移動
+継承される側の判定(isOpen)、継承する側の判定(isOverride)の判断機能を追加
+インクリメント、デクリメントなどのUnaryExprやASSIGN以外のAssignExprの変換出力を変更
+2022/11/22
+インデントなどの細かい修正
+importの記述からファイルの場所を特定する機能を追加
+2022/11/25
+UnaryExprに含まれる符号付きの数字の変換に関して、Unaryに符号かどうかを判断する変数isSignを追加
+何も書いてない(EmptyStmt)記述に対し、akeBlock, InBlockにEmptyStmtの変換を追加(何もはいってないブロックを出力)
+スーパークラスとサブクラスの関係を明記する(isOpen)⇨同一名が複数あるパターンは未対応
+クラスを直接参照する時の扱い⇨同一ファイルのみ可能にする
+2022/11/28
+ver0.8開発完了
+ラムダ式に関する変換機能追加の準備
+ver0.9開発開始
 
-ver0.8にあげてから、アルゴリズムの書き出し
-自動変換のプログラムを、情報収集から完全に切り離す→無理(２回目以降の解析結果を使わずに解析することはできそう)
+11/25以降の話
+SAMで記述されたラムダ式や匿名クラスの扱い
+
+
+今後の話
+もう一度全体の変換をする⇨ver0.9に
 
 同じクラス名の優先度
 
@@ -260,9 +326,7 @@ ver0.8にあげてから、アルゴリズムの書き出し
 パッケージに属していないならば、インナークラスなどで同一ファイルにない場合は、同一pathAbsでアクセスできる
 インナークラスがある場合はそのクラスにしかアクセスできない
 
-2022/07/13以降の着手内容
-【優先度高】
-◉nullをプログラム中から排除するためのシステム構築
+nullをプログラム中から排除するためのシステム構築
 変数が参照される時・値が書き込まれるパターンとしてどんな場合が想定できるか?
 ・書き込み：代入、初期化、インクリメント/デクリメント
 ・読み込み：書き込み時の値参照(代入、初期化)、メソッドの引数になった時、配列の初期化要素の1つになった時、計算式内部でのアクセス
@@ -289,15 +353,6 @@ null代入の捜索範囲　サードパーティ製のライブラリを除い�
 データフロー解析(Dataflow analysis) SSA(static single assignment)形式(form)データフロー解析の関連用語
 制御フローグラフ
 別言語の利点を活用したい：トランスパイラを利用する理由
-
-【優先度中】
-0505以降の更新内容のConverterへの反映
-メソッド参照の勉強
-モジュール関連の機能の調査
-
-【優先度低】
-コメント類を変換後に反映させる方法の思案
-コードの整理
 
 ○そもそもこのJ2KConverterの利点・目的ってなんだ
 自動変換の需要：手書きよりも遥かに早いスピードで別言語への書き換えができる

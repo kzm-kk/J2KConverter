@@ -8,7 +8,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClassTemporaryStore extends BaseInfomation{
+public class ClassTemporaryStore extends BaseInformation {
     String name;
     List<FieldDeclaration> listFD = new ArrayList<>();
     List<MethodDeclaration> listMD = new ArrayList<>();
@@ -22,7 +22,7 @@ public class ClassTemporaryStore extends BaseInfomation{
                                List<MethodDeclaration> listMD,
                                List<ConstructorDeclaration> listCD,
                                List<InitializerDeclaration> listID){
-        super(structure, pathDir, range, rangeStructure);
+        super(structure, pathDir, range, rangeStructure, false, false);
         this.name = name;
         this.listFD = listFD;
         this.listMD = listMD;

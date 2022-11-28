@@ -40,7 +40,7 @@ Node
 ┃　┣━ConditionalExpr(三項演算子)
 ┃　┣━EnclosedExpr(かっこ)
 ┃　┣━FieldAccessExpr(フィールドアクセス記述)
-┃　┣━InstanceOfExpr
+┃　┣━InstanceOfExpr(instanceofの記述)
 ┃　┣━LambdaExpr(ラムダ式)
 ┃　┣━MethodCallExpr(メソッド呼び出し)
 ┃　┣━MethodReferenceExpr
@@ -90,7 +90,7 @@ Node
 ┃　┣━SwitchEntryStmt(switch文の一つ一つのラベル)
 ┃　┣━SwitchStmt(switch文自体)
 ┃　┣━SynchronizedStmt(Synchronizedブロック)
-┃　┣━ThrowStmt
+┃　┣━ThrowStmt(throwの記述)
 ┃　┣━TryStmt(try-catch-finally)
 ┃　┣━UnparsableStmt
 ┃　┗━WhileStmt(while文)

@@ -7,7 +7,7 @@ public class TrialClass {
     String[] strs = str.split(",");
     String[][] stt = new String[3][3];
     int[][][] numnum = {{{1,2,3},{1,2,3},{1,2,3}},{{1,2,3},{1,2,3},{1,2,3}}};
-    static int vals = 100;
+    public static int vals = 100;
 
     static void Sfunc(){
         vals = 500;
@@ -44,4 +44,8 @@ public class TrialClass {
         char numC = '0';
         boolean bool = false;
     }
+}
+
+class Tmp{
+
 }

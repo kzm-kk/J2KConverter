@@ -1,9 +1,8 @@
 import com.github.javaparser.Range;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 
-public class MethodInfomation extends BlockInfomation{
+public class MethodInformation extends BlockInformation {
     //name:名前
     //static:staticか否か
     //access:アクセサメソッドか否か
@@ -12,7 +11,7 @@ public class MethodInfomation extends BlockInfomation{
     //lines:メソッドの中身の行数。2以上ならfixがtrueでカスタムアクセサにできる可能性がある
     //nullable:メソッドの返り値がnullになり得るか
     //type:メソッドの返り値
-    //range:このメソッドの記述範囲、localvalueを引き出すために使う
+    //range:このメソッドの記述範囲、localValueを引き出すために使う
     boolean access;
     boolean fix;
     String accessField;
@@ -20,10 +19,10 @@ public class MethodInfomation extends BlockInfomation{
     boolean nullable;
     String type;
 
-    public MethodInfomation(String name, String structure, String pathDir, boolean isStatic,
-                            boolean access, boolean fix, String accessField, int lines,
-                            boolean nullable, String type, Range range, ArrayDeque<Range> rangeStructure){
-        super(name, "Method", isStatic, structure, pathDir, range, rangeStructure);
+    public MethodInformation(String name, String structure, String pathDir, boolean isStatic,
+                             boolean isKotlinPrivate, boolean access, boolean fix, String accessField, int lines,
+                             boolean nullable, String type, Range range, ArrayDeque<Range> rangeStructure){
+        super(name, "Method", isStatic, isKotlinPrivate, structure, pathDir, range, rangeStructure);
         this.access = access;
         this.fix = fix;
         this.accessField = accessField;

@@ -10,7 +10,7 @@ public class TwinKeyDataList <K1, K2, V>{
     public void setData(K1 key1, K2 key2, V value){
         boolean newFlag = true;
         for(Triplets<K1, K2, V> triplets:dataList){
-            if(key1.equals(triplets.getLeftValue()) && key2.equals(triplets.getCenterValue())){
+            if(triplets.getLeftValue().equals(key1) && triplets.getCenterValue().equals(key2)){
                 int index = dataList.indexOf(triplets);
                 dataList.remove(index);
                 dataList.add(index, new Triplets<K1, K2, V>(key1, key2, value));
@@ -25,7 +25,7 @@ public class TwinKeyDataList <K1, K2, V>{
 
     public Triplets<K1, K2, V> getDataTriplets(K1 key1, K2 key2){
         for(Triplets<K1, K2, V> triplets:dataList){
-            if(key1.equals(triplets.getLeftValue()) && key2.equals(triplets.getCenterValue())){
+            if(triplets.getLeftValue().equals(key1) && triplets.getCenterValue().equals(key2)){
                 return triplets;
             }
         }
@@ -66,7 +66,7 @@ public class TwinKeyDataList <K1, K2, V>{
     public ArrayList<Triplets<K1, K2, V>> getDataListKey1(K1 key1){
         ArrayList<Triplets<K1, K2, V>> retList = new ArrayList<>();
         for(Triplets<K1, K2, V> triplets:dataList){
-            if(key1.equals(triplets.getLeftValue())){
+            if(triplets.getLeftValue().equals(key1)){
                 retList.add(triplets);
             }
         }
@@ -76,7 +76,7 @@ public class TwinKeyDataList <K1, K2, V>{
     public ArrayList<Triplets<K1, K2, V>> getDataListKey2(K2 key2){
         ArrayList<Triplets<K1, K2, V>> retList = new ArrayList<>();
         for(Triplets<K1, K2, V> triplets:dataList){
-            if(key2.equals(triplets.getCenterValue())){
+            if(triplets.getCenterValue().equals(key2)){
                 retList.add(triplets);
             }
         }

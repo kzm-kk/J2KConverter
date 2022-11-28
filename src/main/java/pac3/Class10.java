@@ -2,9 +2,13 @@ package pac3;
 
 import pac4.pac.TrialClass;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Class10 {
     int num = 0, num2 = 0;
     String str = null;
+    List<Integer> listInt = new ArrayList<>();
 
     public void func(){
         if(num > 0 || num ==0){
