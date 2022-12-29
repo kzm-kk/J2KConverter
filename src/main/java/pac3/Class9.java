@@ -34,4 +34,8 @@ public class Class9 extends Class8{
          }
         assert num > 0;
     }
+
+    public static class Class9_In{
+
+    }
 }

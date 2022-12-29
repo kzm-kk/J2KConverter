@@ -1,4 +1,5 @@
 import com.github.javaparser.Range;
+import com.github.javaparser.ast.type.Type;
 
 import java.util.ArrayDeque;
 
@@ -6,7 +7,7 @@ public class FieldInformation extends BaseInformation {
     //name:名前、type:型、dim:配列の深さなければ0、assign:代入の有無、nullable:nullになり得るか？ static:staticか否か
     //initializable:初期値の有無、formerRW:ReadとWriteどちらが先(former)か
     String name;
-    String type;
+    Type type;
     int dim;
     boolean assign;
     boolean nullable;
@@ -14,12 +15,14 @@ public class FieldInformation extends BaseInformation {
     String formerRW;
     boolean isAnonymous;
     boolean isLambda;
-    String valueType;
+    Type valueType;
+
+    boolean isConvertValueType;
 
 
-    public FieldInformation(String name, String structure, String pathDir, String type, int dim,
+    public FieldInformation(String name, String structure, String pathDir, Type type, int dim,
                             boolean assign, boolean nullable, boolean isStatic, boolean isKotlinPrivate,
-                            boolean initializable, String valueType, String formerRW, Range range, ArrayDeque<Range> rangeStructure){
+                            boolean initializable, Type valueType, String formerRW, Range range, ArrayDeque<Range> rangeStructure){
         super(structure, pathDir, range, rangeStructure, isStatic, isKotlinPrivate);
         this.name = name;
         this.type = type;
@@ -31,10 +34,11 @@ public class FieldInformation extends BaseInformation {
         this.formerRW = formerRW;
         this.isAnonymous = false;
         this.isLambda = false;
+        this.isConvertValueType = false;
     }
 
-    public FieldInformation(String name, String structure, String pathDir, String type, int dim,
-                            boolean assign, boolean nullable, boolean initializable, String valueType,
+    public FieldInformation(String name, String structure, String pathDir, Type type, int dim,
+                            boolean assign, boolean nullable, boolean initializable, Type valueType,
                             String formerRW, Range range, ArrayDeque<Range> rangeStructure){
         this(name, structure, pathDir, type, dim, assign, nullable,
                 false, false, initializable, valueType, formerRW, range, rangeStructure);

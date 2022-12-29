@@ -36,7 +36,7 @@ Node
 ┃　┣━AssignExpr(代入記述)
 ┃　┣━BinaryExpr(演算・算術記号の入った記述)
 ┃　┣━CastExpr(キャスト記述)
-┃　┣━ClassExpr
+┃　┣━ClassExpr(呼び出しの際のXXX.classの文言)
 ┃　┣━ConditionalExpr(三項演算子)
 ┃　┣━EnclosedExpr(かっこ)
 ┃　┣━FieldAccessExpr(フィールドアクセス記述)

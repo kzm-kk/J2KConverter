@@ -1,19 +1,20 @@
 import com.github.javaparser.Range;
+import com.github.javaparser.ast.type.Type;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 
 public class ClassInformation extends BlockInformation {
-    String classEx;
-    ArrayList<String> classIm;
+    Type classEx;
+    ArrayList<Type> classIm;
     boolean isEnum;
     ArrayList<MethodInformation> memoryM = new ArrayList<>();
     boolean isContainStatic = false;
 
 
     public ClassInformation(String name, String kind, String structure, String pathDir,
-                            Range range, ArrayDeque<Range> rangeStructure, String classEx,
-                            ArrayList<String> classIm, boolean isEnum, boolean isStatic,
+                            Range range, ArrayDeque<Range> rangeStructure, Type classEx,
+                            ArrayList<Type> classIm, boolean isEnum, boolean isStatic,
                             boolean isKotlinPrivate){
         super(name, kind, isStatic, isKotlinPrivate, structure, pathDir, range, rangeStructure);
         this.range = range;
@@ -25,7 +26,7 @@ public class ClassInformation extends BlockInformation {
     public ClassInformation(String name, String kind, String structure, String pathDir,
                             Range range, ArrayDeque<Range> rangeStructure, boolean isEnum,
                             boolean isStatic, boolean isKotlinPrivate){
-        this(name, kind, structure, pathDir, range, rangeStructure, "", new ArrayList<>(), isEnum, isStatic, isKotlinPrivate);
+        this(name, kind, structure, pathDir, range, rangeStructure, null, new ArrayList<>(), isEnum, isStatic, isKotlinPrivate);
 
     }
 

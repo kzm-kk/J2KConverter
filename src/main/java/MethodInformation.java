@@ -1,4 +1,5 @@
 import com.github.javaparser.Range;
+import com.github.javaparser.ast.type.Type;
 
 import java.util.ArrayDeque;
 
@@ -17,11 +18,11 @@ public class MethodInformation extends BlockInformation {
     String accessField;
     int lines;
     boolean nullable;
-    String type;
+    Type type;
 
     public MethodInformation(String name, String structure, String pathDir, boolean isStatic,
                              boolean isKotlinPrivate, boolean access, boolean fix, String accessField, int lines,
-                             boolean nullable, String type, Range range, ArrayDeque<Range> rangeStructure){
+                             boolean nullable, Type type, Range range, ArrayDeque<Range> rangeStructure){
         super(name, "Method", isStatic, isKotlinPrivate, structure, pathDir, range, rangeStructure);
         this.access = access;
         this.fix = fix;

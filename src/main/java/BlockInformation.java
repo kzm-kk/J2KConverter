@@ -1,6 +1,7 @@
 import com.github.javaparser.Range;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.type.Type;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ public class BlockInformation extends BaseInformation {
     String kind;
     HashMap<String, FieldInformation> memoryF = new HashMap<>();
     TwinKeyDataList<String, Range, BlockInformation> memoryB = new TwinKeyDataList<>();
-    String[] paramTypes;
+    Type[] paramTypes;
 
     public BlockInformation(String name, String kind, boolean isStatic, boolean isKotlinPrivate,
                             String structure, String pathDir, Range range, ArrayDeque<Range> rangeStructure){
@@ -35,9 +36,9 @@ public class BlockInformation extends BaseInformation {
 
     public void setParamTypes(NodeList<Parameter> parameters){
         int size = parameters.size();
-        paramTypes = new String[size];
+        paramTypes = new Type[size];
         for(int i = 0; i < size ;i++){
-            paramTypes[i] = parameters.get(i).getTypeAsString();
+            paramTypes[i] = parameters.get(i).getType();
         }
     }
 

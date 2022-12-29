@@ -65,4 +65,8 @@ public class Class8 {
         Class8 t = new Class8("");
         t.outerMethod();
     }
+
+    public class Class8_In{
+
+    }
 }

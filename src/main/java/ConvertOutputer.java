@@ -7,10 +7,28 @@ public class ConvertOutputer {
 
     public static void ConvertAction(String rootPath, String path){
         try{
-            CreateDir(rootPath + convertDirName);
-            System.setOut(new PrintStream(ConvertOutputer.CreateConvertFile(rootPath, path)));
+            String createPath = rootPath + "/" + convertDirName;
+            createPath = createPath.replace("//", "/");
+            CreateDir(createPath);
+            String[] dirPathTmp = path.replace(rootPath, "").split("/");
+            StringBuilder sb = new StringBuilder(rootPath);
+            StringBuilder sbConvert = new StringBuilder(createPath);
+            for(String tmp:dirPathTmp){
+                sb.append("/" + tmp);
+                sbConvert.append("/" + tmp);
+                File file = new File(sb.toString());
+                if(file.isDirectory())CreateDir(sbConvert.toString());
+                else if(file.isFile()){
+                    if(file.getName().endsWith(".java"))
+                        System.setOut(new PrintStream(ConvertOutputer.CreateConvertFile(rootPath, path)));
+                }else{
+                    System.out.println("can't making:" + sbConvert);
+                }
+            }
+            //System.setOut(new PrintStream(ConvertOutputer.CreateConvertFile(rootPath, path)));
         }catch (IOException e){
             System.out.println("convert failed:" + e.getMessage());
+            System.out.println(rootPath + convertDirName);
         }
     }
 
@@ -19,16 +37,17 @@ public class ConvertOutputer {
         File file = new File(path);
         if(!file.exists()){//ディレクトリが存在しない時
             file.mkdir();
-            System.out.println("directory created");
         } else {//ディレクトリが既にある時
-            //System.out.println("directory already exist");
+
         }
     }
 
     public static FileOutputStream CreateConvertFile(String rootPath, String path) throws IOException {
-        String underConvertPath = path.replace(rootPath, rootPath + convertDirName);
-        String createPath = underConvertPath.replace(".java",  ".kt");
-        File file = new File(createPath);
+        String createPath = rootPath + "/" + convertDirName;
+        createPath = createPath.replace("//", "/");
+        String underConvertPath = path.replace(rootPath, createPath);
+        String createFilePath = underConvertPath.replace(".java",  ".kt");
+        File file = new File(createFilePath);
         if(!file.exists()) file.createNewFile();
         FileOutputStream fos = new FileOutputStream(file);
         return fos;

@@ -300,20 +300,69 @@ if文の変換時に起きていたvisitorの設定ミスを修正
 importの記述からファイルの場所を特定する機能を追加
 2022/11/25
 UnaryExprに含まれる符号付きの数字の変換に関して、Unaryに符号かどうかを判断する変数isSignを追加
-何も書いてない(EmptyStmt)記述に対し、akeBlock, InBlockにEmptyStmtの変換を追加(何もはいってないブロックを出力)
+何も書いてない(EmptyStmt)記述に対し、MakeBlock, InBlockにEmptyStmtの変換を追加(何もはいってないブロックを出力)
 スーパークラスとサブクラスの関係を明記する(isOpen)⇨同一名が複数あるパターンは未対応
 クラスを直接参照する時の扱い⇨同一ファイルのみ可能にする
 2022/11/28
 ver0.8開発完了
 ラムダ式に関する変換機能追加の準備
 ver0.9開発開始
+2022/11/29
+ObjectCreationExprの変換アルゴリズムを変更
+LambdaExprの変換アルゴリズムを変更
+BlockInformationのparamTypesとFieldInformation、MethodInformationのTypeの型をそれぞれStringからTypeに変更
+BlockStmtの変換アルゴリズムを変更
+foreachStmtの情報解析システムを実装、伴って変換システムのアルゴリズムを変更
+2022/12/05
+情報解析プログラムのうち、LambdaExprやObjectCreationExpr内のrangeやrangeStructureについての扱いを修正
+ディレクトリ、ファイルを作成する仕組みを持つConvertOutputerの修正
+GoogleSamplesプログラムのコンバートによる出力確認作業開始
+2022/12/06
+プログラムが6個以下のGoogleSamplesプログラムのコンバート
+2022/12/09
+volatile修飾子、多重代入、androidにおけるリソースid参照、equalsIgnoreCaseに対応
+非null値アサーション演算子をつける基準を変更
+extends、implementsのクラスの変換アルゴリズムを少し変更
+AssignVisitorの変数typeの型をStringからTypeに変更
+2022/12/15
+GoogleSamplesプログラムのコンバート範囲を9個以下に変更
+非null値アサーション演算子をつける基準を変更
+2022/12/18
+変数の情報参照の際の仕組みを少し変更
+2022/12/19
+情報解析の関数analysisの引数を変更(想定した範囲の解析が出来ていなかったため)
+primitive型のデフォルトの型をnon-nullに変更
+2022/12/20
+配列のサイズを確認する変数lengthの変換に対応
+ArrayCreationLevelの正しい解析を実装
+上記に伴いArrayCreationExprの変換アルゴリズムを変更、変換用再帰関数ArrayConverter実装
+2022/12/21
+Javaの特定の関数がKotlinでは変数扱いになる変換に対応
+GoogleSamplesプログラムのコンバート範囲を15個以下に変更
+MethodReferenceExprの変換に対応
+ThisExprに詳細な変換機能追加
+AssignVisitorにAssignExprの変換機能を追加
+2022/12/26
+Supporterのtype, typeDef変数の型をTypeに変更
+companionの出力システム実装
+変数と値の型違いへの対応出力実装
+2022/12/27
+ラッパークラスのtoString()コンバートに対応
+Stringのjoin関数のコンバート対応
+import文の出力方法を少し変更
+リテラル出力の際の型違い出力機能を一時的にオミット
+多重代入の情報収集機能をSupporterに追加
+2022/12/28
+評価用のGoogleSamplesプロジェクトを一度初期化(評価用の修正をしすぎたため)
+キャストの変換システムを修正
+プリミティブ型と判断された変数への後置演算子出力をしないように修正
 
-11/25以降の話
-SAMで記述されたラムダ式や匿名クラスの扱い
-
+2022/12/21現状分析
+60行ほどのプログラムなら全くコンパイルエラーがでないこともある
+それ以上だと何かしらある
+主に型違いのエラーが多発(といってもJavaで許されていた書き方が出来ないか、情報が足りずにAny型にしたせい)
 
 今後の話
-もう一度全体の変換をする⇨ver0.9に
 
 同じクラス名の優先度
 
