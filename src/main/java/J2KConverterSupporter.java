@@ -20,6 +20,7 @@ import java.util.*;
 public class J2KConverterSupporter {
     public static String pathAbs = "";
     public static String pathDir = "";
+    public static boolean isOrderCheck = false;
 
     public static void main(String[] args) throws IOException {
         DataStore.init();
@@ -61,13 +62,12 @@ public class J2KConverterSupporter {
                 ClassTemporaryStore CTS = triplets.getRightValue();
                 ArrayDeque<Range> rangeStructure = CTS.rangeStructure.clone();
                 rangeStructure.add(CTS.range);
-                System.out.println("analysis class:" + CTS.name);
-                System.out.println("structure:" + CTS.blockStructure);
-                System.out.println("range:" + CTS.rangeStructure.clone());
 
                 ClassInformation CI = DataStore.memoryClass.getData(pathAbs, CTS.name);
                 extendCheck(pathAbs, CI);
                 CI = DataStore.memoryClass.getData(pathAbs, CTS.name);
+
+                isOrderCheck = true;
 
                 for(FieldDeclaration fd:CTS.listFD){
                     FieldVisitor fieldVisitor = new FieldVisitor(CTS.name, pathAbs, CTS.blockStructure, rangeStructure, CI);
@@ -102,11 +102,13 @@ public class J2KConverterSupporter {
                     CI = (ClassInformation) constructorVisitor.getBIAfterAnalysis();
                 }
 
+                isOrderCheck = false;
                 for (MethodDeclaration md : CTS.listMD) {
                     MethodSecondVisitor methodVisitor = new MethodSecondVisitor(CTS.name, pathAbs, CTS.blockStructure, rangeStructure, CI);
                     md.accept(methodVisitor, null);
                     CI = (ClassInformation) methodVisitor.getBIAfterAnalysis();
                 }
+
 
                 DataStore.memoryClass.setData(pathAbs, CTS.name, CI);
             }
@@ -119,7 +121,7 @@ public class J2KConverterSupporter {
             for (String pathAbs : DataStore.memoryPathAbs.get(pathDir)) {
                 for (Triplets<String, String, ClassInformation> triplets : DataStore.memoryClass.getDataListKey1(pathAbs)) {
                     String classname = triplets.getRightValue().name;
-                    //if(!classname.equals("Class7")) continue;//debug
+                    if(!classname.equals("PeerConnectionClient")) continue;//debug
                     String kind = triplets.getRightValue().kind;
                     boolean isStatic = triplets.getRightValue().isStatic;
                     boolean isEnum = triplets.getRightValue().isEnum;
@@ -173,6 +175,8 @@ public class J2KConverterSupporter {
                 + " initializable:" + fd.initializable + " formerRW:" + fd.formerRW);
         System.out.println("KotlinPrivate:" + fd.isKotlinPrivate);
         System.out.println("isTypeValue:" + fd.isConvertValueType);
+        System.out.println("isOpen:" + fd.isOpen);
+        System.out.println("isOverride:" + fd.isOverride);
         System.out.println("definition:" + fd.blockStructure);
         System.out.println("range:" + fd.range);
         System.out.println("rangeIN:" + fd.rangeStructure.clone());
@@ -215,10 +219,18 @@ public class J2KConverterSupporter {
             ArrayList<String> arrayTmp = DataStore.memoryPathAbs.get(searchDirPath);
             if(arrayTmp != null) {
                 for (String path : arrayTmp) {
-                    String searchFullPath = searchDirPath + "/" + identifier + ".java";
+                    String searchFullPath = searchDirPath+ "/" + identifier + ".java";
                     if (path.equals(searchFullPath)) {
                         DataStore.memoryClassLibrary.put(ID.getNameAsString(), searchFullPath);
+                    }else if (path.equals(searchDirPath + ".java")) {
+                        if (DataStore.memoryClass.getData(searchDirPath + ".java", identifier) != null) {
+                            DataStore.memoryClassLibrary.put(ID.getNameAsString(), searchDirPath + ".java");
+                        }
                     }
+                }
+            } else {
+                if (DataStore.memoryClass.getData(searchDirPath + ".java", identifier) != null) {
+                    DataStore.memoryClassLibrary.put(ID.getNameAsString(), searchDirPath + ".java");
                 }
             }
 
@@ -348,6 +360,9 @@ public class J2KConverterSupporter {
 
         @Override
         public void visit(EnumDeclaration md, Void arg){
+            ClassInformation CI = DataStore.memoryClass.getData(pathAbs, classname);
+            if(!CI.isContainStatic)CI.isContainStatic = md.isStatic();
+            DataStore.memoryClass.setData(pathAbs, classname, CI);
 
             FirstVisitor visitor = new FirstVisitor(this.classname, this.structure, this.rangeStructure);
             md.accept(visitor, null);
@@ -385,7 +400,7 @@ public class J2KConverterSupporter {
             boolean isKotlinPrivate = false;
             int dim = 0;
             boolean assign = false;
-            boolean nullable = false;
+            boolean nullable = true;
             boolean initializable = true;
             String formerRW = "";
             String structureThis = structure + "/" + fieldname;
@@ -395,7 +410,7 @@ public class J2KConverterSupporter {
                 //formerRW = "R";
             } else {
                 formerRW = "W";
-                ValueInitialVisitor visitor = new ValueInitialVisitor(classname, fieldname, range, rangeStructure, structure);
+                ValueInitialVisitor visitor = new ValueInitialVisitor(classname, fieldname, range, rangeStructure, structureThis);
                 md.getInitializer().get().accept(visitor, null);
                 valueType = visitor.getTypeDef();
                 
@@ -504,7 +519,6 @@ public class J2KConverterSupporter {
             ClassInformation CI = DataStore.memoryClass.getData(pathAbs, classname);
             if(!CI.isContainStatic)CI.isContainStatic = isStatic;
             if (structure.equals(CI.blockStructure)){
-                CI.setMemoryM(MI);
                 CI.setMemory(MI);
                 DataStore.memoryClass.setData(pathAbs, classname, CI);
             } else {
@@ -652,19 +666,18 @@ public class J2KConverterSupporter {
             Range range = md.getRange().get();
             int dim = 0;
             boolean assign = false;
-            boolean nullable = false;
+            boolean nullable = true;
             boolean initializable = true;
             String formerRW = "";
             String structureThis = structure + "/" + fieldname;
 
             if(md.getInitializer().isEmpty()) {
                 assign = true;
-                nullable = true;
                 initializable = false;
                 formerRW = "R";
             } else {
                 formerRW = "W";
-                ValueInitialVisitor visitor = new ValueInitialVisitor(classname, fieldname, range, rangeStructure, structure);
+                ValueInitialVisitor visitor = new ValueInitialVisitor(classname, fieldname, range, rangeStructure, structureThis);
                 md.getInitializer().get().accept(visitor, null);
                 valueType = visitor.getTypeDef();
                 
@@ -696,7 +709,7 @@ public class J2KConverterSupporter {
             Type type = md.getType();
             int dim = 0;
             boolean assign = false;
-            boolean nullable = false;
+            boolean nullable = true;
             boolean initializable = true;
             String formerRW = "W";
 
@@ -723,6 +736,15 @@ public class J2KConverterSupporter {
         @Override
         public void visit(MethodCallExpr md, Void arg){
             ValueInitialVisitor visitor = new ValueInitialVisitor(classname, md.getNameAsString(), range, rangeStructure, structure);
+            md.accept(visitor, null);
+            for (BlockInformation BILow : visitor.getBILower()) {
+                BIUpperStore.add(BILow);
+            }
+        }
+
+        @Override
+        public void visit(ObjectCreationExpr md, Void arg){
+            ValueInitialVisitor visitor = new ValueInitialVisitor(classname, md.getType().toString(), range, rangeStructure, structure);
             md.accept(visitor, null);
             for (BlockInformation BILow : visitor.getBILower()) {
                 BIUpperStore.add(BILow);
@@ -886,6 +908,56 @@ public class J2KConverterSupporter {
         }
 
         @Override
+        public void visit(TryStmt md, Void arg){
+            String structure = this.structure + "/Try";
+            Range range = md.getTryBlock().getRange().get();
+            ArrayDeque<Range> rangeStructure = this.rangeStructure.clone();
+            rangeStructure.add(range);
+
+            InBlockFirstVisitorS tryBlockVisitor = new InBlockFirstVisitorS(classname, methodname, range, rangeStructure, structure, paramList);
+            md.getTryBlock().accept(tryBlockVisitor, null);
+
+            BlockInformation BI = new BlockInformation("Try", "Try", structure, pathDir, range, this.rangeStructure);
+            BI.setMemoryF(tryBlockVisitor.getLocal());
+            for (BlockInformation BILow : tryBlockVisitor.getBILower()) {
+                BI.setMemory(BILow);
+            }
+            BIUpperStore.add(BI);
+
+            for (CatchClause catchClause : md.getCatchClauses()) {
+                structure = this.structure + "/Catch";
+                range = catchClause.getRange().get();
+                rangeStructure = this.rangeStructure.clone();
+                rangeStructure.add(range);
+
+                InBlockFirstVisitorS catchBlockVisitor = new InBlockFirstVisitorS(classname, methodname, range, rangeStructure, structure, paramList);
+                catchClause.accept(catchBlockVisitor, null);
+                BI = new BlockInformation("Catch", "Catch", structure, pathDir, range, this.rangeStructure);
+                BI.setMemoryF(catchBlockVisitor.getLocal());
+                for (BlockInformation BILow : catchBlockVisitor.getBILower()) {
+                    BI.setMemory(BILow);
+                }
+                BIUpperStore.add(BI);
+            }
+
+            if (md.getFinallyBlock().isPresent()) {
+                structure = this.structure + "/Finally";
+                range = md.getFinallyBlock().get().getRange().get();
+                rangeStructure = this.rangeStructure.clone();
+                rangeStructure.add(range);
+                InBlockFirstVisitorS finallyBlockVisitor = new InBlockFirstVisitorS(classname, methodname, range, rangeStructure, structure, paramList);
+                md.getFinallyBlock().get().accept(finallyBlockVisitor, null);
+
+                BI = new BlockInformation("Finally", "Finally", structure, pathDir, range, this.rangeStructure);
+                BI.setMemoryF(finallyBlockVisitor.getLocal());
+                for (BlockInformation BILow : finallyBlockVisitor.getBILower()) {
+                    BI.setMemory(BILow);
+                }
+                BIUpperStore.add(BI);
+            }
+        }
+
+        @Override
         public void visit(SwitchStmt md, Void arg){
             //switchのブロック文内部の確認
             String structure = this.structure + "/Switch";
@@ -926,6 +998,9 @@ public class J2KConverterSupporter {
 
         @Override
         public void visit(AssignExpr md, Void arg){
+            String structure = this.structure;
+            if(md.getValue().isObjectCreationExpr()) structure = this.structure + "/" + md.getTarget().toString();
+            structure = DataStore.structureChangeCheck(md.getValue(), this.structure, md.getTarget().toString());
             ValueInitialVisitor visitor = new ValueInitialVisitor(classname, methodname, range, rangeStructure, structure);
             md.getValue().accept(visitor, null);
             for (BlockInformation BILow : visitor.getBILower()) {
@@ -976,9 +1051,19 @@ public class J2KConverterSupporter {
 
         @Override
         public void visit(MethodCallExpr md, Void arg){
+            if(md.getScope().isPresent()){
+                ValueInitialVisitor visitor = new ValueInitialVisitor(classname, md.getNameAsString(), range, rangeStructure, structure);
+                md.getScope().get().accept(visitor, null);
+                for(BlockInformation BILow : visitor.getBILower()){
+                    BIUpperStore.add(BILow);
+                }
+            }
             if(md.getArguments().size() != 0){
                 for(Expression expression:md.getArguments()){
-                    ValueInitialVisitor visitor = new ValueInitialVisitor(classname, md.getNameAsString(), expression.getRange().get(), rangeStructure, structure);
+                    String structureThis = structure;
+                    if(expression.isObjectCreationExpr()) structureThis = structure + "/" + md.getNameAsString();
+                    structureThis = DataStore.structureChangeCheck(expression, this.structure, md.getNameAsString());
+                    ValueInitialVisitor visitor = new ValueInitialVisitor(classname, md.getNameAsString(), expression.getRange().get(), rangeStructure, structureThis);
                     expression.accept(visitor, null);
                     for(BlockInformation BILow : visitor.getBILower()){
                         BIUpperStore.add(BILow);
@@ -1049,7 +1134,10 @@ public class J2KConverterSupporter {
         public void visit(ObjectCreationExpr md, Void arg){
             valueType = md.getType();
             for(Expression expression:md.getArguments()) {
-                ValueInitialVisitor visitor = new ValueInitialVisitor(classname, contentsname, range, rangeStructure, structure);
+                String structureThis = this.structure;
+                if(expression.isObjectCreationExpr()) structureThis = structure + "/" + md.getType();
+                structureThis = DataStore.structureChangeCheck(expression, this.structure, md.getType().toString());
+                ValueInitialVisitor visitor = new ValueInitialVisitor(classname, md.getType().toString(), range, rangeStructure, structureThis);
                 expression.accept(visitor, null);
                 for(BlockInformation BILow : visitor.getBILower()){
                     BIUpperStore.add(BILow);
@@ -1058,11 +1146,11 @@ public class J2KConverterSupporter {
 
             //匿名クラスの解析
             if (md.getAnonymousClassBody().isPresent()) {
-                String structureThis = this.structure + "/" + contentsname;
+                String structureThis = this.structure + "/" + md.getType();
                 ArrayDeque<Range> rangeStructure = this.rangeStructure.clone();
                 Range range = md.getRange().get();
                 rangeStructure.add(range);
-                BlockInformation BI = new BlockInformation(contentsname, "AnonymousClass", structureThis, pathDir, range, this.rangeStructure);
+                BlockInformation BI = new BlockInformation(md.getType().toString(), "AnonymousClass", structureThis, pathDir, range, this.rangeStructure);
 
                 for (BodyDeclaration bd : md.getAnonymousClassBody().get()) {
                     if(bd.isFieldDeclaration()){
@@ -1188,21 +1276,23 @@ public class J2KConverterSupporter {
             boolean isKotlinPrivate = false;
             int dim = 0;
             boolean assign = false;
-            boolean nullable = false;
+            boolean nullable = true;
             boolean initializable = true;
             boolean isAnonymous = false;
             boolean isLambda = false;
+            boolean isFinal = false;
             String formerRW = "";
 
             if(md.getInitializer().isEmpty()) {
+                assign = true;
                 initializable = false;
                 //formerRW = "R";
             } else {
                 formerRW = "W";
-                AssignVisitorS targetVisitor = new AssignVisitorS(classname, pathAbs, fieldname, range, rangeStructure, structure, BI, BIUpper, false);
+                AssignVisitorS targetVisitor = new AssignVisitorS(classname, pathAbs, fieldname, range, rangeStructure, structure + "/" + fieldname, BI, BIUpper, false);
                 md.getInitializer().get().accept(targetVisitor, null);
                 valueType = targetVisitor.getTypeDef();
-                
+                nullable = targetVisitor.getIsReturnNull();
                 isAnonymous = targetVisitor.isAnonymousAnalysis();
                 isLambda = targetVisitor.isLambdaAnalysis();
                 BI = targetVisitor.getBIAfterAnalysis();
@@ -1218,22 +1308,25 @@ public class J2KConverterSupporter {
             }
 
             for(Modifier modifier:modifiers){
-                if(modifier.toString().equals("static ")) {
+                if(modifier.toString().startsWith("static")) {
                     if(!DataStore.memoryStatic.get(pathAbs))DataStore.memoryStatic.put(pathAbs, true);
                     isStatic = true;
-                    break;
                 } else if(modifier.toString().startsWith("private")){
                     isKotlinPrivate = true;
+                }else if(modifier.toString().startsWith("final")){
+                    isFinal = true;
                 }
             }
 
             FieldInformation FI = BI.getMemoryF().get(fieldname);
-            if(FI == null)
+            if(FI == null) {
                 FI = new FieldInformation(fieldname, structure + "/" + fieldname, pathDir,
                         md.getType(), dim, assign, nullable, isStatic, isKotlinPrivate, initializable,
                         valueType, formerRW, range, rangeStructure);
+            }
             FI.isAnonymous = isAnonymous;
             FI.isLambda = isLambda;
+            FI.nullable = nullable;
 
             if(valueType != null){
                 FI.isConvertValueType = typeChangeCheck(type, valueType);
@@ -1247,21 +1340,7 @@ public class J2KConverterSupporter {
 
             if(BI instanceof ClassInformation){
                 ClassInformation CITmp = (ClassInformation) BI;
-                ClassInformation CISuper = null;
-                if(CITmp.classEx != null) CISuper = DataStore.memoryClass.getData(pathAbs, CITmp.classEx.toString());
-                if(CISuper == null && CITmp.classEx != null){
-                    if(CITmp.classEx.isClassOrInterfaceType())
-                        CISuper = DataStore.memoryClass.getData(pathAbs, CITmp.classEx.asClassOrInterfaceType().getNameAsString());
-                }
-                if(CISuper != null) {
-                    if(CISuper.getMemoryF().get(fieldname) != null){
-                        FieldInformation fi = CISuper.getMemoryF().get(fieldname);
-                        fi.isOpen = true;
-                        CISuper.setMemoryF(fi);
-                        DataStore.memoryClass.setData(pathAbs, CISuper.name, CISuper);
-                        FI.isOverride = true;
-                    }
-                }
+                FI.isOverride = extendCheckField(fieldname, pathAbs, CITmp, isFinal) && !isFinal;
             }
 
             BI.setMemoryF(FI);
@@ -1302,7 +1381,7 @@ public class J2KConverterSupporter {
             this.structure = structure;
             this.rangeStructure = rangeStructure;
             this.BI = BI;
-            
+            paramList = new ArrayList<>();
         }
 
         public MethodSecondVisitor(String name, String pathAbs, String structure,
@@ -1311,6 +1390,7 @@ public class J2KConverterSupporter {
             this(name, pathAbs, structure, rangeStructure, BI);
             this.BIUpper = dequeBI.clone();
             isAnonymousAnalysis = flag;
+            paramList = new ArrayList<>();
         }
 
         @Override
@@ -1319,7 +1399,7 @@ public class J2KConverterSupporter {
             isAccessorCheckS = search_set(md);
             methodname = md.getNameAsString();
             Range range = md.getRange().get();
-
+            Type retType = md.getType();
 
             for(Modifier mod:md.getModifiers()){
                 if(mod.toString().equals("static ")) {
@@ -1337,16 +1417,19 @@ public class J2KConverterSupporter {
 
             boolean access = isAccessorCheckG || isAccessorCheckS;
 
+            NodeList<Parameter> parameters = md.getParameters();
+            Type[] types = DataStore.ParamToTypes(parameters);
+
             MethodInformation MI = (MethodInformation) this.BI.getMemoryData(structureThis, range);
             if(MI == null) MI = new MethodInformation(methodname, structureThis, pathDir, isStatic, md.isPrivate(), access, false, fieldname, numLine, false, md.getType(), range, this.rangeStructure);
 
             ArrayDeque<Range> rangeStructure = this.rangeStructure.clone();
             rangeStructure.add(range);
-            MI.setParamTypes(md.getParameters());
+            //MI.setParamTypes(md.getParameters());
 
             if(!isAnonymousAnalysis)BIUpper.add(this.BI);
 
-            for(Parameter param:md.getParameters()){
+            for(Parameter param:parameters){
                 paramList.add(param.getNameAsString());
                 InBlockSecondVisitorS visitor = new InBlockSecondVisitorS(classname, pathAbs,  methodname, range, rangeStructure, structureThis, isAccessorCheckG, isAccessorCheckS, MI, BIUpper, paramList);
                 param.accept(visitor, null);
@@ -1362,6 +1445,7 @@ public class J2KConverterSupporter {
                 isFixableG = visitor.getIsFixableG();
                 isFixableS = visitor.getIsFixableS();
                 MI.nullable = visitor.getIsReturnNull();
+                retType = visitor.getRetType();
                 if(visitor.getBIAfterAnalysis() instanceof MethodInformation)
                     MI = (MethodInformation) visitor.getBIAfterAnalysis();
                 BIUpper = visitor.getBIUpperAfterAnalysis();
@@ -1369,8 +1453,10 @@ public class J2KConverterSupporter {
 
             MI.fix = isFixableS||isFixableG;
             MI.access = access;
-
-
+            if(typeChangeCheck(md.getType(), retType)){
+                MI.returnType = retType;
+                MI.isConvertReturnType = true;
+            }
             /*ClassInformation CI = DataStore.memoryClass.getData(pathAbs, classname);
             if(!CI.isContainStatic)CI.isContainStatic = isStatic;
             if (structure.equals(CI.blockStructure)){
@@ -1381,6 +1467,13 @@ public class J2KConverterSupporter {
 
             if (this.BI instanceof ClassInformation) {
                 ((ClassInformation) this.BI).isContainStatic = md.isStatic() || ((ClassInformation) this.BI).isContainStatic;
+                if (md.getAnnotations().size() != 0) {
+                    for (int i = 0; i < md.getAnnotations().size(); i++) {
+                        if (md.getAnnotation(i).getNameAsString().equals("Override")) {
+                            MI.isOverride = extendCheckMethod(methodname, types, pathAbs, (ClassInformation) this.BI);
+                        }
+                    }
+                }
             }
             this.BI.setMemory(MI);
         }
@@ -1541,6 +1634,7 @@ public class J2KConverterSupporter {
         private boolean isFixableG = false;
         private boolean isFixableS = false;
         private boolean isReturnNull = false;
+        private Type retType = null;
         ArrayList<String> paramList = new ArrayList<>();
         private BlockInformation BI = null;
         private ArrayDeque<BlockInformation> BIUpper = new ArrayDeque<>();
@@ -1587,21 +1681,20 @@ public class J2KConverterSupporter {
             Range range = md.getRange().get();
             int dim = 0;
             boolean assign = false;
-            boolean nullable = false;
+            boolean nullable = true;
             boolean initializable = true;
             String formerRW = "";
 
             if(md.getInitializer().isEmpty()) {
                 assign = true;
-                nullable = true;
                 initializable = false;
                 formerRW = "R";
             } else {
                 formerRW = "W";
-                AssignVisitorS targetVisitor = new AssignVisitorS(classname, pathAbs, fieldname, range, rangeStructure, structure, BI, BIUpper, false);
+                AssignVisitorS targetVisitor = new AssignVisitorS(classname, pathAbs, fieldname, range, rangeStructure, structure + "/" + fieldname, BI, BIUpper, false);
                 md.getInitializer().get().accept(targetVisitor, null);
                 valueType = targetVisitor.getTypeDef();
-                
+                nullable = targetVisitor.getIsReturnNull();
                 BI = targetVisitor.getBIAfterAnalysis();
                 BIUpper = targetVisitor.getBIUpperAfterAnalysis();
             }
@@ -1616,10 +1709,10 @@ public class J2KConverterSupporter {
             }
 
             FieldInformation FI = BI.getMemoryF().get(fieldname);
-            if(FI == null)
+            if(FI == null) {
                 FI = new FieldInformation(fieldname, structure + "/" + fieldname, pathDir, md.getType(), dim, assign,
-                    nullable, initializable, valueType, formerRW, range, this.rangeStructure);
-
+                        nullable, initializable, valueType, formerRW, range, this.rangeStructure);
+            }
             if(valueType != null){
                 FI.isConvertValueType = typeChangeCheck(type, valueType);
                 if(FI.isConvertValueType) {
@@ -1640,7 +1733,7 @@ public class J2KConverterSupporter {
             Type type = md.getType();
             int dim = 0;
             boolean assign = false;
-            boolean nullable = false;
+            boolean nullable = true;
             boolean initializable = true;
             String formerRW = "W";
 
@@ -1671,10 +1764,12 @@ public class J2KConverterSupporter {
             md.accept(visitor, null);
             BI = visitor.getBIAfterAnalysis();
             BIUpper = visitor.getBIUpperAfterAnalysis();
+            setIsReturnNull(visitor.getIsReturnNull());
         }
 
         @Override
         public void visit(AssignExpr md, Void arg){
+            String structure = this.structure;
             String value = md.getValue().toString();
             String contents = methodname;
             boolean isParentAssign = md.getParentNode().get() instanceof AssignExpr;
@@ -1682,13 +1777,18 @@ public class J2KConverterSupporter {
             boolean isMultiAssign = !isParentAssign && isValueAssign;
 
             //式の右側の解析
-            if(md.getValue().isObjectCreationExpr()) contents = md.getTarget().toString();
+            if(md.getValue().isObjectCreationExpr()) {
+                //contents = md.getTarget().toString();
+                structure = structure + "/" + md.getTarget().toString();
+            }
+            structure = DataStore.structureChangeCheck(md.getValue(), this.structure, md.getTarget().toString());
             if(isMultiAssign){
-                InBlockSecondVisitorS valueVisitor = new InBlockSecondVisitorS(classname, pathAbs, methodname, range, rangeStructure, structure, isAccessorCheckG, isAccessorCheckS, BI, BIUpper, paramList);
+                InBlockSecondVisitorS valueVisitor = new InBlockSecondVisitorS(classname, pathAbs, contents, range, rangeStructure, structure, isAccessorCheckG, isAccessorCheckS, BI, BIUpper, paramList);
                 md.getValue().accept(valueVisitor, null);
                 BI = valueVisitor.getBIAfterAnalysis();
                 BIUpper = valueVisitor.getBIUpperAfterAnalysis();
             } else {
+                //sus point
                 AssignVisitorS valueVisitor = new AssignVisitorS(classname, pathAbs, contents, this.range, rangeStructure, structure, isAccessorCheckG, isAccessorCheckS, BI, BIUpper, paramList, false);
                 md.getValue().accept(valueVisitor, null);
                 BI = valueVisitor.getBIAfterAnalysis();
@@ -1707,13 +1807,12 @@ public class J2KConverterSupporter {
 
             //代入以外のAssign文の場合、一度値を参照してから代入するので、先にReadのチェック
             if (!md.getOperator().toString().equals("ASSIGN")) {
-                AssignVisitorS targetVisitor = new AssignVisitorS(classname, pathAbs, methodname, this.range, rangeStructure, structure, isAccessorCheckG, isAccessorCheckS, BI, BIUpper, paramList, false, value);
+                AssignVisitorS targetVisitor = new AssignVisitorS(classname, pathAbs, contents, this.range, rangeStructure, structure, isAccessorCheckG, isAccessorCheckS, BI, BIUpper, paramList, false, value);
                 md.getTarget().accept(targetVisitor, null);
                 BI = targetVisitor.getBIAfterAnalysis();
                 BIUpper = targetVisitor.getBIUpperAfterAnalysis();
-
             }
-            AssignVisitorS targetVisitor = new AssignVisitorS(classname, pathAbs, methodname, this.range, rangeStructure, structure, isAccessorCheckG, isAccessorCheckS, BI, BIUpper, paramList, true, value);
+            AssignVisitorS targetVisitor = new AssignVisitorS(classname, pathAbs, contents, this.range, rangeStructure, structure, isAccessorCheckG, isAccessorCheckS, BI, BIUpper, paramList, true, value);
             md.getTarget().accept(targetVisitor, null);
             BI = targetVisitor.getBIAfterAnalysis();
             BIUpper = targetVisitor.getBIUpperAfterAnalysis();
@@ -1728,7 +1827,8 @@ public class J2KConverterSupporter {
                 md.getExpression().get().accept(visitor, null);
                 isFixableG = visitor.getIsFixableG();
                 fieldname = visitor.getFieldname();
-                isReturnNull = visitor.getIsReturnNull();
+                setIsReturnNull(visitor.getIsReturnNull());
+                retType = visitor.getTypeDef();
                 BI = visitor.getBIAfterAnalysis();
                 BIUpper = visitor.getBIUpperAfterAnalysis();
             }
@@ -1742,6 +1842,17 @@ public class J2KConverterSupporter {
             md.accept(visitor, null);
             BI = visitor.getBIAfterAnalysis();
             BIUpper = visitor.getBIUpperAfterAnalysis();
+            setIsReturnNull(visitor.getIsReturnNull());
+        }
+
+        @Override
+        public void visit(ObjectCreationExpr md, Void arg){
+            //ここでは何もせず、visitorに明け渡す
+            AssignVisitorS visitor = new AssignVisitorS(classname, pathAbs, methodname, this.range, rangeStructure, structure, isAccessorCheckG, isAccessorCheckS, BI, BIUpper, paramList, false);
+            md.accept(visitor, null);
+            BI = visitor.getBIAfterAnalysis();
+            BIUpper = visitor.getBIUpperAfterAnalysis();
+            setIsReturnNull(visitor.getIsReturnNull());
         }
 
         @Override
@@ -1766,6 +1877,7 @@ public class J2KConverterSupporter {
             md.getBody().accept(bodyVisitor, null);
             BI = bodyVisitor.getBIAfterAnalysis();
             BIUpper = bodyVisitor.getBIUpperAfterAnalysis();
+            setIsReturnNull(bodyVisitor.getIsReturnNull());
             this.BI = BIUpper.pollLast();
             this.BI.setMemory(BI);
         }
@@ -1792,6 +1904,7 @@ public class J2KConverterSupporter {
             md.getBody().accept(bodyVisitor, null);
             BI = bodyVisitor.getBIAfterAnalysis();
             BIUpper = bodyVisitor.getBIUpperAfterAnalysis();
+            setIsReturnNull(bodyVisitor.getIsReturnNull());
 
             this.BI = BIUpper.pollLast();
             this.BI.setMemory(BI);
@@ -1829,6 +1942,7 @@ public class J2KConverterSupporter {
             md.getBody().accept(bodyVisitor, null);
             BI = bodyVisitor.getBIAfterAnalysis();
             BIUpper = bodyVisitor.getBIUpperAfterAnalysis();
+            setIsReturnNull(bodyVisitor.getIsReturnNull());
 
             this.BI = BIUpper.pollLast();
             this.BI.setMemory(BI);
@@ -1883,6 +1997,7 @@ public class J2KConverterSupporter {
             md.getBody().accept(bodyVisitor, null);
             BI = bodyVisitor.getBIAfterAnalysis();
             BIUpper = bodyVisitor.getBIUpperAfterAnalysis();
+            setIsReturnNull(bodyVisitor.getIsReturnNull());
 
             this.BI = BIUpper.pollLast();
             this.BI.setMemory(BI);
@@ -1924,6 +2039,7 @@ public class J2KConverterSupporter {
             md.getBody().accept(bodyVisitor, null);
             BI = bodyVisitor.getBIAfterAnalysis();
             BIUpper = bodyVisitor.getBIUpperAfterAnalysis();
+            setIsReturnNull(bodyVisitor.getIsReturnNull());
 
             this.BI = BIUpper.pollLast();
             this.BI.setMemory(BI);
@@ -1950,6 +2066,7 @@ public class J2KConverterSupporter {
             md.getThenStmt().accept(thenBlockVisitor, null);
             BI = thenBlockVisitor.getBIAfterAnalysis();
             BIUpper = thenBlockVisitor.getBIUpperAfterAnalysis();
+            setIsReturnNull(thenBlockVisitor.getIsReturnNull());
 
             this.BI = BIUpper.pollLast();
             this.BI.setMemory(BI);
@@ -1976,6 +2093,7 @@ public class J2KConverterSupporter {
                 md.getElseStmt().get().accept(elseIfVisitor, null);
                 BI = elseIfVisitor.getBIAfterAnalysis();
                 BIUpper = elseIfVisitor.getBIUpperAfterAnalysis();
+                setIsReturnNull(elseIfVisitor.getIsReturnNull());
 
                 this.BI = BIUpper.pollLast();
                 this.BI.setMemory(BI);
@@ -1988,6 +2106,61 @@ public class J2KConverterSupporter {
                 DataStore.memoryClass.setData(pathAbs, classname, CI);
 
                  */
+            }
+        }
+
+        @Override
+        public void visit(TryStmt md, Void arg){
+            String structure = this.structure + "/Try";
+            Range range = md.getTryBlock().getRange().get();
+            ArrayDeque<Range> rangeStructure = this.rangeStructure.clone();
+            rangeStructure.add(range);
+
+            BlockInformation BI = this.BI.getMemoryData(structure, range);//new BlockInformation("Try", "Try", structure, pathDir, range, this.rangeStructure);
+            BIUpper.add(this.BI);
+
+            InBlockSecondVisitorS tryBlockVisitor = new InBlockSecondVisitorS(classname, pathAbs, methodname, range, rangeStructure, structure, isAccessorCheckG, isAccessorCheckS, BI, BIUpper, paramList);
+            md.getTryBlock().accept(tryBlockVisitor, null);
+            BI = tryBlockVisitor.getBIAfterAnalysis();
+            BIUpper = tryBlockVisitor.getBIUpperAfterAnalysis();
+            setIsReturnNull(tryBlockVisitor.getIsReturnNull());
+            this.BI = BIUpper.pollLast();
+            this.BI.setMemory(BI);
+
+            for (CatchClause catchClause : md.getCatchClauses()) {
+                structure = this.structure + "/Catch";
+                range = catchClause.getRange().get();
+                rangeStructure = this.rangeStructure.clone();
+                rangeStructure.add(range);
+
+                BI = this.BI.getMemoryData(structure, range);//new BlockInformation("Catch", "Catch", structure, pathDir, range, this.rangeStructure);
+                BIUpper.add(this.BI);
+
+                InBlockSecondVisitorS catchBlockVisitor = new InBlockSecondVisitorS(classname, pathAbs, methodname, range, rangeStructure, structure, isAccessorCheckG, isAccessorCheckS, BI, BIUpper, paramList);
+                catchClause.accept(catchBlockVisitor, null);
+                BI = catchBlockVisitor.getBIAfterAnalysis();
+                BIUpper = catchBlockVisitor.getBIUpperAfterAnalysis();
+                setIsReturnNull(catchBlockVisitor.getIsReturnNull());
+                this.BI = BIUpper.pollLast();
+                this.BI.setMemory(BI);
+            }
+
+            if (md.getFinallyBlock().isPresent()) {
+                structure = this.structure + "/Finally";
+                range = md.getFinallyBlock().get().getRange().get();
+                rangeStructure = this.rangeStructure.clone();
+                rangeStructure.add(range);
+
+                BI = this.BI.getMemoryData(structure, range);//new BlockInformation("Finally", "Finally", structure, pathDir, range, this.rangeStructure);
+                BIUpper.add(this.BI);
+
+                InBlockSecondVisitorS finallyBlockVisitor = new InBlockSecondVisitorS(classname, pathAbs, methodname, range, rangeStructure, structure, isAccessorCheckG, isAccessorCheckS, BI, BIUpper, paramList);
+                md.getFinallyBlock().get().accept(finallyBlockVisitor, null);
+                BI = finallyBlockVisitor.getBIAfterAnalysis();
+                BIUpper = finallyBlockVisitor.getBIUpperAfterAnalysis();
+                setIsReturnNull(finallyBlockVisitor.getIsReturnNull());
+                this.BI = BIUpper.pollLast();
+                this.BI.setMemory(BI);
             }
         }
 
@@ -2024,6 +2197,7 @@ public class J2KConverterSupporter {
                     statement.accept(statementVisitor, null);
                     BIEntry = statementVisitor.getBIAfterAnalysis();
                     BIUpper = statementVisitor.getBIUpperAfterAnalysis();
+                    setIsReturnNull(statementVisitor.getIsReturnNull());
                 }
                 BI = BIUpper.pollLast();
                 BI.setMemory(BIEntry);
@@ -2051,7 +2225,7 @@ public class J2KConverterSupporter {
             BIUpper = visitor.getBIUpperAfterAnalysis();
             isFixableG = visitor.getIsFixableG();
             fieldname = visitor.getFieldname();
-            isReturnNull = visitor.getIsReturnNull();
+            setIsReturnNull(visitor.getIsReturnNull());
         }
 
         @Override
@@ -2060,7 +2234,7 @@ public class J2KConverterSupporter {
             md.getStatement().accept(visitor, null);
             BI = visitor.getBIAfterAnalysis();
             BIUpper = visitor.getBIUpperAfterAnalysis();
-
+            setIsReturnNull(visitor.getIsReturnNull());
         }
 
         public String getFieldname(){
@@ -2077,6 +2251,14 @@ public class J2KConverterSupporter {
 
         public boolean getIsReturnNull(){
             return this.isReturnNull;
+        }
+        
+        public void setIsReturnNull(boolean flag){
+            this.isReturnNull = this.isReturnNull || flag;
+        }
+
+        public Type getRetType(){
+            return this.retType;
         }
 
         public BlockInformation getBIAfterAnalysis(){
@@ -2253,11 +2435,30 @@ public class J2KConverterSupporter {
         }
 
         @Override
+        public void visit(AssignExpr md, Void arg){
+            //メソッド呼び出しの引数に使われているかどうかを確認
+            //ここでは何もせず、visitorに明け渡す
+            InBlockSecondVisitorS visitor = new InBlockSecondVisitorS(classname, pathAbs, contentsname, range, rangeStructure, structure, isAccessorCheckG, isAccessorCheckS, BI, BIUpper, paramList);
+            md.accept(visitor, null);
+            BI = visitor.getBIAfterAnalysis();
+            BIUpper = visitor.getBIUpperAfterAnalysis();
+        }
+
+        @Override
         public void visit(MethodCallExpr md, Void arg){
+            if(md.getScope().isPresent()){
+                AssignVisitorS visitor = new AssignVisitorS(classname, pathAbs, md.getNameAsString(), range, rangeStructure, structure, isAccessorCheckG, isAccessorCheckS, BI, BIUpper, paramList, false);
+                md.getScope().get().accept(visitor, null);
+                BI = visitor.getBIAfterAnalysis();
+                BIUpper = visitor.getBIUpperAfterAnalysis();
+            }
             //メソッド呼び出しの引数を確認
             if(md.getArguments().size() != 0){
                 for(Expression expression:md.getArguments()){
-                    AssignVisitorS visitor = new AssignVisitorS(classname, pathAbs, md.getNameAsString(), expression.getRange().get(), rangeStructure, structure, isAccessorCheckG, isAccessorCheckS, BI, BIUpper, paramList, false);
+                    String structureThis = this.structure;
+                    if(expression.isObjectCreationExpr()) structureThis = structure + "/" + md.getNameAsString();
+                    structureThis = DataStore.structureChangeCheck(expression, this.structure, md.getNameAsString());
+                    AssignVisitorS visitor = new AssignVisitorS(classname, pathAbs, md.getNameAsString(), expression.getRange().get(), rangeStructure, structureThis, isAccessorCheckG, isAccessorCheckS, BI, BIUpper, paramList, false);
                     expression.accept(visitor, null);
                     BI = visitor.getBIAfterAnalysis();
                     BIUpper = visitor.getBIUpperAfterAnalysis();
@@ -2273,7 +2474,10 @@ public class J2KConverterSupporter {
             //インスタンス生成に必要な引数の部分の解析
             if(md.getArguments().size() != 0){
                 for(Expression expression:md.getArguments()){
-                    AssignVisitorS visitor = new AssignVisitorS(classname, pathAbs, contentsname, range, rangeStructure, structure, isAccessorCheckG, isAccessorCheckS, BI, BIUpper, paramList, false);
+                    String structureThis = structure;
+                    if(expression.isObjectCreationExpr()) structureThis = structure + "/" + md.getType();
+                    structureThis = DataStore.structureChangeCheck(expression, this.structure, md.getType().toString());
+                    AssignVisitorS visitor = new AssignVisitorS(classname, pathAbs, md.getType().toString(), range, rangeStructure, structureThis, isAccessorCheckG, isAccessorCheckS, BI, BIUpper, paramList, false);
                     expression.accept(visitor, null);
                     BI = visitor.getBIAfterAnalysis();
                     BIUpper = visitor.getBIUpperAfterAnalysis();
@@ -2283,7 +2487,7 @@ public class J2KConverterSupporter {
             //匿名クラスの解析
             if (md.getAnonymousClassBody().isPresent()) {
                 isAnonymousAnalysis = true;
-                String structureThis = this.structure + "/" + contentsname;
+                String structureThis = this.structure + "/" + md.getType();
                 ArrayDeque<Range> rangeStructure = this.rangeStructure.clone();
                 Range range = md.getRange().get();
                 rangeStructure.add(range);
@@ -2381,15 +2585,14 @@ public class J2KConverterSupporter {
             String valName = md.getNameAsString();
             BlockInformation BI = this.BI;
             FieldInformation FI = BI.getMemoryF().get(valName);
-
             if(FI != null){
-                if(BI instanceof ClassInformation); //Do nothing
-                else {
+                if(BI instanceof ClassInformation){
+
+                }else {
                     if (DataStore.rangeDefinitionCheck(FI.range, md.getRange().get())) ;
                     else FI = null;
                 }
             }
-
             boolean isUpperCheck = false;
             ArrayDeque<BlockInformation> dequeBI = new ArrayDeque<>();
             while (FI == null){
@@ -2400,8 +2603,9 @@ public class J2KConverterSupporter {
                     FI = BI.getMemoryF().get(valName);
                     dequeBI.add(BI);
                     if(FI != null){
-                        if(BI instanceof ClassInformation);// Do nothing
-                        else {
+                        if(BI instanceof ClassInformation){
+
+                        }else {
                             if (DataStore.rangeDefinitionCheck(FI.range, md.getRange().get())) ;
                             else FI = null;
                         }
@@ -2409,13 +2613,24 @@ public class J2KConverterSupporter {
                 }
             }
             if(FI != null){
+                typeDef = FI.isConvertValueType ? FI.valueType :FI.type;
                 if(isWriteCheck) {
                     BI.setMemoryF(writeInfoUpdate(FI, nullCheckValue));
                 }
-                else BI.setMemoryF(readInfoUpdate(FI));
+                else {
+                    BI.setMemoryF(readInfoUpdate(FI));
+                }
             } else {
-                ClassOrInterfaceType typeTmp = new ClassOrInterfaceType(null, valName);
-                typeDef = typeTmp;
+                typeDef = new ClassOrInterfaceType(null, valName);
+                if(DataStore.memoryClass.getDataListKey2(valName) != null){
+                    for(Triplets<String, String, ClassInformation> triplets:DataStore.memoryClass.getDataListKey2(valName)){
+                        ClassInformation CI = triplets.getRightValue();
+                        if(CI.isKotlinPrivate) {
+                            CI.isKotlinPrivate = false;
+                            DataStore.memoryClass.setData(triplets.getLeftValue(), triplets.getCenterValue(), CI);
+                        }
+                    }
+                }
             }
             if(isUpperCheck){
                 if(FI != null){
@@ -2479,31 +2694,34 @@ public class J2KConverterSupporter {
                 AssignVisitorS visitor = new AssignVisitorS(classname, pathAbs, contentsname, this.range, rangeStructure, structure, isAccessorCheckG, isAccessorCheckS, BI, BIUpper, paramList, false, nullCheckValue);
                 md.getScope().accept(visitor, null);
                 Type typeTmp = visitor.getTypeDef();
-                if(typeTmp != null)classname = visitor.getTypeDef().toString();
-                Triplets<String, ClassInformation, FieldInformation> tripletsCF =
-                        searchDefinitionField(valName, classname, pathAbs, this.classname);
-                
-                if(tripletsCF == null && typeTmp != null){
-                    if(visitor.getTypeDef().isClassOrInterfaceType()) {
-                        tripletsCF = searchDefinitionField(valName, typeTmp.asClassOrInterfaceType().getNameAsString(), pathAbs, this.classname);
+                if(typeTmp != null){
+                    classname = visitor.getTypeDef().toString();
+                }
+
+                CI = searchDefinitionField(valName, classname, pathAbs);
+                if(CI == null && typeTmp != null){
+                    if(typeTmp.isClassOrInterfaceType()){
+                        CI = searchDefinitionField(valName, typeTmp.asClassOrInterfaceType().getNameAsString(), pathAbs);
                     }
                 }
-
-                //libraryの検索
-                if(tripletsCF == null){
+                if(CI == null){
                     String importStr = DataStore.searchImport(classname, pathAbs);
-                    tripletsCF = searchDefinitionField(valName, classname, DataStore.memoryClassLibrary.get(importStr), this.classname);
+                    CI = searchDefinitionField(valName, classname, DataStore.memoryClassLibrary.get(importStr));
                 }
 
-                if(tripletsCF != null) {
-                    CI = tripletsCF.getCenterValue();
-                    FI = tripletsCF.getRightValue();
-                }
-                if(FI != null) typeDef = FI.type;
                 if(CI != null) {
+                    FI = CI.getMemoryF().get(valName);
+                    if(FI != null) typeDef = FI.isConvertValueType ? FI.valueType :FI.type;
+
                     if (CI.isEnum) {
                         ClassOrInterfaceType typeNodeTmp = new ClassOrInterfaceType(null, classname);
                         typeDef = typeNodeTmp;
+                    }
+                } else {
+                    CI = DataStore.memoryClass.getData(pathAbs, classname);
+
+                    if(CI != null){
+                        if(CI.isEnum) typeDef = typeTmp;
                     }
                 }
             }
@@ -2511,10 +2729,12 @@ public class J2KConverterSupporter {
 
             if(FI != null){
                 if(FI.isKotlinPrivate){
-                    if(!flagThis) FI.isKotlinPrivate = false;
+                    if(!flagThis) {
+                        FI.isKotlinPrivate = false;
+                    }
                 }
                 if(isWriteCheck) {
-                    BI.setMemoryF(writeInfoUpdate(FI, nullCheckValue));
+                    CI.setMemoryF(writeInfoUpdate(FI, nullCheckValue));
 
                     if (isAccessorCheckS) {
                         for (String paramName : paramList) {
@@ -2524,9 +2744,8 @@ public class J2KConverterSupporter {
                             }
                         }
                     }
-                }
-                else {
-                    BI.setMemoryF(readInfoUpdate(FI));
+                } else {
+                    CI.setMemoryF(readInfoUpdate(FI));
 
                     if (isAccessorCheckG) {
                         isFixableG = true;
@@ -2534,16 +2753,26 @@ public class J2KConverterSupporter {
                     }
                 }
 
-                if(flagThis)BIUpper.addFirst(CI);
-                else if(flagSuper) DataStore.memoryClass.setData(CI.pathDir, CI.name, CI);
+                if(flagThis){
+                    BIUpper.addFirst(CI);
+                    typeDef = FI.type;
+                }
+                else if(flagSuper) {
+                    DataStore.memoryClass.setData(CI.pathDir, CI.name, CI);
+                    typeDef = FI.type;
+                } else {//別クラス
+                    DataStore.memoryClass.setData(CI.pathDir, CI.name, CI);
+                }
             } else {
-                if(flagThis)BIUpper.addFirst(CI);
+                if(flagThis){
+                    if(CI != null) BIUpper.addFirst(CI);
+                }
             }
         }
 
         @Override
         public void visit(NullLiteralExpr md, Void arg){
-            isReturnNull = true;
+            this.isReturnNull = true;
         }
 
         private FieldInformation readInfoUpdate(FieldInformation FI){
@@ -2567,7 +2796,7 @@ public class J2KConverterSupporter {
             FITmp.assign = true;
 
             if (FI.formerRW.equals("") && !FI.initializable) {
-                FITmp.formerRW = "W";
+                if(isOrderCheck)FITmp.formerRW = "W";
             }
 
             if (value.equals("null")) FITmp.nullable = true;
@@ -2614,20 +2843,18 @@ public class J2KConverterSupporter {
 
     }
 
-    public static Triplets<String, ClassInformation, FieldInformation> searchDefinitionField(String target, String defClass, String pathAbs, String classname){
+    public static ClassInformation searchDefinitionField(String target, String defClass, String pathAbs){
 
         //同一ファイル最上位、フィールド定義
         String pathDirThis = pathAbs;
         if(DataStore.memoryPathAbs.get(pathDirThis) != null) {
             for (String path : DataStore.memoryPathAbs.get(pathDirThis)) {
                 for (Triplets<String, String, ClassInformation> tripletsCI : DataStore.memoryClass.getDataListKey1(path)) {
-                    //自クラス、extends, implementは飛ばす
-                    if (tripletsCI.getCenterValue().equals(classname)) continue;
-                    else if (tripletsCI.getCenterValue().equals(defClass)) {
-                        for (String name : tripletsCI.getRightValue().getMemoryF().keySet()) {
+                    if (tripletsCI.getCenterValue().equals(defClass)) {
+                        ClassInformation CITmp = tripletsCI.getRightValue();
+                        for (String name : CITmp.getMemoryF().keySet()) {
                             if (name.equals(target)) {
-                                FieldInformation FI = tripletsCI.getRightValue().getMemoryF().get(name);
-                                return new Triplets(path, tripletsCI.rightValue, FI);
+                                return CITmp;
                             }
                         }
                     }
@@ -2642,10 +2869,12 @@ public class J2KConverterSupporter {
                 for(Triplets<String, String, ClassInformation> tripletsCI:DataStore.memoryClass.getDataListKey1(path)){
                     //自クラス、extends, implementは飛ばす
 
-                    for(String name:tripletsCI.getRightValue().getMemoryF().keySet()){
-                        if(name.equals(target)){
-                            FieldInformation FI = tripletsCI.getRightValue().getMemoryF().get(name);
-                            return new Triplets(path,tripletsCI.rightValue, FI);
+                    if (tripletsCI.getCenterValue().equals(defClass)) {
+                        ClassInformation CITmp = tripletsCI.getRightValue();
+                        for (String name : CITmp.getMemoryF().keySet()) {
+                            if (name.equals(target)) {
+                                return CITmp;
+                            }
                         }
                     }
                 }
@@ -2653,7 +2882,6 @@ public class J2KConverterSupporter {
         }
         return null;
     }
-
 
 
     //今探している範囲を含むスコープであるかどうかを確認する
@@ -2728,6 +2956,8 @@ public class J2KConverterSupporter {
     }
 
     public static boolean typeChangeCheck(Type type, Type valueType){
+        if(type == null) return false;
+        if(valueType == null) return false;
         if(type.isClassOrInterfaceType()){
             switch (type.asClassOrInterfaceType().getName().toString()){
                 case "List":
@@ -2757,15 +2987,125 @@ public class J2KConverterSupporter {
     private static void extendCheck(String pathAbs, ClassInformation CI){
         String pathSuper = pathDir + "/" + CI.classEx + ".java";
         ClassInformation CISuper = null;
-        if(CI.classEx != null)CISuper = DataStore.memoryClass.getData(pathSuper, CI.classEx.toString());
-        if(CISuper == null && CI.classEx != null){
-            if(CI.classEx.isClassOrInterfaceType())
-                CISuper = DataStore.memoryClass.getData(pathAbs, CI.classEx.asClassOrInterfaceType().getNameAsString());
+        boolean flag = CI.classEx != null ? CI.classEx.isClassOrInterfaceType() : false;
+        if(flag) {
+            flag = CI.classEx.asClassOrInterfaceType().getScope().isPresent();
         }
+        if(flag){
+            ClassOrInterfaceType type = CI.classEx.asClassOrInterfaceType();
+            CISuper = DataStore.memoryClass.getData(pathAbs, type.getNameAsString());
+            if (CISuper == null) {
+                if (DataStore.memoryClass.getDataListKey2(type.getNameAsString()) != null) {
+                    for (Triplets<String, String, ClassInformation> triplets : DataStore.memoryClass.getDataListKey2(type.getNameAsString())) {
+                        CISuper = triplets.getRightValue();
+                    }
+                }
+            }
+        } else {
+            if (CI.classEx != null) CISuper = DataStore.memoryClass.getData(pathSuper, CI.classEx.toString());
+            if (CISuper == null && CI.classEx != null) {
+                if (DataStore.memoryClass.getDataListKey2(CI.classEx.toString()) != null) {
+                    for (Triplets<String, String, ClassInformation> triplets : DataStore.memoryClass.getDataListKey2(CI.classEx.toString())) {
+                        CISuper = triplets.getRightValue();
+                    }
+                }
+            }
+        }
+
         if(CISuper != null) {
             CISuper.isOpen = true;
-            DataStore.memoryClass.setData(pathAbs, CISuper.name, CISuper);
+            DataStore.memoryClass.setData(CISuper.pathDir, CISuper.name, CISuper);
         }
+    }
+
+    private static boolean extendCheckField(String fieldName, String pathAbs, ClassInformation CI, boolean isFinal){
+        if(isFinal) return false;
+        String pathSuper = pathDir + "/" + CI.classEx + ".java";
+        ClassInformation CISuper = null;
+        boolean flag = CI.classEx != null ? CI.classEx.isClassOrInterfaceType() : false;
+        if(flag) {
+            flag = CI.classEx.asClassOrInterfaceType().getScope().isPresent();
+        }
+        if(flag){
+            ClassOrInterfaceType type = CI.classEx.asClassOrInterfaceType();
+            CISuper = DataStore.memoryClass.getData(pathAbs, type.getNameAsString());
+            if (CISuper == null) {
+                if (DataStore.memoryClass.getDataListKey2(type.getNameAsString()) != null) {
+                    for (Triplets<String, String, ClassInformation> triplets : DataStore.memoryClass.getDataListKey2(type.getNameAsString())) {
+                        CISuper = triplets.getRightValue();
+                    }
+                }
+            }
+        } else {
+            if (CI.classEx != null) CISuper = DataStore.memoryClass.getData(pathSuper, CI.classEx.toString());
+            if (CISuper == null && CI.classEx != null) {
+                if (DataStore.memoryClass.getDataListKey2(CI.classEx.toString()) != null) {
+                    for (Triplets<String, String, ClassInformation> triplets : DataStore.memoryClass.getDataListKey2(CI.classEx.toString())) {
+                        CISuper = triplets.getRightValue();
+                    }
+                }
+            }
+        }
+
+        if(CISuper != null) {
+            FieldInformation fi = CISuper.getMemoryF().get(fieldName);
+            if(fi != null) {
+                fi.isOpen = true;
+                CISuper.setMemoryF(fi);
+                DataStore.memoryClass.setData(CISuper.pathDir, CISuper.name, CISuper);
+                return fi.isOpen;
+            }
+
+        }
+        return false;
+    }
+
+    private static boolean extendCheckMethod(String methodName, Type[] types, String pathAbs, ClassInformation CI){
+        String pathSuper = pathDir + "/" + CI.classEx + ".java";
+        ClassInformation CISuper = null;
+        boolean flag = CI.classEx != null ? CI.classEx.isClassOrInterfaceType() : false;
+        if(flag) {
+            flag = CI.classEx.asClassOrInterfaceType().getScope().isPresent();
+        }
+        if(flag){
+            ClassOrInterfaceType type = CI.classEx.asClassOrInterfaceType();
+            CISuper = DataStore.memoryClass.getData(pathAbs, type.getNameAsString());
+            if (CISuper == null) {
+                if (DataStore.memoryClass.getDataListKey2(type.getNameAsString()) != null) {
+                    for (Triplets<String, String, ClassInformation> triplets : DataStore.memoryClass.getDataListKey2(type.getNameAsString())) {
+                        CISuper = triplets.getRightValue();
+                    }
+                }
+            }
+        } else {
+            if (CI.classEx != null) CISuper = DataStore.memoryClass.getData(pathSuper, CI.classEx.toString());
+            if (CISuper == null && CI.classEx != null) {
+                if (DataStore.memoryClass.getDataListKey2(CI.classEx.toString()) != null) {
+                    for (Triplets<String, String, ClassInformation> triplets : DataStore.memoryClass.getDataListKey2(CI.classEx.toString())) {
+                        CISuper = triplets.getRightValue();
+                    }
+                }
+            }
+        }
+
+        if(CISuper != null) {
+            String structure = CISuper.blockStructure + "/" + methodName;
+            if(CISuper.getMemoryKind("Method") != null){
+                ArrayList<Triplets<String, Range, BlockInformation>> arrayList = CISuper.getMemoryKind("Method");
+                for(Triplets<String, Range, BlockInformation> triplets:arrayList){
+                    if(triplets.getLeftValue().equals(structure)){
+                        MethodInformation MI = (MethodInformation) triplets.getRightValue();
+                        if(DataStore.CheckMethod(types, MI)) {
+                            MI.isOpen = true;
+                            CISuper.setMemory(MI);
+                            DataStore.memoryClass.setData(CISuper.pathDir, CISuper.name, CISuper);
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     private static void pathLink(String pathAbs, String pathDir){

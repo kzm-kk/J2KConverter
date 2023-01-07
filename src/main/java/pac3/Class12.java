@@ -18,6 +18,7 @@ public class Class12 {
                 return "lambda";
             }
         };
+
         if32 = (s) -> {return "lambda";};
 
         func();

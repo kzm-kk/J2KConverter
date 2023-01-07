@@ -11,7 +11,7 @@ public class ASTViewer {
     public static void main(String[] args) throws IOException {
 
         String pathname
-                = "/Users/kzm0308/Desktop/workspace/android-play-safetynet-master/client/java/SafetyNetSample/Application/src/main/java/com/example/android/common/logger/LogView.java";
+                = "/Users/kzm0308/IdeaProjects/J2KConverter/src/main/java/pac3/Class3.java";
         File file;
         if (args.length == 0)
             file = new File(pathname);

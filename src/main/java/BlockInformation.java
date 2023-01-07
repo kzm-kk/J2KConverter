@@ -33,7 +33,6 @@ public class BlockInformation extends BaseInformation {
     }
 
 
-
     public void setParamTypes(NodeList<Parameter> parameters){
         int size = parameters.size();
         paramTypes = new Type[size];

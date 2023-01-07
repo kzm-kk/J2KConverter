@@ -26,6 +26,9 @@ public class J2KConverter {
     public static String pathDir = "";
 
     private static boolean isNonNullFlag = false;
+    private static boolean isCustomAccessFlag = false;
+
+    private static DataStore.ConvertFor_i convertFor_i = new DataStore.ConvertFor_i();
 
     public static void setOutputer(String output) {
         Outputer.append(output);
@@ -45,6 +48,7 @@ public class J2KConverter {
             if (size > 1) {
                 for(int i = 1;i < size;i++){
                     if (args[i].equals("-nn")) isNonNullFlag = true;
+                    if (args[i].equals("-ca")) isCustomAccessFlag = true;
                 }
             }
         }
@@ -58,10 +62,12 @@ public class J2KConverter {
             CompilationUnit.Storage cus = cu.getStorage().get();
             pathAbs = cus.getPath().toString();
             pathDir = cus.getDirectory().toString();
-            VoidVisitor<?> visitor = new OutClassVisitor("", "", new ArrayDeque<>());
+            VoidVisitor<?> visitor = new OutClassVisitor("", "", new ArrayDeque<>(), false);
             cu.accept(visitor, null);
             OutputerStore.put(pathAbs, Outputer);
         }
+
+        System.out.println("Finish Convert Kotlin:" + path_root);
 
         for(String path:OutputerStore.keySet()){
             /*if(path.equals("/Users/kzm0308/IdeaProjects/J2KConverter/src/main/java/pac3/Class9.java")) {
@@ -80,13 +86,15 @@ public class J2KConverter {
         String indent = "";
         String packageName = "";
         String structure = "";
+        boolean isInner = false;
         ArrayDeque<Range> rangeStructure = new ArrayDeque<>();
         ArrayList<ImportDeclaration> ImportNameList = new ArrayList<>();
 
-        public OutClassVisitor(String indent, String structure, ArrayDeque<Range> rangeStructure) {
+        public OutClassVisitor(String indent, String structure, ArrayDeque<Range> rangeStructure, boolean isInner) {
             this.indent = indent;
             this.structure = structure;
             this.rangeStructure = rangeStructure;
+            this.isInner = isInner;
         }
 
         @Override
@@ -129,15 +137,16 @@ public class J2KConverter {
             if(DataStore.memoryImportAlreadyOutput.get(pathAbs));// Do nothing
             else {
                 for (ImportDeclaration importDeclaration : ImportNameList) {
-                    setOutputer("import " + importDeclaration.getName());
+                    setOutputer("import " + ImportMaker(importDeclaration.getName()));
                     if(importDeclaration.isAsterisk()) setOutputer(".*");
                     setOutputer("\n");
                 }
                 DataStore.memoryImportAlreadyOutput.put(pathAbs, true);
             }
+            setOutputer("\n");
             String mod = ModifierConvert(md.getModifiers(), CI);
             String openclass = CI.isOpen ? "open " : "";
-            String innerclass = md.isInnerClass() ? "inner " :"";
+            String innerclass = md.isInnerClass() && isInner ? "inner " :"";
             String CorI = "class";
             if (md.isInterface()) CorI = "interface";
             setOutputer(indent + mod + openclass + innerclass + CorI + " " + classname);
@@ -146,10 +155,15 @@ public class J2KConverter {
             if (md.getTypeParameters().size() != 0) {
                 isDia = true;
                 TypeParameter TP = md.getTypeParameter(0);
-                if (TP.getTypeBound().size() != 0)
+                TypeVisitor Tvisitor = new TypeVisitor(false);
+                TP.accept(Tvisitor, null);
+                typeParams = "<" +Tvisitor.getRetType() + ">";
+                /*if (TP.getTypeBound().size() != 0)
                     typeParams = "<" + TP.getNameAsString() + " : " + TP.getTypeBound().get(0) + "?" + ">";
                 else
                     typeParams = "<" + TP.getNameAsString() + ">";
+
+                 */
             }
             StringBuilder extend = new StringBuilder("");
             int sizeExIm = 0;
@@ -184,7 +198,6 @@ public class J2KConverter {
             Range range = md.getRange().get();
             rangeStructure.add(range);
 
-
             if (CI.isContainStatic) {
                 setOutputerln(indent + indent4 + "companion object{");
                 for (BodyDeclaration<?> bodyDeclaration : md.getMembers()) {
@@ -194,8 +207,8 @@ public class J2KConverter {
                 setOutputerln(indent + indent4 + "}");
             }
             for (BodyDeclaration<?> bodyDeclaration : md.getMembers()) {
-                InClassVisitor CompanionVisitor = new InClassVisitor(indent, md.getNameAsString(), structureThis, rangeStructure, false);
-                bodyDeclaration.accept(CompanionVisitor, null);
+                InClassVisitor nonCompanionVisitor = new InClassVisitor(indent, md.getNameAsString(), structureThis, rangeStructure, false);
+                bodyDeclaration.accept(nonCompanionVisitor, null);
             }
             setOutputerln(indent + "}");
 
@@ -206,7 +219,7 @@ public class J2KConverter {
             String classname = md.getNameAsString();
             ClassInformation CI = DataStore.memoryClass.getData(pathAbs, classname);
             String mod = ModifierConvert(md.getModifiers(), CI);
-            setOutputerln(indent + indent4 + mod + "enum class " + md.getNameAsString() + "{");
+            setOutputerln(indent + mod + "enum class " + md.getNameAsString() + "{");
             int size = md.getEntries().size();
             for (int i = 0; i < size; i++) {
                 if (i != 0) setOutputer(",\n");
@@ -218,13 +231,39 @@ public class J2KConverter {
             ArrayDeque<Range> rangeStructure = this.rangeStructure.clone();
             Range range = md.getRange().get();
             rangeStructure.add(range);
-            for (Node member : md.getMembers()) {
-                InClassVisitor visitor = new InClassVisitor(indent + indent4, md.getNameAsString(), structureThis, rangeStructure, false);
-                member.accept(visitor, null);
+
+            if (CI.isContainStatic) {
+                setOutputerln(indent + indent4 + "companion object{");
+                for (BodyDeclaration<?> bodyDeclaration : md.getMembers()) {
+                    InClassVisitor CompanionVisitor = new InClassVisitor(indent + indent4, md.getNameAsString(), structureThis, rangeStructure, true);
+                    bodyDeclaration.accept(CompanionVisitor, null);
+                }
+                setOutputerln(indent + indent4 + "}");
             }
-            setOutputerln(indent + indent4 + "}");
+            for (BodyDeclaration<?> bodyDeclaration : md.getMembers()) {
+                InClassVisitor nonCompanionVisitor = new InClassVisitor(indent, md.getNameAsString(), structureThis, rangeStructure, false);
+                bodyDeclaration.accept(nonCompanionVisitor, null);
+            }
+            setOutputerln(indent + "}");
         }
 
+    }
+
+    public static String ImportMaker(Name name){
+        String str = "";
+        if(name.getQualifier().isPresent()) str = ImportMaker(name.getQualifier().get()) + ".";
+        String CompanionStr = "";
+        if(!str.equals("")) {
+            String importStr = "";
+            if(DataStore.memoryClassLibrary.get(str + name.getIdentifier()) != null) {
+                importStr = DataStore.memoryClassLibrary.get(str + name.getIdentifier());
+            }
+            ClassInformation CI = DataStore.memoryClass.getData(importStr, name.getIdentifier());
+            if(CI != null){
+                if(CI.isStatic) CompanionStr = "Companion.";
+            }
+        }
+        return str + CompanionStr +  name.getIdentifier();
     }
 
     private static class InClassVisitor extends VoidVisitorAdapter<Void> {
@@ -259,7 +298,8 @@ public class J2KConverter {
             this.structure = structure;
             this.rangeStructure = rangeStructure;
             this.dequeBI = dequeBI.clone();
-            BI = dequeBI.peekLast();
+            BI = dequeBI.peekLast().getMemoryData(structure, range);
+            if(BI != null) this.dequeBI.add(BI);
             isAnonymous = true;
         }
 
@@ -273,7 +313,7 @@ public class J2KConverter {
                 }
             }
             if (isStatic == isCompanionConvert) {
-                OutClassVisitor visitor = new OutClassVisitor(indent + indent4, this.structure, this.rangeStructure);
+                OutClassVisitor visitor = new OutClassVisitor(indent + indent4, this.structure, this.rangeStructure, !md.isInterface());
                 md.accept(visitor, null);
             }
         }
@@ -284,9 +324,11 @@ public class J2KConverter {
             Range range = md.getRange().get();
             boolean flagConvert = false;
             MethodInformation MI = null;
-            if(isAnonymous) MI = (MethodInformation) BI.getMemoryData(structure + "/" + methodName, range);
+            if(isAnonymous) {
+                if(BI != null)MI = (MethodInformation) BI.getMemoryData(structure + "/" + methodName, range);
+            }
             else MI = (MethodInformation) CI.getMemoryData(CI.blockStructure + "/" + methodName, range);
-            if(isNonNullFlag) {
+            if(isCustomAccessFlag) {
                 if (MI != null) {
                     if(MI.access) flagConvert = true;
                     String targetField = MI.accessField;
@@ -342,6 +384,8 @@ public class J2KConverter {
                         setOutputerln(")");
                     }
                     String mod = ModifierConvert(md.getModifiers(), true, indent + indent4, MI, false);
+                    String openMod = "";
+                    if(MI != null) openMod = MI.isOpen ? "open " : "";
                     String override = "";
                     boolean isNonNull = false;
                     if (md.getAnnotations().size() != 0) {
@@ -356,18 +400,29 @@ public class J2KConverter {
                             }
                         }
                     }
-                    setOutputer(indent + indent4 + override + mod + "fun " + methodName + "(");
+                    setOutputer(indent + indent4 + openMod + override + mod + "fun " + methodName + "(");
                     for (int i = 0; i < md.getParameters().size(); i++) {
                         if (i != 0) setOutputer(", ");
-                        ParameterConvert(md.getParameter(i));
+                        boolean nonNullFlag = SFP_NC(methodName, i);
+                        ParameterConvert(md.getParameter(i), MI, nonNullFlag);
                     }
                     setOutputer(")");
                     if (!md.getType().isVoidType()) {
                         setOutputer(": ");
+                        Type type = md.getType();
+                        boolean nullable = true;
+                        if(MI != null){
+                            if(MI.isConvertReturnType) type = MI.returnType;
+                            nullable = MI.nullable;
+                        }
                         TypeVisitor Tvisitor = new TypeVisitor(false);
-                        md.getType().accept(Tvisitor, null);
-                        if(isNonNullFlag || isNonNull || md.getType().isPrimitiveType())
-                            setOutputer(Tvisitor.getRetType());
+                        type.accept(Tvisitor, null);
+                        if(md.getType().isPrimitiveType()) setOutputer(Tvisitor.getRetType());
+                        else if(isNonNull)setOutputer(Tvisitor.getRetType());
+                        else if(isNonNullFlag) {
+                            if(nullable)setOutputer(Tvisitor.getRetTypeNullable());
+                            else setOutputer(Tvisitor.getRetType());
+                        }
                         else setOutputer(Tvisitor.getRetTypeNullable());
                         /*if (!isNonNullFlag && md.getType().isPrimitiveType())
                             setOutputer(Tvisitor.getRetTypeNullable());
@@ -383,6 +438,28 @@ public class J2KConverter {
                     setOutputer("\n");
                 }
             }
+        }
+
+        // SFP_NC: Specific Function`s Paramter Non-null Compulsion
+        // 特定の関数の引数をnon-null化する(ライブラリなどの解析の代わりに使用)
+        private boolean SFP_NC(String methodName, int num){
+            return switch (methodName){
+                case "onRequestPermissionsResult" -> true;
+                case "onCreateViewHolder" -> true;
+                case "onBindViewHolder" -> true;
+                case "onScrolled" -> true;
+                case "getItemOffset" -> true;
+                case "onCreateView" -> num == 0;//最初の引数だけnon-null
+                case "onViewCreated" -> num == 0;//最初の引数だけnon-null
+                case "onCreate" -> false;
+                case "onCoWatchingStateChanged" -> true;
+                case "onCoDoingStateChanged" -> true;
+                case "onMeetingEnded" -> true;
+                case "onSaveInstanceState" -> true;
+                case "onFailure" -> true;
+                case "onUpdated" -> true;
+                default -> false;
+            };
         }
 
         @Override
@@ -418,16 +495,17 @@ public class J2KConverter {
                 }
             }
             if (isStatic == isCompanionConvert) {
-                setOutputer(indent + indent4 + "constructor(");
-                for (int i = 0; i < md.getParameters().size(); i++) {
-                    if (i != 0) setOutputer(", ");
-                    ParameterConvert(md.getParameter(i));
-                }
-                setOutputer(")");
                 String structureThis = this.structure + "/" + md.getNameAsString();
                 ArrayDeque<Range> rangeStructure = this.rangeStructure.clone();
                 Range range = md.getRange().get();
                 rangeStructure.add(range);
+                BlockInformation BI = CI != null ? CI.getMemoryData(structureThis, range) :null;
+                setOutputer(indent + indent4 + "constructor(");
+                for (int i = 0; i < md.getParameters().size(); i++) {
+                    if (i != 0) setOutputer(", ");
+                    ParameterConvert(md.getParameter(i),BI, false);
+                }
+                setOutputer(")");
                 VoidVisitor<?> visitor = new MakeBlockVisitor(classname, md.getNameAsString(), structureThis, range, rangeStructure, dequeBI, indent + indent4, indent + indent4);
                 md.accept(visitor, null);
                 setOutputer("\n");
@@ -444,7 +522,7 @@ public class J2KConverter {
                 }
             }
             if (isStatic == isCompanionConvert) {
-                OutClassVisitor visitor = new OutClassVisitor(indent, structure, rangeStructure);
+                OutClassVisitor visitor = new OutClassVisitor(indent, structure, rangeStructure, false);
                 md.accept(visitor, null);
             }
         }
@@ -592,6 +670,7 @@ public class J2KConverter {
 
             String mod = ModifierConvert(modifiers, FI, isLocal);
             boolean flagOver = false;
+            boolean isNullable = true;
 
             if(FI != null){
                 dim = FI.dim;
@@ -599,29 +678,54 @@ public class J2KConverter {
                 openMod = FI.isOpen ? "open " : "";
                 overrideMod = FI.isOverride ? "override " : "";
                 flagOver = FI.isOverride;
+                isNullable = FI.nullable;
                 if(FI.isConvertValueType) type = FI.valueType;
             }
             setOutputer(indent + openMod + overrideMod + mod);
             boolean isLambda = false;
             if (assign || isWhile || flagOver) dec = "var";
             else dec = "val";
-            setOutputer(dec + " " + name);
+            boolean isReservedWord = CheckReservedWord(name);
+            boolean isNonOutputDec = false;
+            if(name.equals("i")) {
+                isNonOutputDec = convertFor_i.UseCheck(pathAbs, structure, rangeStructure.clone());
+            }
+            if(isNonOutputDec) dec = "";
+            setOutputer(dec + " ");
+            if(isReservedWord) setOutputer("`");
+            setOutputer(name);
+            if(isReservedWord) setOutputer("`");
             TypeVisitor Tvisitor = new TypeVisitor(false);
             type.accept(Tvisitor, null);
             if (md.getInitializer().isPresent()) {
-                setOutputer(": ");
-                if(isNonNullFlag) setOutputer(Tvisitor.getRetType());
-                else {
-                    if(type.isPrimitiveType())setOutputer(Tvisitor.getRetType());
-                    else setOutputer(Tvisitor.getRetTypeNullable());
+                if(!isNonOutputDec) {
+                    setOutputer(": ");
+                    if (type.isPrimitiveType()) setOutputer(Tvisitor.getRetType());
+                    else {
+                        if(isNonNullFlag && !isNullable) setOutputer(Tvisitor.getRetType());
+                        else setOutputer(Tvisitor.getRetTypeNullable());
+                    }
                 }
                 setOutputer(" = ");
                 if (md.getInitializer().get().isLambdaExpr()) {
                     isLambda = true;
                 } else {
-                    AssignVisitor visitor =
-                            new AssignVisitor(classname, structure + "/" + name, md.getRange().get(), rangeStructure, dequeBI, indent, md.getType(), dim);
+                    //AssignVisitor visitor = new AssignVisitor(classname, name, structure + "/" + name, md.getRange().get(), rangeStructure, dequeBI, indent, md.getType(), dim);
+                    AssignVisitor_Literal visitor =
+                            new AssignVisitor_Literal(classname, name, structure + "/" + name, md.getRange().get(), rangeStructure, dequeBI, indent, md.getType(), dim);
+
                     md.getInitializer().get().accept(visitor, null);
+                    if(!(md.getInitializer().get() instanceof LiteralExpr) && !(md.getInitializer().get() instanceof CastExpr)) {
+                        boolean castFlag = false;
+                        if (visitor.getTypeDef() != null) {
+                            if (!visitor.getTypeDef().toString().equals(Tvisitor.getRetType()))
+                                castFlag = true;
+                        } else castFlag = true;
+
+                        if (castFlag) {
+                            if (type.isPrimitiveType()) setOutputer(" as " + Tvisitor.getRetType());
+                        }
+                    }
                 }
             } else {
                 if (type.isPrimitiveType()) {
@@ -641,7 +745,7 @@ public class J2KConverter {
                 } else {
                     setOutputer(": ");
 
-                    if(isNonNullFlag) setOutputer(Tvisitor.getRetType());
+                    if(isNonNullFlag && !isNullable) setOutputer(Tvisitor.getRetType());
                     else setOutputer(Tvisitor.getRetTypeNullable());
                     initial = initial.concat(" = null");
                 }
@@ -649,7 +753,7 @@ public class J2KConverter {
             setOutputer(initial);
             if (isLambda) {
                 AssignVisitor visitor
-                        = new AssignVisitor(classname,structure + "/" + name, md.getRange().get(), rangeStructure, dequeBI, indent, md.getType(), dim, FI);
+                        = new AssignVisitor(classname, name, structure + "/" + name, md.getRange().get(), rangeStructure, dequeBI, indent, md.getType(), dim, FI);
                 md.getInitializer().get().accept(visitor, null);
             }
             boolean flagGS = false;
@@ -767,7 +871,7 @@ public class J2KConverter {
             if (ECIS.getArguments().size() != 0) {
                 for (int i = 0; i < ECIS.getArguments().size(); i++) {
                     if (i != 0) setOutputer(",");
-                    AssignVisitor visitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent);
+                    AssignVisitor visitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent);
                     ECIS.getArgument(i).accept(visitor, null);
                 }
             }
@@ -868,28 +972,29 @@ public class J2KConverter {
         @Override
         public void visit(ContinueStmt md, Void arg) {
             setOutputer(indent);
-            AssignVisitor visitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent + indent4);
+            AssignVisitor visitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent + indent4);
             md.accept(visitor, null);
         }
 
         @Override
         public void visit(BreakStmt md, Void arg) {
             setOutputer(indent);
-            AssignVisitor visitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent + indent4);
+            AssignVisitor visitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent + indent4);
             md.accept(visitor, null);
         }
 
         @Override
         public void visit(ReturnStmt md, Void arg) {
             setOutputer(indent);
-            if(md.getExpression().isPresent()){
-                Range exRange = md.getExpression().get().getRange().get();
-                Type type = null;
-                if(isLambda) type = typeLambda;
-                AssignVisitor visitor = new AssignVisitor(classname, structure, exRange, rangeStructure, dequeBI, indent + indent4, type, 0, isLambda);
+            Range exRange = md.getExpression().isPresent() ? md.getExpression().get().getRange().get() : range;
+            if(isLambda){
+                AssignVisitor_Lambda visitor = new AssignVisitor_Lambda(classname, contentsName, structure, exRange, rangeStructure, dequeBI, indent, typeLambda);
+                md.accept(visitor, null);
+            } else if(md.getExpression().isPresent()){
+                AssignVisitor visitor = new AssignVisitor(classname, contentsName, structure, exRange, rangeStructure, dequeBI, indent + indent4, null, 0, isLambda);
                 md.accept(visitor, null);
             } else {
-                AssignVisitor visitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent + indent4);
+                AssignVisitor visitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent + indent4);
                 md.accept(visitor, null);
             }
         }
@@ -897,14 +1002,14 @@ public class J2KConverter {
         @Override
         public void visit(ThrowStmt md, Void arg) {
             setOutputer(indent);
-            AssignVisitor visitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent);
+            AssignVisitor visitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent);
             md.accept(visitor, null);
         }
 
         @Override
         public void visit(UnaryExpr md, Void arg) {
             setOutputer(indent);
-            AssignVisitor visitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent);
+            AssignVisitor visitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent);
             md.accept(visitor, null);
             setOutputer("\n");
         }
@@ -927,14 +1032,14 @@ public class J2KConverter {
 
         @Override
         public void visit(LocalClassDeclarationStmt md, Void arg) {
-            OutClassVisitor outClassVisitor = new OutClassVisitor(indent, structure, rangeStructure);
+            OutClassVisitor outClassVisitor = new OutClassVisitor(indent, structure, rangeStructure, false);
             md.getClassDeclaration().accept(outClassVisitor, null);
         }
 
         @Override
         public void visit(SynchronizedStmt md, Void arg) {
             setOutputer(indent + "synchronized(");
-            AssignVisitor expressionVisitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent);
+            AssignVisitor expressionVisitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent);
             md.getExpression().accept(expressionVisitor, null);
             setOutputer(")");
             String structureThis = this.structure + "/Synchronized";
@@ -949,7 +1054,7 @@ public class J2KConverter {
         @Override
         public void visit(AssertStmt md, Void arg) {
             setOutputer(indent + "assert(" );
-            AssignVisitor conditionVisitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent);
+            AssignVisitor conditionVisitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent);
             md.getCheck().accept(conditionVisitor, null);
             setOutputer(")");
             if (md.getMessage().isPresent()) {
@@ -961,24 +1066,41 @@ public class J2KConverter {
         @Override
         public void visit(TryStmt md, Void arg) {
             setOutputer(indent + "try");
-            MakeBlockVisitor visitor = new MakeBlockVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent, indent);
+            String structureThis = this.structure + "/Try";
+            ArrayDeque<Range> rangeStructure = this.rangeStructure.clone();
+            Range range = md.getRange().get();
+            rangeStructure.add(range);
+            MakeBlockVisitor visitor = new MakeBlockVisitor(classname, contentsName, structureThis, range, rangeStructure, dequeBI, indent, indent);
             md.getTryBlock().accept(visitor, null);
             for (CatchClause catchClause : md.getCatchClauses()) {
                 String paramName = catchClause.getParameter().getNameAsString();
                 Parameter parameter = catchClause.getParameter();
+
+                structureThis = this.structure + "/Catch";
+                range = catchClause.getRange().get();
+                rangeStructure = this.rangeStructure.clone();
+                rangeStructure.add(range);
+
                 if (parameter.getType().isUnionType()) {
                     UnionType unionType = (UnionType) parameter.getType();
                     for (ReferenceType ref : unionType.getElements()) {
                         setOutputer("catch(" + paramName + ": " + ref + ")");
+                        visitor = new MakeBlockVisitor(classname, contentsName, structureThis, range, rangeStructure, dequeBI, indent, indent);
                         catchClause.getBody().accept(visitor, null);
                     }
                 } else {
                     setOutputer("catch(" + paramName + ": " + parameter.getTypeAsString() + ")");
+                    visitor = new MakeBlockVisitor(classname, contentsName, structureThis, range, rangeStructure, dequeBI, indent, indent);
                     catchClause.getBody().accept(visitor, null);
                 }
             }
             if (md.getFinallyBlock().isPresent()) {
+                structureThis = this.structure + "/Finally";
+                range = md.getFinallyBlock().get().getRange().get();
+                rangeStructure = this.rangeStructure.clone();
+                rangeStructure.add(range);
                 setOutputer("finally");
+                visitor = new MakeBlockVisitor(classname, contentsName, structureThis, range, rangeStructure, dequeBI, indent, indent);
                 md.getFinallyBlock().get().accept(visitor, null);
             }
             setOutputer("\n");
@@ -995,11 +1117,12 @@ public class J2KConverter {
             if(isMultiAssign){
                 setOutputerln("run{");
                 if(md.getValue().isObjectCreationExpr()) structure = structure + "/" + md.getTarget().toString();
+                structure = DataStore.structureChangeCheck(md.getValue(), this.structure, md.getTarget().toString());
                 InBlockVisitor visitor = new InBlockVisitor(classname, contentsName, structure, range, this.rangeStructure, dequeBI, indent + indent4,  false);
                 md.getValue().accept(visitor, null);
             }
             if(isMultiAssign) setOutputer(indent + indent4);
-            AssignVisitor targetVisitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent, true);
+            AssignVisitor targetVisitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent, true);
             md.getTarget().accept(targetVisitor, null);
             Type type = targetVisitor.getTypeDef();
 
@@ -1009,26 +1132,27 @@ public class J2KConverter {
                 setOutputer(arithmeticOperator);
             } else {
                 setOutputer(" = ");
-                targetVisitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent, type, false);
+                targetVisitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent, type, false);
                 md.getTarget().accept(targetVisitor, null);
                 String arithmeticOperator = BinaryOperator(operator.name());
                 setOutputer(arithmeticOperator + " ");
             }
 
             if(isMultiAssign){
-                AssignVisitor valueVisitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent, type, false);
+                AssignVisitor valueVisitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent, type, false);
                 md.getValue().asAssignExpr().getTarget().accept(valueVisitor, null);
                 setOutputerln("\n" + indent + "}");
             } else {
                 if (md.getValue().isObjectCreationExpr()) structure = structure + "/" + md.getTarget().toString();
-                AssignVisitor valueVisitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent, type, false);
+                structure = DataStore.structureChangeCheck(md.getValue(), this.structure, md.getTarget().toString());
+                AssignVisitor_Literal valueVisitor = new AssignVisitor_Literal(classname, contentsName, structure, range, rangeStructure, dequeBI, indent, type, 0);
                 if (md.getValue().isLambdaExpr()) {
                     FieldInformation FI = targetVisitor.backFI();
                     Type typeLambda = FI != null ? FI.type : null;
-                    valueVisitor = new AssignVisitor(classname, structure + "/" + md.getTarget().toString(), md.getRange().get(), rangeStructure, dequeBI, indent, typeLambda, 0, FI);
+                    AssignVisitor valueVisitorL = new AssignVisitor(classname, contentsName, structure + "/" + md.getTarget().toString(), md.getRange().get(), rangeStructure, dequeBI, indent, typeLambda, 0, FI);
+                    md.getValue().accept(valueVisitorL, null);
+                } else md.getValue().accept(valueVisitor, null);
 
-                }
-                md.getValue().accept(valueVisitor, null);
                 setOutputer("\n");
             }
         }
@@ -1041,7 +1165,7 @@ public class J2KConverter {
             rangeStructure.add(range);
 
             setOutputer(afterLabelIndent() + "while(");
-            AssignVisitor conditionVisitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent);
+            AssignVisitor conditionVisitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent);
             md.getCondition().accept(conditionVisitor, null);
             setOutputer(")");
             if (md.getBody().isBlockStmt()) {
@@ -1061,7 +1185,7 @@ public class J2KConverter {
             boolean isIndent = false;
             if (isElseIf) setOutputer("if(");
             else setOutputer(afterLabelIndent() + "if(");
-            AssignVisitor conditionVisitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent);
+            AssignVisitor conditionVisitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent);
             md.getCondition().accept(conditionVisitor, null);
             setOutputer(")");
             VoidVisitor<?> visitor = new MakeBlockVisitor(classname, "", structureThis, range, this.rangeStructure, dequeBI, indent, indent);
@@ -1074,7 +1198,7 @@ public class J2KConverter {
             }
             if (md.getElseStmt().isPresent()) {
                 if (isIndent) setOutputer(" else ");
-                else setOutputer(indent + "else");
+                else setOutputer(indent + "else ");
                 structureThis = this.structure + "/Else";
                 range = md.getElseStmt().get().getRange().get();
                 rangeStructure = this.rangeStructure.clone();
@@ -1082,7 +1206,7 @@ public class J2KConverter {
                 if (md.getElseStmt().get().isBlockStmt())
                     visitor = new MakeBlockVisitor(classname, "", structureThis, range, this.rangeStructure, dequeBI, indent, indent);
                 else
-                    visitor = new InBlockVisitor(classname, contentsName, structureThis, range, rangeStructure, dequeBI, indent,md.getElseStmt().get().isIfStmt());
+                    visitor = new InBlockVisitor(classname, contentsName, structureThis, range, rangeStructure, dequeBI, indent, md.getElseStmt().get().isIfStmt());
 
                 md.getElseStmt().get().accept(visitor, null);
             }
@@ -1090,9 +1214,17 @@ public class J2KConverter {
         }
 
         @Override
+        public void visit(ObjectCreationExpr md, Void arg) {
+            setOutputer(indent);
+            AssignVisitor visitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent);
+            md.accept(visitor, null);
+            setOutputer("\n");
+        }
+
+        @Override
         public void visit(MethodCallExpr md, Void arg) {
             setOutputer(indent);
-            AssignVisitor visitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent);
+            AssignVisitor visitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent);
             md.accept(visitor, null);
             setOutputer("\n");
         }
@@ -1100,7 +1232,7 @@ public class J2KConverter {
         @Override
         public void visit(MethodReferenceExpr md, Void arg) {
             setOutputer(indent);
-            AssignVisitor visitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent);
+            AssignVisitor visitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent);
             md.accept(visitor, null);
             setOutputer("\n");
         }
@@ -1108,9 +1240,10 @@ public class J2KConverter {
         @Override
         public void visit(SwitchStmt md, Void arg) {
             setOutputer(indent + "when(");
-            AssignVisitor selectorVisitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent);
+            AssignVisitor selectorVisitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent);
             md.getSelector().accept(selectorVisitor, null);
             setOutputerln("){");
+            Type selectType = selectorVisitor.getTypeDef();
             String structureThis = this.structure + "/Switch";
             Range range = md.getRange().get();
             ArrayDeque<Range> rangeStructure = this.rangeStructure.clone();
@@ -1118,19 +1251,24 @@ public class J2KConverter {
             BlockInformation BI = dequeBI.peekLast().getMemoryData(structureThis, range);
             ArrayDeque<BlockInformation> dequeBISwitch = dequeBI.clone();
             if(dequeBISwitch != null && BI != null) dequeBISwitch.add(BI);
+            boolean isNoElse = true;
             for (SwitchEntry entry : md.getEntries()) {
                 String structureLabel = structureThis + "/";
                 StringBuilder label = new StringBuilder();
                 for(Expression expression:entry.getLabels()) label.append(expression);
-                if(entry.getLabels().size() == 0) label.append("default");
+                if(entry.getLabels().size() == 0) {
+                    label.append("default");
+                    isNoElse = false;
+                }
                 structureLabel = structureLabel + label;
                 Range rangeEntry = entry.getRange().get();
                 ArrayDeque<Range> rangeStructureEntry = rangeStructure.clone();
                 rangeStructureEntry.add(rangeEntry);
 
-                SwitchEntryVisitor visitor = new SwitchEntryVisitor(classname, structureLabel, rangeEntry, rangeStructureEntry, dequeBISwitch, indent + indent4, true);
+                SwitchEntryVisitor visitor = new SwitchEntryVisitor(classname, contentsName, structureLabel, rangeEntry, rangeStructureEntry, dequeBISwitch, indent + indent4, true, selectType);
                 entry.accept(visitor, null);
             }
+            if(isNoElse) setOutputerln(indent + indent4 + "else -> {}");
             setOutputerln(indent + "}");
         }
 
@@ -1150,14 +1288,14 @@ public class J2KConverter {
                 setOutputer(indent);
             }
             setOutputer("while(");
-            AssignVisitor conditionVisitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent);
+            AssignVisitor conditionVisitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent);
             md.getCondition().accept(conditionVisitor, null);
             setOutputerln(")");
         }
 
         @Override
         public void visit(SwitchExpr md, Void arg) {
-            AssignVisitor visitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent);
+            AssignVisitor visitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent);
             md.accept(visitor, null);
             setOutputer("\n");
         }
@@ -1170,7 +1308,7 @@ public class J2KConverter {
             rangeStructure.add(range);
             String value = md.getVariable().getVariable(0).getNameAsString();
             setOutputer(afterLabelIndent() + "for(" + value + " in ");
-            AssignVisitor iterableVisitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent);
+            AssignVisitor iterableVisitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent);
             md.getIterable().accept(iterableVisitor, null);
             setOutputerln("){");
             VoidVisitor<?> visitor = new InBlockVisitor(classname, "", structureThis, range, rangeStructure, dequeBI, indent + indent4, false);
@@ -1210,7 +1348,7 @@ public class J2KConverter {
                 compare = "true";
                 setOutputer(compare);
             } else {
-                AssignVisitor compareVisitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent);
+                AssignVisitor compareVisitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent);
                 md.getCompare().get().accept(compareVisitor, null);
             }
             //setOutputer(Forlooper(initialMap, compareMap, updateMap));
@@ -1221,7 +1359,7 @@ public class J2KConverter {
             for (Expression update : md.getUpdate()) {
 
                 setOutputer(indent + indent4);
-                AssignVisitor UpdateVisitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent);
+                AssignVisitor UpdateVisitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent);
                 update.accept(UpdateVisitor, null);
                 setOutputer("\n");
             }
@@ -1315,7 +1453,7 @@ public class J2KConverter {
 
         @Override
         public void visit(BreakStmt md, Void arg){
-
+            //Do nothing
         }
     }
 
@@ -1360,23 +1498,27 @@ public class J2KConverter {
 
     private static class SwitchEntryVisitor extends VoidVisitorAdapter<Void> {
         String classname = "";
+        String contentsname = "";
         String structure = "";
         Range range = null;
         ArrayDeque<Range> rangeStructure = new ArrayDeque<>();
         ArrayDeque<BlockInformation> dequeBI = new ArrayDeque<>();
         String indent = "";
         boolean isStmt = false;
+        Type selectType = null;
 
-        private SwitchEntryVisitor(String classname, String structure, Range range,
+        private SwitchEntryVisitor(String classname, String contentsname, String structure, Range range,
                                    ArrayDeque<Range> rangeStructure, ArrayDeque<BlockInformation> dequeBI,
-                                   String indent, boolean flag) {
+                                   String indent, boolean isStmt, Type selectType) {
             this.classname = classname;
+            this.contentsname = contentsname;
             this.structure = structure;
             this.range = range;
             this.rangeStructure = rangeStructure;
             this.dequeBI = dequeBI.clone();
             this.indent = indent;
-            this.isStmt = flag;
+            this.isStmt = isStmt;
+            this.selectType = selectType;
 
             BlockInformation BI = dequeBI.peekLast().getMemoryData(structure, range);
             if(BI != null)this.dequeBI.add(BI);
@@ -1385,7 +1527,15 @@ public class J2KConverter {
         @Override
         public void visit(SwitchEntry md, Void arg) {
             String label = "";
-            if (md.getLabels().size() != 0) label = md.getLabels().get(0).toString();
+            if (md.getLabels().size() != 0) {
+                label = md.getLabels().get(0).toString();
+                if(isVariable(md.getLabels().get(0))) {
+                    if(selectType != null) {
+                        if(!selectType.isPrimitiveType() && !selectType.toString().startsWith("String"))
+                            label = selectType.toString() + "." + label;
+                    }
+                }
+            }
             else label = "else";
             setOutputer(indent + label + " -> ");
             if (isStmt) {
@@ -1397,17 +1547,25 @@ public class J2KConverter {
                 setOutputerln(indent + "}");
             } else {
                 for (Statement statement : md.getStatements()) {
-                    AssignVisitor visitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, "");
+                    AssignVisitor visitor = new AssignVisitor(classname, contentsname, structure, range, rangeStructure, dequeBI, "");
                     statement.accept(visitor, null);
                     setOutputer("\n");
                 }
             }
         }
 
+        private boolean isVariable(Node node){
+            if(node instanceof NameExpr) return true;
+            else if(node instanceof FieldAccessExpr) return true;
+            else if(node instanceof ArrayAccessExpr) return true;
+            else return false;
+        }
+
     }
 
     private static class AssignVisitor extends VoidVisitorAdapter<Void> {
         String classname = "";
+        String contentsName = "";
         String structure = "";
         Range range = null;
         ArrayDeque<Range> rangeStructure = new ArrayDeque<>();
@@ -1419,13 +1577,13 @@ public class J2KConverter {
         boolean isArrayNullable = false;
         private boolean isEnumConvert = false;
         private boolean isLambda = false;
-        private boolean isArrayConvert = false;
         private FieldInformation FI = null;
         private boolean isWriteTarget = false;
 
-        AssignVisitor(String classname, String structure, Range range, ArrayDeque<Range> rangeStructure,
+        AssignVisitor(String classname, String contentsName, String structure, Range range, ArrayDeque<Range> rangeStructure,
                       ArrayDeque<BlockInformation> dequeBI, String indent, Type type, int dim) {
             this.classname = classname;
+            this.contentsName = contentsName;
             this.structure = structure;
             this.range = range;
             this.rangeStructure = rangeStructure;
@@ -1438,49 +1596,44 @@ public class J2KConverter {
             if(BI != null)this.dequeBI.add(BI);
         }
 
-        AssignVisitor(String classname, String structure, Range range, ArrayDeque<Range> rangeStructure,
-                      ArrayDeque<BlockInformation> dequeBI, String indent, boolean flag, Type type, int dim) {
-            this(classname, structure, range, rangeStructure, dequeBI, indent, type, dim);
-            this.isArrayConvert = flag;
-        }
 
-        AssignVisitor(String classname, String structure, Range range, ArrayDeque<Range> rangeStructure,
+        AssignVisitor(String classname, String contentsName, String structure, Range range, ArrayDeque<Range> rangeStructure,
                       ArrayDeque<BlockInformation> dequeBI, String indent, Type type, int dim, boolean isLambda){
-            this(classname, structure, range, rangeStructure, dequeBI, indent, type, dim);
+            this(classname, contentsName, structure, range, rangeStructure, dequeBI, indent, type, dim);
             this.isLambda = isLambda;
         }
 
-        AssignVisitor(String classname, String structure, Range range, ArrayDeque<Range> rangeStructure,
+        AssignVisitor(String classname, String contentsName, String structure, Range range, ArrayDeque<Range> rangeStructure,
                       ArrayDeque<BlockInformation> dequeBI, String indent, Type type, int dim, FieldInformation FI) {
-            this(classname, structure, range, rangeStructure, dequeBI, indent, type, dim);
+            this(classname, contentsName, structure, range, rangeStructure, dequeBI, indent, type, dim);
             this.FI = FI;
         }
 
-        AssignVisitor(String classname, String structure, Range range, ArrayDeque<Range> rangeStructure,
+        AssignVisitor(String classname, String contentsName, String structure, Range range, ArrayDeque<Range> rangeStructure,
                       ArrayDeque<BlockInformation> dequeBI, String indent) {
-            this(classname, structure, range, rangeStructure, dequeBI, indent, null, 0);
+            this(classname, contentsName, structure, range, rangeStructure, dequeBI, indent, null, 0);
         }
 
         AssignVisitor(String structure, Range range, ArrayDeque<Range> rangeStructure,
                       ArrayDeque<BlockInformation> dequeBI, String indent) {
-            this("", structure, range, rangeStructure, dequeBI, indent, null, 0);
+            this("", "", structure, range, rangeStructure, dequeBI, indent, null, 0);
         }
 
-        AssignVisitor(String classname, String structure, Range range, ArrayDeque<Range> rangeStructure,
+        AssignVisitor(String classname, String contentsName, String structure, Range range, ArrayDeque<Range> rangeStructure,
                       ArrayDeque<BlockInformation> dequeBI, String indent, Type type, boolean flag) {
-            this(classname, structure, range, rangeStructure, dequeBI, indent, type, 0);
+            this(classname, contentsName, structure, range, rangeStructure, dequeBI, indent, type, 0);
             isWriteTarget = flag;
         }
 
-        AssignVisitor(String classname, String structure, Range range, ArrayDeque<Range> rangeStructure,
+        AssignVisitor(String classname, String contentsName, String structure, Range range, ArrayDeque<Range> rangeStructure,
                       ArrayDeque<BlockInformation> dequeBI, String indent, boolean flag) {
-            this(classname, structure, range, rangeStructure, dequeBI, indent, null, 0);
+            this(classname, contentsName, structure, range, rangeStructure, dequeBI, indent, null, 0);
             isWriteTarget = flag;
         }
 
-        AssignVisitor(String classname, String structure, Range range, ArrayDeque<Range> rangeStructure,
+        AssignVisitor(String classname, String contentsName, String structure, Range range, ArrayDeque<Range> rangeStructure,
                       ArrayDeque<BlockInformation> dequeBI, Type type, boolean flag) {
-            this(classname, structure, range, rangeStructure, dequeBI, "", type, 0);
+            this(classname, contentsName, structure, range, rangeStructure, dequeBI, "", type, 0);
             isWriteTarget = flag;
         }
 
@@ -1501,10 +1654,10 @@ public class J2KConverter {
         @Override
         public void visit(ReturnStmt md, Void arg) {
             setOutputer("return");
-            if(isLambda) setOutputer("@" + type);
+            if(isLambda && type != null) setOutputer("@" + type);
             setOutputer(" ");
             if(md.getExpression().isPresent()){
-                AssignVisitor visitor = new AssignVisitor(this.classname, structure, range, rangeStructure, dequeBI, indent);
+                AssignVisitor visitor = new AssignVisitor(this.classname, contentsName, structure, range, rangeStructure, dequeBI, indent);
                 md.getExpression().get().accept(visitor, null);
             }
             setOutputer("\n");
@@ -1513,7 +1666,7 @@ public class J2KConverter {
         @Override
         public void visit(ThrowStmt md, Void arg) {
             setOutputer("throw ");
-            AssignVisitor visitor = new AssignVisitor(this.classname, structure, range, rangeStructure, dequeBI, indent + indent4);
+            AssignVisitor visitor = new AssignVisitor(this.classname, contentsName, structure, range, rangeStructure, dequeBI, indent + indent4);
             md.getExpression().accept(visitor, null);
             setOutputer("\n");
         }
@@ -1524,12 +1677,12 @@ public class J2KConverter {
             boolean isSign_Not
                     = operator.asString().equals("+") || operator.asString().equals("-") || operator.asString().equals("!");
             if(operator.isPrefix() && isSign_Not) setOutputer(operator.asString());
-            AssignVisitor visitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent, true);
+            AssignVisitor visitor = new AssignVisitor(classname, structure, contentsName, range, rangeStructure, dequeBI, indent, true);
             md.getExpression().accept(visitor, null);
 
             if(!isSign_Not) {
                 setOutputer(" = ");
-                visitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent, false);
+                visitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent, false);
                 md.getExpression().accept(visitor, null);
                 setOutputer(operator.asString().charAt(0) + " 1");
                 //if(operator.isPostfix()) setOutputer(operator.asString());
@@ -1538,7 +1691,7 @@ public class J2KConverter {
 
         @Override
         public void visit(InstanceOfExpr md, Void arg){
-            AssignVisitor visitor = new AssignVisitor(this.classname, structure, range, rangeStructure, dequeBI, indent + indent4);
+            AssignVisitor visitor = new AssignVisitor(this.classname, contentsName, structure, range, rangeStructure, dequeBI, indent + indent4);
             md.getExpression().accept(visitor, null);
             setOutputer(" is ");
             TypeVisitor Tvisitor = new TypeVisitor(false);
@@ -1550,7 +1703,7 @@ public class J2KConverter {
         public void visit(ArrayCreationExpr md, Void arg) {
             if(md.getInitializer().isPresent()){
                 AssignVisitor visitor =
-                        new AssignVisitor(classname, structure, md.getRange().get(), rangeStructure, dequeBI, indent, md.getElementType(), dim);
+                        new AssignVisitor(classname, contentsName, structure, md.getRange().get(), rangeStructure, dequeBI, indent, md.getElementType(), dim);
                 md.getInitializer().get().accept(visitor, null);
             } else {
                 String type = "";
@@ -1586,7 +1739,7 @@ public class J2KConverter {
             int sizeMax = listAcl.size();
             if(level > 1) {
                 setOutputer("Array(");
-                AssignVisitor visitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent, true, type, dim);
+                AssignVisitor visitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent, type, dim);
                 listAcl.get(sizeMax - level).accept(visitor, null);
                 setOutputer(") {");
             }
@@ -1599,7 +1752,7 @@ public class J2KConverter {
                     else setOutputer("arrayOfNulls<" + tv.getRetTypeNullable() + ">");
                 }
                 setOutputer("(");
-                AssignVisitor visitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent, true, type, dim);
+                AssignVisitor visitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent, type, dim);
                 listAcl.get(sizeMax - 1).accept(visitor, null);
                 setOutputer(")");
             }
@@ -1619,7 +1772,7 @@ public class J2KConverter {
             setOutputer(str);
             for (int i = 0; i < size; i++) {
                 if (i != 0) setOutputer(", ");
-                AssignVisitor visitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent, type, dim);
+                AssignVisitor visitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent, type, dim);
                 md.getValues().get(i).accept(visitor, null);
             }
             setOutputer(")");
@@ -1639,17 +1792,20 @@ public class J2KConverter {
             if (size != 0) {
                 for (int i = 0; i < md.getArguments().size(); i++) {
                     if (i != 0) setOutputer(",");
-                    if(md.getArgument(i).isObjectCreationExpr()) structure = structure + "/" + name;
-                    AssignVisitor visitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent, type, dim);
+                    String structureThis = structure;
+                    if(md.getArgument(i).isObjectCreationExpr()) structureThis = structure + "/" + md.getType();
+                    structureThis = DataStore.structureChangeCheck(md.getArgument(i), this.structure, md.getType().toString());
+                    AssignVisitor visitor = new AssignVisitor(classname, md.getType().toString(), structureThis, range, rangeStructure, dequeBI, indent, type, dim);
                     md.getArgument(i).accept(visitor, null);
                 }
 
             }
             if(!isAnonymous || size != 0)setOutputer(")");
             if (isAnonymous) {
+                String structureThis = this.structure + "/" + md.getType();
                 setOutputerln("{");
-                InClassVisitor visitor = new InClassVisitor(indent, name, structure, range, rangeStructure, dequeBI);
-                for (BodyDeclaration bd : md.getAnonymousClassBody().get()) {
+                InClassVisitor visitor = new InClassVisitor(indent, name, structureThis, md.getRange().get(), rangeStructure, dequeBI);
+                for (BodyDeclaration<?> bd : md.getAnonymousClassBody().get()) {
                     bd.accept(visitor, null);
                 }
                 setOutputerln(indent + "}");
@@ -1663,20 +1819,24 @@ public class J2KConverter {
             boolean isExistScope = md.getScope().isPresent();
             String methodname = md.getNameAsString();
             boolean isCastPrimitive = false;
+            ClassInformation CI = null;
+            MethodInformation MI = null;
             if (isExistScope) {
                 String str = md.getScope().get() + "." + methodname;
                 boolean isNormalConvert = true;
                 if (str.equals("System.out.println")) isNormalConvert = false;// Do nothing
                 else if (str.equals("System.out.print")) isNormalConvert = false;//Do nothing
-                else if(methodname.equals("toString")){
-                    boolean flag = isPrimitiveWrapper(md.getScope().get().toString());
-                    if(flag) {
+                else if(isPrimitiveWrapper(md.getScope().get().toString())){
+                    boolean flagToString = methodname.equals("toString");
+                    boolean flagParse = methodname.startsWith("parse");
+                    if(flagToString || flagParse) {
                         if (md.getArguments().size() != 0) {
                             for (int i = 0; i < md.getArguments().size(); i++) {
                                 if (i != 0) setOutputer(",");
-                                if (md.getArgument(i).isObjectCreationExpr())
-                                    structure = structure + "/" + md.getNameAsString();
-                                AssignVisitor argVisitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent, type, dim);
+                                String structureThis = structure;
+                                if(md.getArgument(i).isObjectCreationExpr()) structureThis = structure + "/" + md.getNameAsString();
+                                structureThis = DataStore.structureChangeCheck(md.getArgument(i), this.structure, md.getNameAsString());
+                                AssignVisitor_Literal argVisitor = new AssignVisitor_Literal(classname, contentsName, structureThis, range, rangeStructure, dequeBI, indent, type, dim);
                                 md.getArgument(i).accept(argVisitor, null);
                             }
                         }
@@ -1684,11 +1844,31 @@ public class J2KConverter {
                         isCastPrimitive = true;
                         isNormalConvert = false;
                     }
+                    if(flagParse){
+                        methodname = methodname.replace("parse", "to").replace("Integer", "Int").replace("Character", "Char");
+                    }
                 }
                 if(isNormalConvert){
-                    visitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent, type, dim);
+                    visitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent, type, dim);
                     md.getScope().get().accept(visitor, null);
                     setOutputer(".");
+                    if(visitor.getTypeDef() != null){
+                        CI = DataStore.ClassCheck(pathDir, visitor.getTypeDef().toString());
+                        if (CI != null) {
+                            String structure = CI.blockStructure + "/" + methodname;
+                            if (CI.getMemoryKind("Method") != null) {
+                                ArrayList<Triplets<String, Range, BlockInformation>> arrayList = CI.getMemoryKind("Method");
+                                for (Triplets<String, Range, BlockInformation> triplets : arrayList) {
+                                    if (triplets.getLeftValue().equals(structure)) {
+                                        MI = (MethodInformation) triplets.getRightValue();
+                                        if (md.getArguments().size() == MI.paramTypes.length) {
+                                            break;
+                                        } else MI = null;
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
             boolean flagOutputNormal = true;
@@ -1726,6 +1906,7 @@ public class J2KConverter {
                 boolean flagIgnore = false;
                 boolean isNeedEnclose = true;
                 boolean isSplit = false;
+                boolean isNeedNullable = true;
                 if (methodname.matches("concat")) {
                     setOutputer(" + ");
                     isNeedEnclose = false;
@@ -1739,21 +1920,25 @@ public class J2KConverter {
                         if(visitor.getTypeDef() != null) {
                             if (visitor.getTypeDef().toString().split("<")[0].endsWith("List")) {
                                 isNeedEnclose = false;
+                            } else if (visitor.getTypeDef().toString().split("<")[0].endsWith("Set")) {
+                                isNeedEnclose = false;
+                            } else if (visitor.getTypeDef().toString().endsWith("StringBuilder")) {
+                                isNeedEnclose = false;
                             }
                         }
                     }
+                    isNeedNullable = false;
                 }else if(methodname.matches("remove")){
-                    //ArrayListとかのsize関数がKotlinだと変数
                     setOutputer(methodname);
                     if(isExistScope) {
                         if(visitor.getTypeDef() != null) {
-                            if (visitor.getTypeDef().toString().split("<")[0].endsWith("List")) {
+                            if (visitor.getTypeDef().toString().split("<")[0].endsWith("MutableList")) {
                                 setOutputer("At");
                             }
                         }
                     }
                 }else if(methodname.matches("length")){
-                    //Stringとかのsize関数がKotlinだと変数
+                    //Stringとかのlength関数がKotlinだと変数
                     setOutputer(methodname);
                     if(isExistScope) {
                         if(visitor.getTypeDef() != null) {
@@ -1764,9 +1949,11 @@ public class J2KConverter {
                             }
                         }
                     }
+                    isNeedNullable = false;
                 }else if(methodname.matches("ordinal")){
                     //Enumとかのordinal関数がKotlinだと変数
                     setOutputer(methodname);
+                    isNeedEnclose = false;//仮置き
                     /*if(isExistScope) {
                         if(visitor.getTypeDef().isArrayType()){
                             isNeedEnclose = false;
@@ -1791,73 +1978,121 @@ public class J2KConverter {
                 } else if(methodname.matches("split")){
                     setOutputer(methodname);
                     isSplit = true;
+                } else if(methodname.matches("getCause")){
+                    if(isExistScope) {
+                        if(visitor.getTypeDef() != null) {
+                            if (visitor.getTypeDef().toString().equals("Throwable")) {
+                                setOutputer("cause");
+                                isNeedEnclose = false;
+                            }
+                        }
+                    }
                 }else{
                     setOutputer(methodname);
                 }
                 if(isNeedEnclose)setOutputer("(");
                 if (md.getArguments().size() != 0) {
-                    for (int i = 0; i < md.getArguments().size(); i++) {
+                    int size = md.getArguments().size();
+                    Type[] types = new Type[size];
+                    for (int i = 0; i < size; i++) {
                         if(isCastPrimitive) break;
                         if (i != 0) setOutputer(",");
-                        if(md.getArgument(i).isObjectCreationExpr()) structure = structure + "/" + md.getNameAsString();
-                        AssignVisitor argVisitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent, type, dim);
+                        String structureThis = structure;
+                        if(md.getArgument(i).isObjectCreationExpr()) structureThis = structure + "/" + md.getNameAsString();
+                        structureThis = DataStore.structureChangeCheck(md.getArgument(i), this.structure, md.getNameAsString());
+                        Type typeTmp = type;
+                        if(MI != null) typeTmp = MI.paramTypes[i];
+                        AssignVisitor_Literal argVisitor = new AssignVisitor_Literal(classname, contentsName, structureThis, range, rangeStructure, dequeBI, indent, typeTmp, dim);
                         md.getArgument(i).accept(argVisitor, null);
+                        types[i] = argVisitor.getTypeDef();
                     }
+
                 }
                 if(flagIgnore) setOutputer(", true");
                 if(isNeedEnclose) setOutputer(")");
                 if(isSplit) setOutputer(".toTypedArray()");//Kotlin Split = List<> Java Split = Array
                 boolean isGetInfo = false;
+                isGetInfo = MI != null;
                 boolean isPrimitive = false;
-                if(dequeBI.peekLast() != null){
-                    BlockInformation BI = dequeBI.peekLast();
-                    if (BI.kind.equals("Methods")) {
-                        MethodInformation MI = (MethodInformation) BI;
-                        isGetInfo = true;
-                        if (isNonNullFlag) {
-                            if (MI.nullable)
-                                setOutputer("!!");
-                        } else {
+                if(isGetInfo){
+                    if (isNonNullFlag) {
+                        if (MI.nullable)
+                            setOutputer("!!");
+                    } else {
+                        if(isNeedNullable){
                             if (!MI.type.toString().equals("void"))
                                 setOutputer("!!");
                         }
-                        typeDef = MI.type;
+                    }
+                    typeDef = MI.type;
+                    isPrimitive = typeDef.isPrimitiveType();
+                }
+                /*if(dequeBI.peekLast() != null){
+                    BlockInformation BI = dequeBI.peekLast();
+                    if (BI.kind.equals("Methods")) {//機能させていない、ここのアルゴリズムが不明
+                        MethodInformation MITmp = (MethodInformation) BI;
+                        isGetInfo = true;
+                        if (isNonNullFlag) {
+                            if (MITmp.nullable)
+                                setOutputer("!!");
+                        } else {
+                            if(isNeedNullable){
+                                if (!MITmp.type.toString().equals("void"))
+                                    setOutputer("!!");
+                            }
+                        }
+                        typeDef = MITmp.type;
                         isPrimitive = typeDef.isPrimitiveType();
                     }
+                }*/
+                if(!isGetInfo && !isPrimitive && isNeedNullable){
+                    if(methodname.equals("wait") || methodname.equals("notify") || methodname.equals("notifyAll")) ;
+                    else setOutputer("!!");
                 }
-                if(!isGetInfo && !isPrimitive)setOutputer("!!");
 
             }
         }
 
         @Override
         public void visit(MethodReferenceExpr md, Void arg) {
-            AssignVisitor visitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent, type, dim);
-            md.getScope().accept(visitor, null);
+            if(md.getScope().isTypeExpr()) {
+                TypeVisitor visitor = new TypeVisitor(false);
+                md.getScope().accept(visitor, null);
+                setOutputer(visitor.getRetType());
+                setOutputer("!!");
+                /*if(md.getScope().toString().equals("System.out"))setOutputer(visitor.getRetType());
+                else {
+                    if(isNonNullFlag)setOutputer(visitor.getRetType());
+                    else setOutputer(visitor.getRetTypeNullable());
+                }*/
+            } else {
+                AssignVisitor visitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent, type, dim);
+                md.getScope().accept(visitor, null);
+            }
             setOutputer("::" + md.getIdentifier());
         }
 
         @Override
         public void visit(ConditionalExpr md, Void arg) {
             setOutputer("if(");
-            AssignVisitor conditionVisitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent, type, dim);
+            AssignVisitor conditionVisitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent, type, dim);
             md.getCondition().accept(conditionVisitor, null);
             setOutputer(")");
-            AssignVisitor trueVisitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent, type, dim);
+            AssignVisitor trueVisitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent, type, dim);
             md.getThenExpr().accept(trueVisitor, null);
             setOutputer(" else ");
-            AssignVisitor falseVisitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent, type, dim);
+            AssignVisitor falseVisitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent, type, dim);
             md.getElseExpr().accept(falseVisitor, null);
 
         }
 
         @Override
         public void visit(BinaryExpr md, Void arg) {
-            AssignVisitor visitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent, type, dim);
+            AssignVisitor visitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent, type, dim);
             md.getLeft().accept(visitor, null);
             String arithmeticOperator = BinaryOperator(md.getOperator().name());
             setOutputer(arithmeticOperator);
-            visitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent, type, dim);
+            visitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent, type, dim);
             md.getRight().accept(visitor, null);
 
         }
@@ -1872,12 +2107,20 @@ public class J2KConverter {
         @Override
         public void visit(CastExpr md, Void arg) {
             super.visit(md, arg);
-            TypeVisitor visitor = new TypeVisitor(false);
-            md.getType().accept(visitor, null);
-            if(md.getType().isPrimitiveType()) setOutputer(" as " + visitor.getRetType());
-            else {
-                if (isNonNullFlag) setOutputer(" as " + visitor.getRetType());
-                else setOutputer(" as " + visitor.getRetTypeNullable());
+            boolean isNeedCast = true;
+            //findViewByIdはas Typeによるキャストでエラー出力の可能性あり
+            if(md.getExpression().isMethodCallExpr()){
+                if(md.getExpression().asMethodCallExpr().getName().toString().equals("findViewById")) {
+                    isNeedCast = false;
+                }
+            }
+            if(isNeedCast) {
+                TypeVisitor visitor = new TypeVisitor(false);
+                md.getType().accept(visitor, null);
+                if (md.getType().isPrimitiveType()) setOutputer(" as " + visitor.getRetType());
+                else {
+                    setOutputer(" as " + visitor.getRetType());
+                }
             }
         }
 
@@ -1885,15 +2128,21 @@ public class J2KConverter {
         public void visit(LambdaExpr md, Void arg) {
             boolean notExist = true;
             String indentThis = indent + indent4;
+            String structureThis = this.structure + "/" + contentsName;
+            Type type = null;
 
             //interface search
             MethodInformation MI = null;
             if(this.FI != null){
-                ClassInformation CI = DataStore.ClassCheck(pathDir, FI.type.toString());
+                type = this.FI.type;
+            } else if (this.type != null) {
+                type = this.type;
+            }
+            if(type != null){
+                ClassInformation CI = DataStore.ClassCheck(pathDir, type.toString());
                 if(CI != null){
                     notExist = false;
-                    ArrayList<Triplets<String, Range, BlockInformation>> triplets
-                            = CI.getMemoryKind("Method");
+                    ArrayList<Triplets<String, Range, BlockInformation>> triplets = CI.getMemoryKind("Method");
                     MI = (MethodInformation) triplets.get(0).getRightValue();
 
 
@@ -1902,8 +2151,20 @@ public class J2KConverter {
 
             if(!notExist) setOutputer("object: ");
             TypeVisitor Tvisitor = new TypeVisitor(false);
-            if(FI != null) {
-                FI.type.accept(Tvisitor, null);
+            if(type != null){
+                type.accept(Tvisitor, null);
+
+                //argumentの中身取り出し
+                if(type.isClassOrInterfaceType()){
+                    ClassOrInterfaceType type1 = type.asClassOrInterfaceType();
+                    if(type1.getTypeArguments().isPresent()){
+                        if(type1.toString().startsWith("Optional")) {
+                            Tvisitor = new TypeVisitor(false);
+                            type1.getTypeArguments().get().get(0).accept(Tvisitor, null);
+                            type = type1.getTypeArguments().get().get(0);
+                        }
+                    }
+                }
                 setOutputer(Tvisitor.getRetType().replace("?", ""));
             }
             setOutputer("{");
@@ -1938,13 +2199,18 @@ public class J2KConverter {
             else{
                 Tvisitor = new TypeVisitor(false);
                 MI.type.accept(Tvisitor, null);
-                setOutputer("):" + Tvisitor.getRetTypeNullable());
+                if(MI.type.isVoidType()) setOutputer(")");
+                else {
+                    setOutputer("):");
+                    if (MI.nullable) setOutputer(Tvisitor.getRetTypeNullable());
+                    else setOutputer(Tvisitor.getRetType());
+                }
             }
             boolean flag = true;
             if(md.getBody().isExpressionStmt()){
                 Statement statement = md.getBody();
                 if(!notExist)setOutputer(" = ");
-                AssignVisitor visitor = new AssignVisitor(classname, structure, md.getRange().get(), rangeStructure, dequeBI, indent);
+                AssignVisitor_Lambda visitor = new AssignVisitor_Lambda(classname, contentsName, structureThis, md.getRange().get(), rangeStructure, dequeBI, indent, type);
                 statement.accept(visitor, null);
                 flag = false;
                 setOutputer("\n");
@@ -1953,7 +2219,7 @@ public class J2KConverter {
                 if(!notExist)setOutputer("{");
                 setOutputer("\n");
                 String indentLambda = notExist ? indentThis : indentThis + indent4;
-                VoidVisitor<?> visitor = new InBlockVisitor(classname, structure, md.getRange().get(), rangeStructure, dequeBI, indentLambda, notExist, type);
+                VoidVisitor<?> visitor = new InBlockVisitor(classname, structureThis, md.getRange().get(), rangeStructure, dequeBI, indentLambda, notExist, type);
                 md.getBody().accept(visitor, null);
                 if(!notExist)setOutputer(indentThis + "}");
                 setOutputer("\n");
@@ -1963,29 +2229,29 @@ public class J2KConverter {
 
         @Override
         public void visit(ArrayAccessExpr md, Void arg) {
-            AssignVisitor nameVisitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent, type, dim);
+            AssignVisitor nameVisitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent, type, dim);
             md.getName().accept(nameVisitor, null);
             setOutputer("[");
-            AssignVisitor indexVisitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent, type, dim);
+            AssignVisitor indexVisitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent, type, dim);
             md.getIndex().accept(indexVisitor, null);
             setOutputer("]");
-            if (isNonNullFlag) {
+            if(isWriteTarget) ;
+            else if (isNonNullFlag) {
                 if (isParentNodeArray(md)) {
                     isArrayNullable = nameVisitor.isArrayNullable();
+                    setOutputer("!!");
                 } else {
                     if (nameVisitor.isArrayNullable()) {
                         setOutputer("!!");
                     }
                 }
-            } else {
-                if(!isWriteTarget)setOutputer("!!");
             }
             typeDef = nameVisitor.getTypeDef();
         }
 
         @Override
         public void visit(FieldAccessExpr md, Void arg) {
-            AssignVisitor visitor = new AssignVisitor(classname, structure, range, rangeStructure, dequeBI, indent, type, dim);
+            AssignVisitor visitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent, type, dim);
             md.getScope().accept(visitor, null);
             String name = md.getNameAsString();
             boolean flag = isParentNodeArray(md);
@@ -2039,19 +2305,22 @@ public class J2KConverter {
                 isEnumConvert
                         = isEnumClass(name) || isEnumClass(typeDef);
             }
-            if(name.equals("in")) name = "`in`";
             if(name.equals("length")){
                 if(visitor.getTypeDef() != null) {
                     if(visitor.getTypeDef().isArrayType())name = "size";
                 }
             }
-            setOutputer("." + name);
+            setOutputer(".");
+            boolean isReservedWord = CheckReservedWord(name);
+            if(isReservedWord) setOutputer("`");
+            setOutputer(name);
+            if(isReservedWord) setOutputer("`");
             boolean isPrimitive = FI != null ? FI.type.isPrimitiveType() : false;
             if (!flag2 || !isNonNullFlag || !isPrimitive) {
                 if(!isWriteTarget){
                     boolean isResource = md.getScope().toString().equals("R");//Android
                     boolean isBuild = md.getScope().toString().equals("Build");//Android SDK VERSION
-                    boolean isAndroid = md.getScope().toString().equals("android");
+                    boolean isAndroid = md.getScope().toString().startsWith("android");
                     boolean isManifest = md.getScope().toString().equals("Manifest");//Android Manifast
                     boolean isFirstUpper = name.substring(0, 1).equals(name.substring(0, 1).toUpperCase());
                     boolean isFullUpper = name.equals(name.toUpperCase());
@@ -2102,8 +2371,10 @@ public class J2KConverter {
                 this.FI = FI;
             }
             if(name.equals("String")) setOutputer("java.lang.");
-            if(name.equals("in")) name = "`in`";
+            boolean isReservedWord = CheckReservedWord(name);
+            if(isReservedWord) setOutputer("`");
             setOutputer(name);
+            if(isReservedWord) setOutputer("`");
             boolean isPrimitive = FI != null ? FI.type.isPrimitiveType() : false;
             if (!isEnumConvert || !isNonNullFlag || !isPrimitive) {
                 String importStr = DataStore.searchImport(name, pathAbs);
@@ -2132,8 +2403,11 @@ public class J2KConverter {
 
         @Override
         public void visit(SwitchExpr md, Void arg) {
-            String selector = md.getSelector().toString();
-            setOutputerln("when(" + selector + "){");
+            setOutputer("when(");
+            AssignVisitor selectorVisitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent);
+            md.getSelector().accept(selectorVisitor, null);
+            setOutputerln("){");
+            Type selectType = selectorVisitor.getTypeDef();
             String structureThis = this.structure + "/Switch";
             Range range = md.getRange().get();
             ArrayDeque<Range> rangeStructure = this.rangeStructure.clone();
@@ -2142,27 +2416,51 @@ public class J2KConverter {
             ArrayDeque<BlockInformation> dequeBISwitch = dequeBI.clone();
             //if(dequeBISwitch != null && BI != null)
             dequeBISwitch.add(BI);
+            boolean isNoElse = true;
             for (SwitchEntry entry : md.getEntries()) {
                 String structureLabel = structureThis + "/";
                 StringBuilder label = new StringBuilder();
-                for(Expression expression:entry.getLabels()) label.append(expression);
-                if(entry.getLabels().size() == 0) label.append("default");
+                for(Expression expression:entry.getLabels()) {
+                    label.append(expression);
+                }
+                if(entry.getLabels().size() == 0) {
+                    label.append("default");
+                    isNoElse = false;
+                }
                 structureLabel = structureLabel + label;
                 Range rangeEntry = entry.getRange().get();
                 ArrayDeque<Range> rangeStructureEntry = rangeStructure.clone();
                 rangeStructureEntry.add(rangeEntry);
-                SwitchEntryVisitor visitor = new SwitchEntryVisitor(classname, structureLabel, rangeEntry, rangeStructureEntry, dequeBISwitch, indent, false);
+                SwitchEntryVisitor visitor = new SwitchEntryVisitor(classname, contentsName, structureLabel, rangeEntry, rangeStructureEntry, dequeBISwitch, indent, false, selectType);
                 entry.accept(visitor, null);
             }
+            if(isNoElse) setOutputerln(indent + "else -> {}");
             String indentSwitch = indent.substring(0, indent.length() - 4);
             setOutputer(indentSwitch + "}");
         }
 
         @Override
         public void visit(AssignExpr md, Void arg){
-            InBlockVisitor visitor = new InBlockVisitor(classname, "", structure, range, this.rangeStructure, dequeBI, "",  false);
-            md.accept(visitor, null);
-            //後々変更予定
+
+            structure = DataStore.structureChangeCheck(md.getValue(), this.structure, md.getTarget().toString());
+            AssignVisitor valueVisitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent, type, false);
+            md.getValue().accept(valueVisitor, null);
+            setOutputer(".also {");
+            AssignVisitor targetVisitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent, true);
+            md.getTarget().accept(targetVisitor, null);
+            AssignExpr.Operator operator = md.getOperator();
+            if(md.getOperator().name().equals("ASSIGN") ){//|| !(md.getParentNode().get() instanceof AssignExpr)) {
+                String arithmeticOperator = AssignOperator(operator.name());
+                setOutputer(arithmeticOperator);
+            } else {
+                setOutputer(" = ");
+                targetVisitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent, type, false);
+                md.getTarget().accept(targetVisitor, null);
+                String arithmeticOperator = BinaryOperator(operator.name());
+                setOutputer(arithmeticOperator + " ");
+            }
+            setOutputer("it");
+            setOutputer(" }");
         }
 
         @Override
@@ -2190,40 +2488,6 @@ public class J2KConverter {
         public void visit(BooleanLiteralExpr md, Void arg) {
             setOutputer(md.toString());
         }
-
-        /*@Override
-        public void visit(CharLiteralExpr md, Void arg) {
-            boolean isChar
-                    = type != null ?
-                    type.toString().equalsIgnoreCase("char") || type.toString().equalsIgnoreCase("character")
-                    : false;
-            setOutputer(md.toString() + PrimitiveCast(type, isArrayConvert || isChar));
-        }
-
-        @Override
-        public void visit(IntegerLiteralExpr md, Void arg) {
-            boolean isInt
-                    = type != null ?
-                    type.toString().equalsIgnoreCase("int") || type.toString().equalsIgnoreCase("integer")
-                    : false;
-            setOutputer(md.toString() + PrimitiveCast(type, isArrayConvert || isInt));
-        }
-
-        @Override
-        public void visit(DoubleLiteralExpr md, Void arg) {
-            boolean isDouble
-                    = type != null ?type.toString().equalsIgnoreCase("double") : false;
-            setOutputer(md.toString() + PrimitiveCast(type, isArrayConvert || isDouble));
-        }
-
-        @Override
-        public void visit(LongLiteralExpr md, Void arg) {
-            boolean isLong
-                    = type != null ? type.toString().equalsIgnoreCase("long"): false;
-            setOutputer(md.toString() + PrimitiveCast(type, isArrayConvert || isLong));
-        }
-
-         */
 
         @Override
         public void visit(CharLiteralExpr md, Void arg) {
@@ -2318,7 +2582,69 @@ public class J2KConverter {
 
     }
 
-    private static class TypeVisitor extends VoidVisitorAdapter<Void> {
+    private static class AssignVisitor_Literal extends AssignVisitor{
+
+
+        public AssignVisitor_Literal(String classname, String contentsName, String structure, Range range, ArrayDeque<Range> rangeStructure,
+                      ArrayDeque<BlockInformation> dequeBI, String indent, Type type, int dim) {
+            super(classname, contentsName, structure, range, rangeStructure, dequeBI, indent, type, dim);
+        }
+
+        @Override
+        public void visit(CharLiteralExpr md, Void arg) {
+            boolean isChar
+                    = type != null ?
+                    type.toString().equalsIgnoreCase("char") || type.toString().equalsIgnoreCase("character")
+                    : false;
+            setOutputer(md.toString() + PrimitiveCast(type, isChar));
+        }
+
+        @Override
+        public void visit(IntegerLiteralExpr md, Void arg) {
+            boolean isInt
+                    = type != null ?
+                    type.toString().equalsIgnoreCase("int") || type.toString().equalsIgnoreCase("integer")
+                    : false;
+            setOutputer(md.toString() + PrimitiveCast(type, isInt));
+        }
+
+        @Override
+        public void visit(DoubleLiteralExpr md, Void arg) {
+            boolean isDouble
+                    = type != null ?type.toString().equalsIgnoreCase("double") : false;
+            setOutputer(md.toString() + PrimitiveCast(type, isDouble));
+        }
+
+        @Override
+        public void visit(LongLiteralExpr md, Void arg) {
+            boolean isLong
+                    = type != null ? type.toString().equalsIgnoreCase("long"): false;
+            setOutputer(md.toString() + PrimitiveCast(type, isLong));
+        }
+
+    }
+
+    private static class AssignVisitor_Lambda extends AssignVisitor{
+        Type retLabel = null;
+
+        public AssignVisitor_Lambda(String classname, String contentsname, String structure, Range range,
+                                    ArrayDeque<Range> rangeStructure,
+                                    ArrayDeque<BlockInformation> dequeBI, String indent, Type type){
+            super(classname, contentsname, structure, range, rangeStructure, dequeBI, indent);
+            retLabel = type;
+        }
+
+        @Override
+        public void visit(ReturnStmt md, Void arg){
+            if(md.getExpression().isPresent()){
+                AssignVisitor visitor = new AssignVisitor(this.classname, contentsName, structure, range, rangeStructure, dequeBI, indent);
+                md.getExpression().get().accept(visitor, null);
+            }
+            setOutputer("\n");
+        }
+    }
+
+    public static class TypeVisitor extends VoidVisitorAdapter<Void> {
         private StringBuilder retType = new StringBuilder("");
         private boolean isAsterisk = false;
         private boolean isConvertAnno = false;
@@ -2329,17 +2655,41 @@ public class J2KConverter {
         @Override//参照型はここ
         public void visit(ClassOrInterfaceType md, Void arg) {
             boolean flag = isNonNullFlag || isConvertAnno;
+            boolean flagScope = false;
             TypeVisitor scopeVisitor = new TypeVisitor(false);
             if(md.getScope().isPresent()){
                 md.getScope().get().accept(scopeVisitor, null);
                 retType.append(scopeVisitor.getRetType());
                 retType.append(".");
+                flagScope = true;
             }
 
             ClassInformation CI = DataStore.memoryClass.getData(pathAbs, md.getNameAsString());
+            if(CI == null){
+                if(DataStore.memoryClass.getDataListKey2(md.getNameAsString()) != null) {
+                    for (Triplets<String, String, ClassInformation> triplets : DataStore.memoryClass.getDataListKey2(md.getNameAsString())) {
+                        CI = triplets.getRightValue();
+                        if(flagScope){
+                            ClassOrInterfaceType typeTmp = md.getScope().get();
+                            String[] strs = typeTmp.toString().split("\\.");
+                            String str = strs[strs.length - 1];
+                            boolean flagTmp = true;
+                            for(String partPath:CI.blockStructure.split("/")){
+                                if(partPath.equals(str)){
+                                    flagTmp = false;
+                                    break;
+                                }
+                            }
+                            if(flagTmp) CI = null;
+                        }
+                    }
+                }
+            }
+
             if(CI != null){
-                if(CI.isStatic)retType.append("Companion.");
-            } else {
+                if(CI.isStatic){
+                    if(ImportStaticCheck(pathAbs, md.getNameAsString()))retType.append("Companion.");
+                }
             }
 
             //setOutputer(md.getNameAsString());
@@ -2414,9 +2764,14 @@ public class J2KConverter {
 
                 TypeVisitor visitor = new TypeVisitor(false);
                 md.getComponentType().accept(visitor, null);
+                boolean isComponentFlag = false;
+                if(md.getComponentType().isArrayType()){
+                    if(md.getComponentType().asArrayType().getComponentType().isPrimitiveType())
+                        isComponentFlag = true;
+                }
                 retType.append("Array<");
 
-                if(isConvertAnno) retType.append(visitor.getRetType());
+                if(isConvertAnno || isComponentFlag) retType.append(visitor.getRetType());
                 else retType.append(visitor.getRetTypeNullable());
 
                 retType.append(">");
@@ -2468,13 +2823,26 @@ public class J2KConverter {
         @Override//引数の型
         public void visit(TypeParameter md, Void arg) {
             boolean flag = isNonNullFlag || isConvertAnno;
-            TypeVisitor visitor = new TypeVisitor(false);
-            md.getTypeBound().get(0).accept(visitor, null);
-            retType.append(md.getNameAsString()).append(":");
-            if (flag) retType.append(visitor.getRetType());
-            else retType.append(visitor.getRetTypeNullable());
-            retType.append(">");
-            //setOutputer("<" + md.getNameAsString() + ":" + md.getTypeBound().get(0) + ">");
+            retType.append(md.getNameAsString());
+            if(md.getTypeBound().size() != 0){
+                TypeVisitor visitor = new TypeVisitor(false);
+                md.getTypeBound().get(0).accept(visitor, null);
+                retType.append(":");
+                if (flag) retType.append(visitor.getRetType());
+                else retType.append(visitor.getRetTypeNullable());
+                //retType.append(">");
+                //setOutputer("<" + md.getNameAsString() + ":" + md.getTypeBound().get(0) + ">");
+            }
+        }
+
+        public boolean ImportStaticCheck(String pathAbs, String name){
+            if(DataStore.memoryImport.get(pathAbs) != null){
+                ArrayList<ImportDeclaration> arrayList = DataStore.memoryImport.get(pathAbs);
+                for(ImportDeclaration declaration:arrayList){
+                    if(name.equals(declaration.getName().getIdentifier())) return false;
+                }
+            }
+            return true;
         }
 
         public boolean isAsterisk() {
@@ -2496,6 +2864,7 @@ public class J2KConverter {
         boolean flagG = false;
         boolean flagS = false;
         String param = "";
+
 
         public CustomAccessorConvertor(String classname, String structure, ArrayDeque<Range> rangeStructure,
                                        String targetField, String indent, boolean flagG, boolean flagS) {
@@ -2568,6 +2937,15 @@ public class J2KConverter {
 
     }
 
+    public static boolean CheckReservedWord(String name){
+        return switch (name){
+            case "in" -> true;
+            case "is" -> true;
+            case "object" -> true;
+            default -> false;
+        };
+    }
+
     public static String ModifierConvert(NodeList<Modifier> modifiers, boolean isMethod, String indent, BaseInformation BI, boolean isLocal){
         StringBuilder mod = new StringBuilder();
         if (modifiers.size() != 0) {
@@ -2628,9 +3006,9 @@ public class J2KConverter {
             case "GREATER" -> " > ";
             case "LESS_EQUALS" -> " <= ";
             case "GREATER_EQUALS" -> " >= ";
-            case "LEFT_SHIFT" -> " << ";
-            case "SIGNED_RIGHT_SHIFT" -> " >> ";
-            case "UNSIGNED_RIGHT_SHIFT" -> " >>> ";
+            case "LEFT_SHIFT" -> " shl ";
+            case "SIGNED_RIGHT_SHIFT" -> " shr ";
+            case "UNSIGNED_RIGHT_SHIFT" -> " ushr ";
             default -> "";
         };
     }
@@ -2655,23 +3033,38 @@ public class J2KConverter {
 
     public static String PrimitiveCast(Type type, boolean flag){
         if(type == null || flag) return "";
+        if(!type.isPrimitiveType()) return "";
         return switch (type.toString()){
-            case "Integer" -> " as Int";
-            case "Character" -> " as Char";
-            default -> " as " + type.toString().substring(0, 1).toUpperCase() + type.toString().substring(1);
+            case "Integer" -> ".toInt()";
+            case "Character" -> ".toChar()";
+            default -> ".to" + type.toString().substring(0, 1).toUpperCase() + type.toString().substring(1)  + "()";
         };
     }
 
-    public static void ParameterConvert(Parameter parameter) {
+    public static void ParameterConvert(Parameter parameter, BlockInformation BI, boolean nonNullCompulsion) {
         if (parameter.isVarArgs()) setOutputer("vararg ");
-        setOutputer(parameter.getNameAsString() + ": ");
+        boolean isReservedWord = CheckReservedWord(parameter.getNameAsString());
+        if(isReservedWord) setOutputer("`");
+        setOutputer(parameter.getNameAsString());
+        if(isReservedWord) setOutputer("`");
+        setOutputer(": ");
         TypeVisitor Tvisitor = new TypeVisitor(false);
         parameter.getType().accept(Tvisitor, null);
-        if(isNonNullFlag) setOutputer(Tvisitor.getRetType());
+        boolean isNonNull = parameter.getType().isPrimitiveType();
+        if(isNonNullFlag) {
+            if(BI != null){
+                FieldInformation FI = BI.getMemoryF().get(parameter.getNameAsString());
+                if(FI != null) isNonNull = !FI.nullable || isNonNull;
+            }
+        }
+        isNonNull = isNonNull || nonNullCompulsion;
+        if(isNonNull)setOutputer(Tvisitor.getRetType());
+        else setOutputer(Tvisitor.getRetTypeNullable());
+        /*if(isNonNullFlag) setOutputer(Tvisitor.getRetType());
         else {
             if(parameter.getType().isPrimitiveType())setOutputer(Tvisitor.getRetType());
             else setOutputer(Tvisitor.getRetTypeNullable());
-        }
+        }*/
     }
 
 }

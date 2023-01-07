@@ -17,10 +17,6 @@ public class Class14 {
         Interface4 if4;
         String str = String.join(",","a", "b", "c");
 
-        /*
-        for (str in arrayList) {
-            println(str)
-        }
-         */
+        String t = null;
     }
 }

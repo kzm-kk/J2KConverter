@@ -3,12 +3,12 @@ import com.github.javaparser.ast.type.Type;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ClassInformation extends BlockInformation {
     Type classEx;
     ArrayList<Type> classIm;
     boolean isEnum;
-    ArrayList<MethodInformation> memoryM = new ArrayList<>();
     boolean isContainStatic = false;
 
 
@@ -30,9 +30,6 @@ public class ClassInformation extends BlockInformation {
 
     }
 
-    public void setMemoryM(MethodInformation information){
-        memoryM.add(information);
-    }
 
 
 

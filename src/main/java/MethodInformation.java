@@ -19,6 +19,9 @@ public class MethodInformation extends BlockInformation {
     int lines;
     boolean nullable;
     Type type;
+    Type returnType;
+
+    boolean isConvertReturnType;
 
     public MethodInformation(String name, String structure, String pathDir, boolean isStatic,
                              boolean isKotlinPrivate, boolean access, boolean fix, String accessField, int lines,
@@ -30,5 +33,7 @@ public class MethodInformation extends BlockInformation {
         this.lines = lines;
         this.nullable = nullable;
         this.type = type;
+        this.returnType = type;
+        this.isConvertReturnType = false;
     }
 }
