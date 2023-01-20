@@ -388,6 +388,9 @@ switch文のラベルにおいて変数を使用している際、selectorがプ
 情報解析の際、isReturnNullの値が一度trueになったあとfalseにならないように修正
 情報解析にtry-catch-finally追加
 final修飾子とopen/override修飾子が同時に出力されないようにopen/override修飾子のフラグがtrueになる条件を修正
+ver1.0リリース、ver1.1開発開始
+2023/01/17
+軽微な修正
 
 今後の話
 

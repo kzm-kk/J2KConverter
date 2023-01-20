@@ -1,6 +1,8 @@
 package pac3;
 
-public class Class15 extends pac4.pac.TrialClass {
+import pac4.pac.TrialClass;
+
+public class Class15 extends TrialClass {
 
     @Override
     public void func() {

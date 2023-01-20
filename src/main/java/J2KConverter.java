@@ -383,6 +383,7 @@ public class J2KConverter {
                         }
                         setOutputerln(")");
                     }
+                    if(methodName.equals("main")) setOutputerln(indent + indent4 +  "@JvmStatic");
                     String mod = ModifierConvert(md.getModifiers(), true, indent + indent4, MI, false);
                     String openMod = "";
                     if(MI != null) openMod = MI.isOpen ? "open " : "";
@@ -394,6 +395,8 @@ public class J2KConverter {
                                 override = "override ";
                             } else if (md.getAnnotation(i).getNameAsString().equals("NonNull")) {
                                 isNonNull = true;
+                            } else if (md.getAnnotation(i).getNameAsString().equals("Nullable")) {
+                                isNonNull = false;
                             } else {
                                 AnnotationVisitor annotationVisitor = new AnnotationVisitor(classname, indent);
                                 md.getAnnotation(i).accept(annotationVisitor, null);
@@ -448,7 +451,7 @@ public class J2KConverter {
                 case "onCreateViewHolder" -> true;
                 case "onBindViewHolder" -> true;
                 case "onScrolled" -> true;
-                case "getItemOffset" -> true;
+                case "getItemOffsets" -> true;
                 case "onCreateView" -> num == 0;//最初の引数だけnon-null
                 case "onViewCreated" -> num == 0;//最初の引数だけnon-null
                 case "onCreate" -> false;
@@ -723,7 +726,8 @@ public class J2KConverter {
                         } else castFlag = true;
 
                         if (castFlag) {
-                            if (type.isPrimitiveType()) setOutputer(" as " + Tvisitor.getRetType());
+                            //omit
+                            //if (type.isPrimitiveType()) setOutputer(" as " + Tvisitor.getRetType());
                         }
                     }
                 }
@@ -734,8 +738,8 @@ public class J2KConverter {
                     initial = switch (md.getTypeAsString()) {
                         case "int" -> initial.concat(" = 0");
                         case "double" -> initial.concat(" = 0.0");
-                        case "long" -> initial.concat(" = 0");
-                        case "float" -> initial.concat(" = 0");
+                        case "long" -> initial.concat(" = 0L");
+                        case "float" -> initial.concat(" = 0F");
                         case "boolean" -> initial.concat(" = false");
                         case "byte" -> initial.concat(" = 0");
                         case "short" -> initial.concat(" = 0");
@@ -1851,7 +1855,6 @@ public class J2KConverter {
                 if(isNormalConvert){
                     visitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent, type, dim);
                     md.getScope().get().accept(visitor, null);
-                    setOutputer(".");
                     if(visitor.getTypeDef() != null){
                         CI = DataStore.ClassCheck(pathDir, visitor.getTypeDef().toString());
                         if (CI != null) {
@@ -1911,11 +1914,11 @@ public class J2KConverter {
                     setOutputer(" + ");
                     isNeedEnclose = false;
                 }else if(methodname.matches("equalsIgnoreCase")){
-                    setOutputer("equals");
+                    setOutputer(".equals");
                     flagIgnore = true;
                 }else if(methodname.matches("size")){
                     //ArrayListとかのsize関数がKotlinだと変数
-                    setOutputer(methodname);
+                    setOutputer("." + methodname);
                     if(isExistScope) {
                         if(visitor.getTypeDef() != null) {
                             if (visitor.getTypeDef().toString().split("<")[0].endsWith("List")) {
@@ -1929,7 +1932,7 @@ public class J2KConverter {
                     }
                     isNeedNullable = false;
                 }else if(methodname.matches("remove")){
-                    setOutputer(methodname);
+                    setOutputer("." + methodname);
                     if(isExistScope) {
                         if(visitor.getTypeDef() != null) {
                             if (visitor.getTypeDef().toString().split("<")[0].endsWith("MutableList")) {
@@ -1939,10 +1942,10 @@ public class J2KConverter {
                     }
                 }else if(methodname.matches("length")){
                     //Stringとかのlength関数がKotlinだと変数
-                    setOutputer(methodname);
+                    setOutputer("." + methodname);
                     if(isExistScope) {
                         if(visitor.getTypeDef() != null) {
-                            if (visitor.getTypeDef().toString().equals("String")) {
+                            if (visitor.getTypeDef().toString().startsWith("String")) {
                                 isNeedEnclose = false;
                             } else if (visitor.getTypeDef().toString().split("<")[0].endsWith("List")) {
                                 isNeedEnclose = false;
@@ -1952,7 +1955,7 @@ public class J2KConverter {
                     isNeedNullable = false;
                 }else if(methodname.matches("ordinal")){
                     //Enumとかのordinal関数がKotlinだと変数
-                    setOutputer(methodname);
+                    setOutputer("." + methodname);
                     isNeedEnclose = false;//仮置き
                     /*if(isExistScope) {
                         if(visitor.getTypeDef().isArrayType()){
@@ -1965,7 +1968,7 @@ public class J2KConverter {
                     if(isExistScope) {
                         if(visitor.getTypeDef() != null) {
                             if (visitor.getTypeDef().toString().equals("String")) {
-                                setOutputer("toByteArray");
+                                setOutputer(".toByteArray");
                                 flag = false;
                             }
                         }
@@ -1973,22 +1976,23 @@ public class J2KConverter {
                     if(flag)setOutputer(methodname);
                 }else if(methodname.matches("getMessage")){
                     //excption系のgetMessage関数がKotlinだと変数
-                    setOutputer("message");
+                    setOutputer(".message");
                     isNeedEnclose = false;
                 } else if(methodname.matches("split")){
-                    setOutputer(methodname);
+                    setOutputer("." + methodname);
+                    typeDef = new ArrayType(new ClassOrInterfaceType(null, "String"));
                     isSplit = true;
                 } else if(methodname.matches("getCause")){
                     if(isExistScope) {
                         if(visitor.getTypeDef() != null) {
                             if (visitor.getTypeDef().toString().equals("Throwable")) {
-                                setOutputer("cause");
+                                setOutputer(".cause");
                                 isNeedEnclose = false;
                             }
                         }
                     }
                 }else{
-                    setOutputer(methodname);
+                    setOutputer("." + methodname);
                 }
                 if(isNeedEnclose)setOutputer("(");
                 if (md.getArguments().size() != 0) {
@@ -2235,8 +2239,16 @@ public class J2KConverter {
             AssignVisitor indexVisitor = new AssignVisitor(classname, contentsName, structure, range, rangeStructure, dequeBI, indent, type, dim);
             md.getIndex().accept(indexVisitor, null);
             setOutputer("]");
-            if(isWriteTarget) ;
-            else if (isNonNullFlag) {
+            if(isWriteTarget) {
+                if (isParentNodeArray(md)) {
+                    isArrayNullable = nameVisitor.isArrayNullable();
+                    setOutputer("!!");
+                } else {
+                    if (nameVisitor.isArrayNullable()) {
+                        setOutputer("!!");
+                    }
+                }
+            }else if (isNonNullFlag) {
                 if (isParentNodeArray(md)) {
                     isArrayNullable = nameVisitor.isArrayNullable();
                     setOutputer("!!");
@@ -2764,15 +2776,9 @@ public class J2KConverter {
 
                 TypeVisitor visitor = new TypeVisitor(false);
                 md.getComponentType().accept(visitor, null);
-                boolean isComponentFlag = false;
-                if(md.getComponentType().isArrayType()){
-                    if(md.getComponentType().asArrayType().getComponentType().isPrimitiveType())
-                        isComponentFlag = true;
-                }
                 retType.append("Array<");
 
-                if(isConvertAnno || isComponentFlag) retType.append(visitor.getRetType());
-                else retType.append(visitor.getRetTypeNullable());
+                retType.append(visitor.getRetType());
 
                 retType.append(">");
             }
