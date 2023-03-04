@@ -11,7 +11,7 @@ public class ASTViewer {
     public static void main(String[] args) throws IOException {
 
         String pathname
-                = "/Users/kzm0308/IdeaProjects/J2KConverter/src/main/java/pac3/Class3.java";
+                = "/Users/kzm0308/IdeaProjects/J2KConverter/src/main/java/pac3/Class18.java";
         File file;
         if (args.length == 0)
             file = new File(pathname);

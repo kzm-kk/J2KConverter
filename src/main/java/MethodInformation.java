@@ -13,7 +13,8 @@ public class MethodInformation extends BlockInformation {
     //nullable:メソッドの返り値がnullになり得るか
     //type:メソッドの返り値
     //range:このメソッドの記述範囲、localValueを引き出すために使う
-    boolean access;
+    boolean getAccess;
+    boolean setAccess;
     boolean fix;
     String accessField;
     int lines;
@@ -24,10 +25,11 @@ public class MethodInformation extends BlockInformation {
     boolean isConvertReturnType;
 
     public MethodInformation(String name, String structure, String pathDir, boolean isStatic,
-                             boolean isKotlinPrivate, boolean access, boolean fix, String accessField, int lines,
+                             boolean isKotlinPrivate, boolean getAccess, boolean setAccess, boolean fix, String accessField, int lines,
                              boolean nullable, Type type, Range range, ArrayDeque<Range> rangeStructure){
         super(name, "Method", isStatic, isKotlinPrivate, structure, pathDir, range, rangeStructure);
-        this.access = access;
+        this.getAccess = getAccess;
+        this.setAccess = setAccess;
         this.fix = fix;
         this.accessField = accessField;
         this.lines = lines;

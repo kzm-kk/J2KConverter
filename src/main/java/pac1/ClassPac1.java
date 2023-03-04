@@ -1,6 +1,6 @@
 package pac1;
 
-public class Verf_pac1 {
+public class ClassPac1 {
 
     /*命名規則
     フィールド名tmpに対してgetterがgetTmp, setterがsetTmpのように

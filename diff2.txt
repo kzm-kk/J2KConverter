@@ -1,0 +1,2439 @@
+0107debug 2BaseCallActivity (line 271,col 74)-(line 275,col 9)
+If st:/BaseCallActivity/onCreate/if false
+0107debug 2BaseConnectActivity (line 209,col 34)-(line 212,col 9)
+If st:/BaseConnectActivity/connectToRoom/if false
+0107debug 2BaseConnectActivity (line 218,col 21)-(line 221,col 17)
+Try st:/BaseConnectActivity/connectToRoom/if/if/Try false
+0107debug 2BaseConnectActivity (line 221,col 19)-(line 225,col 17)
+Catch st:/BaseConnectActivity/connectToRoom/if/if/Catch false
+name:PeerConnectionClient kind:class isStatic:false isEnum:false isContainStatic:true
+definition:/PeerConnectionClient isOpen:false
+rangeIN:[]
+field information:PeerConnectionClient
+AUDIO_CODEC_PARAM_BITRATE type:String dim:0 assign:false nullable:false static:true initializable:true formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/AUDIO_CODEC_PARAM_BITRATE
+range:(line 107,col 31)-(line 107,col 77)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+audioSource type:AudioSource dim:0 assign:false nullable:true static:false initializable:false formerRW:
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/audioSource
+range:(line 136,col 23)-(line 136,col 33)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+preferIsac type:boolean dim:0 assign:false nullable:true static:false initializable:false formerRW:
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/preferIsac
+range:(line 139,col 19)-(line 139,col 28)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+localRender type:VideoSink dim:0 assign:true nullable:true static:false initializable:false formerRW:
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/localRender
+range:(line 143,col 21)-(line 143,col 31)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+sdpMediaConstraints type:MediaConstraints dim:0 assign:false nullable:true static:false initializable:false formerRW:
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/sdpMediaConstraints
+range:(line 150,col 28)-(line 150,col 46)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+videoHeight type:int dim:0 assign:false nullable:true static:false initializable:false formerRW:
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/videoHeight
+range:(line 147,col 15)-(line 147,col 25)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+videoWidth type:int dim:0 assign:false nullable:true static:false initializable:false formerRW:
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/videoWidth
+range:(line 146,col 15)-(line 146,col 24)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+AUDIO_AUTO_GAIN_CONTROL_CONSTRAINT type:String dim:0 assign:false nullable:false static:true initializable:true formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/AUDIO_AUTO_GAIN_CONTROL_CONSTRAINT
+range:(line 109,col 31)-(line 109,col 88)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+videoSource type:VideoSource dim:0 assign:false nullable:true static:false initializable:false formerRW:
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/videoSource
+range:(line 138,col 33)-(line 138,col 43)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+VIDEO_CODEC_H264_BASELINE type:String dim:0 assign:false nullable:false static:true initializable:true formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/VIDEO_CODEC_H264_BASELINE
+range:(line 97,col 31)-(line 97,col 73)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+executor type:ExecutorService dim:0 assign:false nullable:false static:true initializable:true formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/executor
+range:(line 121,col 40)-(line 121,col 85)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+audioConstraints type:MediaConstraints dim:0 assign:false nullable:true static:false initializable:false formerRW:
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/audioConstraints
+range:(line 149,col 28)-(line 149,col 43)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+surfaceTextureHelper type:SurfaceTextureHelper dim:0 assign:false nullable:true static:false initializable:false formerRW:
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/surfaceTextureHelper
+range:(line 137,col 42)-(line 137,col 61)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+remoteSinks type:List<VideoSink> dim:0 assign:true nullable:true static:false initializable:false formerRW:
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/remoteSinks
+range:(line 144,col 37)-(line 144,col 47)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+signalingParameters type:SignalingParameters dim:0 assign:true nullable:true static:false initializable:false formerRW:
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/signalingParameters
+range:(line 145,col 31)-(line 145,col 49)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+events type:PeerConnectionEvents dim:0 assign:true nullable:true static:false initializable:false formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/events
+range:(line 129,col 38)-(line 129,col 43)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+localSdp type:SessionDescription dim:0 assign:false nullable:true static:false initializable:false formerRW:
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/localSdp
+range:(line 158,col 30)-(line 158,col 37)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+HD_VIDEO_HEIGHT type:int dim:0 assign:false nullable:false static:true initializable:true formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/HD_VIDEO_HEIGHT
+range:(line 114,col 28)-(line 114,col 48)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+localAudioTrack type:AudioTrack dim:0 assign:false nullable:true static:false initializable:false formerRW:
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/localAudioTrack
+range:(line 172,col 22)-(line 172,col 36)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+localVideoTrack type:VideoTrack dim:0 assign:false nullable:true static:false initializable:false formerRW:
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/localVideoTrack
+range:(line 164,col 22)-(line 164,col 36)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+RTCEVENTLOG_OUTPUT_DIR_NAME type:String dim:0 assign:false nullable:false static:true initializable:true formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/RTCEVENTLOG_OUTPUT_DIR_NAME
+range:(line 116,col 31)-(line 116,col 75)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+AUDIO_HIGH_PASS_FILTER_CONSTRAINT type:String dim:0 assign:false nullable:false static:true initializable:true formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/AUDIO_HIGH_PASS_FILTER_CONSTRAINT
+range:(line 110,col 31)-(line 110,col 86)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+videoCapturer type:VideoCapturer dim:0 assign:true nullable:true static:false initializable:false formerRW:
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/videoCapturer
+range:(line 160,col 25)-(line 160,col 37)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+HD_VIDEO_WIDTH type:int dim:0 assign:false nullable:false static:true initializable:true formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/HD_VIDEO_WIDTH
+range:(line 113,col 28)-(line 113,col 48)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+videoCapturerStopped type:boolean dim:0 assign:false nullable:true static:false initializable:false formerRW:
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/videoCapturerStopped
+range:(line 140,col 19)-(line 140,col 38)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+VIDEO_TRACK_ID type:String dim:0 assign:false nullable:false static:true initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/VIDEO_TRACK_ID
+range:(line 90,col 30)-(line 90,col 56)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+VIDEO_CODEC_VP8 type:String dim:0 assign:false nullable:false static:true initializable:true formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/VIDEO_CODEC_VP8
+range:(line 94,col 31)-(line 94,col 53)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+VIDEO_CODEC_VP9 type:String dim:0 assign:false nullable:false static:true initializable:true formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/VIDEO_CODEC_VP9
+range:(line 95,col 31)-(line 95,col 53)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+remoteVideoTrack type:VideoTrack dim:0 assign:false nullable:true static:false initializable:false formerRW:
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/remoteVideoTrack
+range:(line 166,col 22)-(line 166,col 37)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+AUDIO_ECHO_CANCELLATION_CONSTRAINT type:String dim:0 assign:false nullable:false static:true initializable:true formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/AUDIO_ECHO_CANCELLATION_CONSTRAINT
+range:(line 108,col 31)-(line 108,col 89)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+dataChannel type:DataChannel dim:0 assign:false nullable:true static:false initializable:false formerRW:
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/dataChannel
+range:(line 174,col 23)-(line 174,col 33)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+enableAudio type:boolean dim:0 assign:false nullable:false static:false initializable:true formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/enableAudio
+range:(line 170,col 19)-(line 170,col 36)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+BPS_IN_KBPS type:int dim:0 assign:false nullable:false static:true initializable:true formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/BPS_IN_KBPS
+range:(line 115,col 28)-(line 115,col 45)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+AUDIO_TRACK_ID type:String dim:0 assign:false nullable:false static:true initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/AUDIO_TRACK_ID
+range:(line 91,col 30)-(line 91,col 56)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+isInitiator type:boolean dim:0 assign:false nullable:true static:false initializable:false formerRW:
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/isInitiator
+range:(line 156,col 19)-(line 156,col 29)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+rtcEventLog type:RtcEventLog dim:0 assign:false nullable:true static:false initializable:false formerRW:
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/rtcEventLog
+range:(line 178,col 23)-(line 178,col 33)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+peerConnectionParameters type:PeerConnectionParameters dim:0 assign:true nullable:true static:false initializable:false formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/peerConnectionParameters
+range:(line 128,col 42)-(line 128,col 65)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+sdpObserver type:SDPObserver dim:0 assign:false nullable:false static:false initializable:true formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/sdpObserver
+range:(line 124,col 29)-(line 124,col 59)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+queuedRemoteCandidates type:List<IceCandidate> dim:0 assign:false nullable:true static:false initializable:false formerRW:
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/queuedRemoteCandidates
+range:(line 155,col 30)-(line 155,col 51)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+dataChannelEnabled type:boolean dim:0 assign:true nullable:true static:false initializable:false formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/dataChannelEnabled
+range:(line 175,col 25)-(line 175,col 42)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+videoFps type:int dim:0 assign:false nullable:true static:false initializable:false formerRW:
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/videoFps
+range:(line 148,col 15)-(line 148,col 22)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+AUDIO_CODEC_OPUS type:String dim:0 assign:false nullable:false static:true initializable:true formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/AUDIO_CODEC_OPUS
+range:(line 99,col 31)-(line 99,col 55)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+pcObserver type:PCObserver dim:0 assign:false nullable:false static:false initializable:true formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/pcObserver
+range:(line 123,col 28)-(line 123,col 56)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+isError type:boolean dim:0 assign:false nullable:true static:false initializable:false formerRW:
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/isError
+range:(line 141,col 19)-(line 141,col 25)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+statsTimer type:Timer dim:0 assign:false nullable:false static:false initializable:true formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/statsTimer
+range:(line 125,col 23)-(line 125,col 46)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+VIDEO_CODEC_H264 type:String dim:0 assign:false nullable:false static:true initializable:true formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/VIDEO_CODEC_H264
+range:(line 96,col 31)-(line 96,col 55)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+VIDEO_VP8_INTEL_HW_ENCODER_FIELDTRIAL type:String dim:0 assign:false nullable:false static:true initializable:true formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/VIDEO_VP8_INTEL_HW_ENCODER_FIELDTRIAL
+range:(line 104,col 31)-(line 104,col 96)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+VIDEO_CODEC_H264_HIGH type:String dim:0 assign:false nullable:false static:true initializable:true formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/VIDEO_CODEC_H264_HIGH
+range:(line 98,col 31)-(line 98,col 65)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+peerConnection type:PeerConnection dim:0 assign:false nullable:true static:false initializable:false formerRW:
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/peerConnection
+range:(line 134,col 26)-(line 134,col 39)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+AUDIO_CODEC_ISAC type:String dim:0 assign:false nullable:false static:true initializable:true formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/AUDIO_CODEC_ISAC
+range:(line 100,col 31)-(line 100,col 55)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+VIDEO_FLEXFEC_FIELDTRIAL type:String dim:0 assign:false nullable:false static:true initializable:true formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/VIDEO_FLEXFEC_FIELDTRIAL
+range:(line 102,col 31)-(line 103,col 71)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+DTLS_SRTP_KEY_AGREEMENT_CONSTRAINT type:String dim:0 assign:false nullable:false static:true initializable:true formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/DTLS_SRTP_KEY_AGREEMENT_CONSTRAINT
+range:(line 112,col 31)-(line 112,col 89)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+factory type:PeerConnectionFactory dim:0 assign:false nullable:true static:false initializable:false formerRW:
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/factory
+range:(line 132,col 33)-(line 132,col 39)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+localVideoSender type:RtpSender dim:0 assign:false nullable:true static:false initializable:false formerRW:
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/localVideoSender
+range:(line 168,col 21)-(line 168,col 36)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+VIDEO_CODEC_PARAM_START_BITRATE type:String dim:0 assign:false nullable:false static:true initializable:true formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/VIDEO_CODEC_PARAM_START_BITRATE
+range:(line 101,col 31)-(line 101,col 88)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+saveRecordedAudioToFile type:RecordedAudioToFileController dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/saveRecordedAudioToFile
+range:(line 182,col 41)-(line 182,col 70)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+AUDIO_NOISE_SUPPRESSION_CONSTRAINT type:String dim:0 assign:false nullable:false static:true initializable:true formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/AUDIO_NOISE_SUPPRESSION_CONSTRAINT
+range:(line 111,col 31)-(line 111,col 89)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+DISABLE_WEBRTC_AGC_FIELDTRIAL type:String dim:0 assign:false nullable:false static:true initializable:true formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/DISABLE_WEBRTC_AGC_FIELDTRIAL
+range:(line 105,col 31)-(line 106,col 56)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+appContext type:Context dim:0 assign:true nullable:true static:false initializable:false formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/appContext
+range:(line 127,col 25)-(line 127,col 34)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+TAG type:String dim:0 assign:false nullable:false static:true initializable:true formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/TAG
+range:(line 93,col 31)-(line 93,col 49)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+renderVideo type:boolean dim:0 assign:false nullable:false static:false initializable:true formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/renderVideo
+range:(line 162,col 19)-(line 162,col 36)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+VIDEO_TRACK_TYPE type:String dim:0 assign:false nullable:false static:true initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/VIDEO_TRACK_TYPE
+range:(line 92,col 30)-(line 92,col 55)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+rootEglBase type:EglBase dim:0 assign:true nullable:true static:false initializable:false formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/rootEglBase
+range:(line 126,col 25)-(line 126,col 35)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+all infomation:PeerConnectionClient
+name:PeerConnectionClient kind:Constructor isStatic:false range:(line 318,col 3)-(line 337,col 3)
+definition:/PeerConnectionClient/PeerConnectionClient
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:PeerConnectionClient
+eglBase type:EglBase dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/PeerConnectionClient/eglBase
+range:(line 318,col 51)-(line 318,col 65)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 318,col 3)-(line 337,col 3)]
+appContext type:Context dim:0 assign:true nullable:true static:false initializable:false formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/appContext
+range:(line 127,col 25)-(line 127,col 34)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+peerConnectionParameters type:PeerConnectionParameters dim:0 assign:true nullable:true static:false initializable:false formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/peerConnectionParameters
+range:(line 128,col 42)-(line 128,col 65)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+fieldTrials type:String dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/PeerConnectionClient/fieldTrials
+range:(line 328,col 18)-(line 328,col 71)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 318,col 3)-(line 337,col 3)]
+dataChannelEnabled type:boolean dim:0 assign:true nullable:true static:false initializable:false formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/dataChannelEnabled
+range:(line 175,col 25)-(line 175,col 42)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+events type:PeerConnectionEvents dim:0 assign:true nullable:true static:false initializable:false formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/events
+range:(line 129,col 38)-(line 129,col 43)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+rootEglBase type:EglBase dim:0 assign:true nullable:true static:false initializable:false formerRW:W
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/rootEglBase
+range:(line 126,col 25)-(line 126,col 35)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+dataChannelParameters type:DataChannelParameters dim:0 assign:true nullable:true static:false initializable:false formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/PeerConnectionParameters/dataChannelParameters
+range:(line 232,col 41)-(line 232,col 61)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 209,col 3)-(line 265,col 3)]
+name:execute kind:Lambda isStatic:false range:(line 329,col 22)-(line 336,col 5)
+definition:/PeerConnectionClient/PeerConnectionClient/execute/execute
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 318,col 3)-(line 337,col 3)]
+variable information:execute
+name:createPeerConnectionFactory kind:Method isStatic:false range:(line 342,col 3)-(line 347,col 3)
+definition:/PeerConnectionClient/createPeerConnectionFactory
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:createPeerConnectionFactory
+options type:PeerConnectionFactory.Options dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createPeerConnectionFactory/options
+range:(line 342,col 43)-(line 342,col 79)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 342,col 3)-(line 347,col 3)]
+name:If kind:If isStatic:false range:(line 343,col 26)-(line 345,col 5)
+definition:/PeerConnectionClient/createPeerConnectionFactory/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 342,col 3)-(line 347,col 3)]
+variable information:If
+name:execute kind:Lambda isStatic:false range:(line 346,col 22)-(line 346,col 71)
+definition:/PeerConnectionClient/createPeerConnectionFactory/execute/execute
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 342,col 3)-(line 347,col 3)]
+variable information:execute
+name:createPeerConnection kind:Method isStatic:false range:(line 349,col 3)-(line 356,col 3)
+definition:/PeerConnectionClient/createPeerConnection
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:createPeerConnection
+videoCallEnabled type:boolean dim:0 assign:true nullable:true static:false initializable:false formerRW:R
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/PeerConnectionParameters/videoCallEnabled
+range:(line 210,col 26)-(line 210,col 41)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 209,col 3)-(line 265,col 3)]
+videoCapturer type:VideoCapturer dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createPeerConnection/videoCapturer
+range:(line 350,col 7)-(line 350,col 39)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 349,col 3)-(line 356,col 3)]
+remoteSink type:VideoSink dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createPeerConnection/remoteSink
+range:(line 349,col 65)-(line 349,col 90)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 349,col 3)-(line 356,col 3)]
+localRender type:VideoSink dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createPeerConnection/localRender
+range:(line 349,col 36)-(line 349,col 62)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 349,col 3)-(line 356,col 3)]
+signalingParameters type:SignalingParameters dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createPeerConnection/signalingParameters
+range:(line 350,col 42)-(line 350,col 86)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 349,col 3)-(line 356,col 3)]
+name:If kind:If isStatic:false range:(line 351,col 77)-(line 353,col 5)
+definition:/PeerConnectionClient/createPeerConnection/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 349,col 3)-(line 356,col 3)]
+variable information:If
+name:createPeerConnection kind:Method isStatic:false range:(line 358,col 3)-(line 378,col 3)
+definition:/PeerConnectionClient/createPeerConnection
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:createPeerConnection
+videoCapturer type:VideoCapturer dim:0 assign:true nullable:true static:false initializable:false formerRW:
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/videoCapturer
+range:(line 160,col 25)-(line 160,col 37)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+localRender type:VideoSink dim:0 assign:true nullable:true static:false initializable:false formerRW:
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/localRender
+range:(line 143,col 21)-(line 143,col 31)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+remoteSinks type:List<VideoSink> dim:0 assign:true nullable:true static:false initializable:false formerRW:
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/remoteSinks
+range:(line 144,col 37)-(line 144,col 47)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+signalingParameters type:SignalingParameters dim:0 assign:true nullable:true static:false initializable:false formerRW:
+KotlinPrivate:true
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/signalingParameters
+range:(line 145,col 31)-(line 145,col 49)
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+name:If kind:If isStatic:false range:(line 360,col 43)-(line 363,col 5)
+definition:/PeerConnectionClient/createPeerConnection/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 358,col 3)-(line 378,col 3)]
+variable information:If
+name:execute kind:Lambda isStatic:false range:(line 368,col 22)-(line 377,col 5)
+definition:/PeerConnectionClient/createPeerConnection/execute/execute
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 358,col 3)-(line 378,col 3)]
+variable information:execute
+name:Try kind:Try isStatic:false range:(line 369,col 11)-(line 373,col 7)
+definition:/PeerConnectionClient/createPeerConnection/execute/execute/Try
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 358,col 3)-(line 378,col 3), (line 368,col 22)-(line 377,col 5)]
+variable information:Try
+name:Catch kind:Catch isStatic:false range:(line 373,col 9)-(line 376,col 7)
+definition:/PeerConnectionClient/createPeerConnection/execute/execute/Catch
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 358,col 3)-(line 378,col 3), (line 368,col 22)-(line 377,col 5)]
+variable information:Catch
+e type:Exception dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createPeerConnection/execute/execute/Catch/e
+range:(line 373,col 16)-(line 373,col 26)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 358,col 3)-(line 378,col 3), (line 368,col 22)-(line 377,col 5), (line 373,col 9)-(line 376,col 7)]
+name:close kind:Method isStatic:false range:(line 380,col 3)-(line 382,col 3)
+definition:/PeerConnectionClient/close
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:close
+name:isVideoCallEnabled kind:Method isStatic:false range:(line 384,col 3)-(line 386,col 3)
+definition:/PeerConnectionClient/isVideoCallEnabled
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:isVideoCallEnabled
+videoCallEnabled type:boolean dim:0 assign:true nullable:true static:false initializable:false formerRW:R
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/PeerConnectionParameters/videoCallEnabled
+range:(line 210,col 26)-(line 210,col 41)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 209,col 3)-(line 265,col 3)]
+name:createPeerConnectionFactoryInternal kind:Method isStatic:false range:(line 388,col 3)-(line 447,col 3)
+definition:/PeerConnectionClient/createPeerConnectionFactoryInternal
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:createPeerConnectionFactoryInternal
+enableH264HighProfile type:boolean dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createPeerConnectionFactoryInternal/enableH264HighProfile
+range:(line 425,col 19)-(line 426,col 73)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 388,col 3)-(line 447,col 3)]
+tracing type:boolean dim:0 assign:true nullable:true static:false initializable:false formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/PeerConnectionParameters/tracing
+range:(line 212,col 26)-(line 212,col 32)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 209,col 3)-(line 265,col 3)]
+useLegacyAudioDevice type:boolean dim:0 assign:true nullable:true static:false initializable:false formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/PeerConnectionParameters/useLegacyAudioDevice
+range:(line 231,col 26)-(line 231,col 45)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 209,col 3)-(line 265,col 3)]
+options type:PeerConnectionFactory.Options dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createPeerConnectionFactoryInternal/options
+range:(line 388,col 52)-(line 388,col 88)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 388,col 3)-(line 447,col 3)]
+videoCodecHwAcceleration type:boolean dim:0 assign:true nullable:true static:false initializable:false formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/PeerConnectionParameters/videoCodecHwAcceleration
+range:(line 218,col 26)-(line 218,col 49)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 209,col 3)-(line 265,col 3)]
+adm type:AudioDeviceModule dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createPeerConnectionFactoryInternal/adm
+range:(line 417,col 29)-(line 419,col 33)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 388,col 3)-(line 447,col 3)]
+decoderFactory type:VideoDecoderFactory dim:0 assign:true nullable:true static:false initializable:false formerRW:R
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createPeerConnectionFactoryInternal/decoderFactory
+range:(line 428,col 31)-(line 428,col 44)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 388,col 3)-(line 447,col 3)]
+audioCodec type:String dim:0 assign:true nullable:true static:false initializable:false formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/PeerConnectionParameters/audioCodec
+range:(line 221,col 25)-(line 221,col 34)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 209,col 3)-(line 265,col 3)]
+encoderFactory type:VideoEncoderFactory dim:0 assign:true nullable:true static:false initializable:false formerRW:R
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createPeerConnectionFactoryInternal/encoderFactory
+range:(line 427,col 31)-(line 427,col 44)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 388,col 3)-(line 447,col 3)]
+saveInputAudioToFile type:boolean dim:0 assign:true nullable:true static:false initializable:false formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/PeerConnectionParameters/saveInputAudioToFile
+range:(line 224,col 26)-(line 224,col 45)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 209,col 3)-(line 265,col 3)]
+videoCodec type:String dim:0 assign:true nullable:true static:false initializable:false formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/PeerConnectionParameters/videoCodec
+range:(line 217,col 25)-(line 217,col 34)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 209,col 3)-(line 265,col 3)]
+name:If kind:If isStatic:false range:(line 391,col 43)-(line 395,col 5)
+definition:/PeerConnectionClient/createPeerConnectionFactoryInternal/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 388,col 3)-(line 447,col 3)]
+variable information:If
+name:If kind:If isStatic:false range:(line 406,col 56)-(line 415,col 5)
+definition:/PeerConnectionClient/createPeerConnectionFactoryInternal/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 388,col 3)-(line 447,col 3)]
+variable information:If
+useOpenSLES type:boolean dim:0 assign:true nullable:true static:false initializable:false formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/PeerConnectionParameters/useOpenSLES
+range:(line 225,col 26)-(line 225,col 36)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 209,col 3)-(line 265,col 3)]
+name:If kind:If isStatic:false range:(line 407,col 50)-(line 410,col 7)
+definition:/PeerConnectionClient/createPeerConnectionFactoryInternal/if/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 388,col 3)-(line 447,col 3), (line 406,col 56)-(line 415,col 5)]
+variable information:If
+name:Else kind:Else isStatic:false range:(line 410,col 14)-(line 414,col 7)
+definition:/PeerConnectionClient/createPeerConnectionFactoryInternal/if/Else
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 388,col 3)-(line 447,col 3), (line 406,col 56)-(line 415,col 5)]
+variable information:Else
+name:If kind:If isStatic:false range:(line 422,col 26)-(line 424,col 5)
+definition:/PeerConnectionClient/createPeerConnectionFactoryInternal/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 388,col 3)-(line 447,col 3)]
+variable information:If
+name:If kind:If isStatic:false range:(line 430,col 60)-(line 434,col 5)
+definition:/PeerConnectionClient/createPeerConnectionFactoryInternal/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 388,col 3)-(line 447,col 3)]
+variable information:If
+name:Else kind:Else isStatic:false range:(line 434,col 12)-(line 437,col 5)
+definition:/PeerConnectionClient/createPeerConnectionFactoryInternal/Else
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 388,col 3)-(line 447,col 3)]
+variable information:Else
+name:createLegacyAudioDevice kind:Method isStatic:false range:(line 449,col 3)-(line 521,col 3)
+definition:/PeerConnectionClient/createLegacyAudioDevice
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:createLegacyAudioDevice
+useOpenSLES type:boolean dim:0 assign:true nullable:true static:false initializable:false formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/PeerConnectionParameters/useOpenSLES
+range:(line 225,col 26)-(line 225,col 36)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 209,col 3)-(line 265,col 3)]
+disableBuiltInNS type:boolean dim:0 assign:true nullable:true static:false initializable:false formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/PeerConnectionParameters/disableBuiltInNS
+range:(line 228,col 26)-(line 228,col 41)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 209,col 3)-(line 265,col 3)]
+disableBuiltInAEC type:boolean dim:0 assign:true nullable:true static:false initializable:false formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/PeerConnectionParameters/disableBuiltInAEC
+range:(line 226,col 26)-(line 226,col 42)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 209,col 3)-(line 265,col 3)]
+name:If kind:If isStatic:false range:(line 451,col 48)-(line 454,col 5)
+definition:/PeerConnectionClient/createLegacyAudioDevice/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 449,col 3)-(line 521,col 3)]
+variable information:If
+name:Else kind:Else isStatic:false range:(line 454,col 12)-(line 457,col 5)
+definition:/PeerConnectionClient/createLegacyAudioDevice/Else
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 449,col 3)-(line 521,col 3)]
+variable information:Else
+name:If kind:If isStatic:false range:(line 459,col 53)-(line 462,col 5)
+definition:/PeerConnectionClient/createLegacyAudioDevice/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 449,col 3)-(line 521,col 3)]
+variable information:If
+name:Else kind:Else isStatic:false range:(line 462,col 12)-(line 465,col 5)
+definition:/PeerConnectionClient/createLegacyAudioDevice/Else
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 449,col 3)-(line 521,col 3)]
+variable information:Else
+name:If kind:If isStatic:false range:(line 467,col 52)-(line 470,col 5)
+definition:/PeerConnectionClient/createLegacyAudioDevice/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 449,col 3)-(line 521,col 3)]
+variable information:If
+name:Else kind:Else isStatic:false range:(line 470,col 12)-(line 473,col 5)
+definition:/PeerConnectionClient/createLegacyAudioDevice/Else
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 449,col 3)-(line 521,col 3)]
+variable information:Else
+name:WebRtcAudioRecordErrorCallback kind:AnonymousClass isStatic:false range:(line 478,col 40)-(line 497,col 5)
+definition:/PeerConnectionClient/createLegacyAudioDevice/setErrorCallback/WebRtcAudioRecordErrorCallback
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 449,col 3)-(line 521,col 3)]
+variable information:WebRtcAudioRecordErrorCallback
+name:onWebRtcAudioRecordInitError kind:Method isStatic:false range:(line 479,col 7)-(line 483,col 7)
+definition:/PeerConnectionClient/createLegacyAudioDevice/setErrorCallback/WebRtcAudioRecordErrorCallback/onWebRtcAudioRecordInitError
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 449,col 3)-(line 521,col 3), (line 478,col 40)-(line 497,col 5)]
+variable information:onWebRtcAudioRecordInitError
+errorMessage type:String dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createLegacyAudioDevice/setErrorCallback/WebRtcAudioRecordErrorCallback/onWebRtcAudioRecordInitError/errorMessage
+range:(line 480,col 48)-(line 480,col 66)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 449,col 3)-(line 521,col 3), (line 478,col 40)-(line 497,col 5), (line 479,col 7)-(line 483,col 7)]
+name:onWebRtcAudioRecordStartError kind:Method isStatic:false range:(line 485,col 7)-(line 490,col 7)
+definition:/PeerConnectionClient/createLegacyAudioDevice/setErrorCallback/WebRtcAudioRecordErrorCallback/onWebRtcAudioRecordStartError
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 449,col 3)-(line 521,col 3), (line 478,col 40)-(line 497,col 5)]
+variable information:onWebRtcAudioRecordStartError
+errorMessage type:String dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createLegacyAudioDevice/setErrorCallback/WebRtcAudioRecordErrorCallback/onWebRtcAudioRecordStartError/errorMessage
+range:(line 487,col 48)-(line 487,col 66)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 449,col 3)-(line 521,col 3), (line 478,col 40)-(line 497,col 5), (line 485,col 7)-(line 490,col 7)]
+errorCode type:AudioRecordStartErrorCode dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createLegacyAudioDevice/setErrorCallback/WebRtcAudioRecordErrorCallback/onWebRtcAudioRecordStartError/errorCode
+range:(line 487,col 11)-(line 487,col 45)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 449,col 3)-(line 521,col 3), (line 478,col 40)-(line 497,col 5), (line 485,col 7)-(line 490,col 7)]
+name:onWebRtcAudioRecordError kind:Method isStatic:false range:(line 492,col 7)-(line 496,col 7)
+definition:/PeerConnectionClient/createLegacyAudioDevice/setErrorCallback/WebRtcAudioRecordErrorCallback/onWebRtcAudioRecordError
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 449,col 3)-(line 521,col 3), (line 478,col 40)-(line 497,col 5)]
+variable information:onWebRtcAudioRecordError
+errorMessage type:String dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createLegacyAudioDevice/setErrorCallback/WebRtcAudioRecordErrorCallback/onWebRtcAudioRecordError/errorMessage
+range:(line 493,col 44)-(line 493,col 62)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 449,col 3)-(line 521,col 3), (line 478,col 40)-(line 497,col 5), (line 492,col 7)-(line 496,col 7)]
+name:WebRtcAudioTrack.ErrorCallback kind:AnonymousClass isStatic:false range:(line 499,col 39)-(line 518,col 5)
+definition:/PeerConnectionClient/createLegacyAudioDevice/setErrorCallback/WebRtcAudioTrack.ErrorCallback
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 449,col 3)-(line 521,col 3)]
+variable information:WebRtcAudioTrack.ErrorCallback
+name:onWebRtcAudioTrackInitError kind:Method isStatic:false range:(line 500,col 7)-(line 504,col 7)
+definition:/PeerConnectionClient/createLegacyAudioDevice/setErrorCallback/WebRtcAudioTrack.ErrorCallback/onWebRtcAudioTrackInitError
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 449,col 3)-(line 521,col 3), (line 499,col 39)-(line 518,col 5)]
+variable information:onWebRtcAudioTrackInitError
+errorMessage type:String dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createLegacyAudioDevice/setErrorCallback/WebRtcAudioTrack.ErrorCallback/onWebRtcAudioTrackInitError/errorMessage
+range:(line 501,col 47)-(line 501,col 65)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 449,col 3)-(line 521,col 3), (line 499,col 39)-(line 518,col 5), (line 500,col 7)-(line 504,col 7)]
+name:onWebRtcAudioTrackStartError kind:Method isStatic:false range:(line 506,col 7)-(line 511,col 7)
+definition:/PeerConnectionClient/createLegacyAudioDevice/setErrorCallback/WebRtcAudioTrack.ErrorCallback/onWebRtcAudioTrackStartError
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 449,col 3)-(line 521,col 3), (line 499,col 39)-(line 518,col 5)]
+variable information:onWebRtcAudioTrackStartError
+errorMessage type:String dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createLegacyAudioDevice/setErrorCallback/WebRtcAudioTrack.ErrorCallback/onWebRtcAudioTrackStartError/errorMessage
+range:(line 508,col 47)-(line 508,col 65)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 449,col 3)-(line 521,col 3), (line 499,col 39)-(line 518,col 5), (line 506,col 7)-(line 511,col 7)]
+errorCode type:AudioTrackStartErrorCode dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createLegacyAudioDevice/setErrorCallback/WebRtcAudioTrack.ErrorCallback/onWebRtcAudioTrackStartError/errorCode
+range:(line 508,col 11)-(line 508,col 44)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 449,col 3)-(line 521,col 3), (line 499,col 39)-(line 518,col 5), (line 506,col 7)-(line 511,col 7)]
+name:onWebRtcAudioTrackError kind:Method isStatic:false range:(line 513,col 7)-(line 517,col 7)
+definition:/PeerConnectionClient/createLegacyAudioDevice/setErrorCallback/WebRtcAudioTrack.ErrorCallback/onWebRtcAudioTrackError
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 449,col 3)-(line 521,col 3), (line 499,col 39)-(line 518,col 5)]
+variable information:onWebRtcAudioTrackError
+errorMessage type:String dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createLegacyAudioDevice/setErrorCallback/WebRtcAudioTrack.ErrorCallback/onWebRtcAudioTrackError/errorMessage
+range:(line 514,col 43)-(line 514,col 61)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 449,col 3)-(line 521,col 3), (line 499,col 39)-(line 518,col 5), (line 513,col 7)-(line 517,col 7)]
+name:createJavaAudioDevice kind:Method isStatic:false range:(line 523,col 3)-(line 580,col 3)
+definition:/PeerConnectionClient/createJavaAudioDevice
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:createJavaAudioDevice
+useOpenSLES type:boolean dim:0 assign:true nullable:true static:false initializable:false formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/PeerConnectionParameters/useOpenSLES
+range:(line 225,col 26)-(line 225,col 36)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 209,col 3)-(line 265,col 3)]
+disableBuiltInNS type:boolean dim:0 assign:true nullable:true static:false initializable:false formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/PeerConnectionParameters/disableBuiltInNS
+range:(line 228,col 26)-(line 228,col 41)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 209,col 3)-(line 265,col 3)]
+audioTrackErrorCallback type:AudioTrackErrorCallback dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createJavaAudioDevice/audioTrackErrorCallback
+range:(line 552,col 29)-(line 571,col 5)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 523,col 3)-(line 580,col 3)]
+audioRecordErrorCallback type:AudioRecordErrorCallback dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createJavaAudioDevice/audioRecordErrorCallback
+range:(line 531,col 30)-(line 550,col 5)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 523,col 3)-(line 580,col 3)]
+disableBuiltInAEC type:boolean dim:0 assign:true nullable:true static:false initializable:false formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/PeerConnectionParameters/disableBuiltInAEC
+range:(line 226,col 26)-(line 226,col 42)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 209,col 3)-(line 265,col 3)]
+name:If kind:If isStatic:false range:(line 525,col 48)-(line 528,col 5)
+definition:/PeerConnectionClient/createJavaAudioDevice/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 523,col 3)-(line 580,col 3)]
+variable information:If
+name:AudioRecordErrorCallback kind:AnonymousClass isStatic:false range:(line 531,col 57)-(line 550,col 5)
+definition:/PeerConnectionClient/createJavaAudioDevice/audioRecordErrorCallback/AudioRecordErrorCallback
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 523,col 3)-(line 580,col 3)]
+variable information:AudioRecordErrorCallback
+name:onWebRtcAudioRecordInitError kind:Method isStatic:false range:(line 532,col 7)-(line 536,col 7)
+definition:/PeerConnectionClient/createJavaAudioDevice/audioRecordErrorCallback/AudioRecordErrorCallback/onWebRtcAudioRecordInitError
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 523,col 3)-(line 580,col 3), (line 531,col 57)-(line 550,col 5)]
+variable information:onWebRtcAudioRecordInitError
+errorMessage type:String dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createJavaAudioDevice/audioRecordErrorCallback/AudioRecordErrorCallback/onWebRtcAudioRecordInitError/errorMessage
+range:(line 533,col 48)-(line 533,col 66)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 523,col 3)-(line 580,col 3), (line 531,col 57)-(line 550,col 5), (line 532,col 7)-(line 536,col 7)]
+name:onWebRtcAudioRecordStartError kind:Method isStatic:false range:(line 538,col 7)-(line 543,col 7)
+definition:/PeerConnectionClient/createJavaAudioDevice/audioRecordErrorCallback/AudioRecordErrorCallback/onWebRtcAudioRecordStartError
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 523,col 3)-(line 580,col 3), (line 531,col 57)-(line 550,col 5)]
+variable information:onWebRtcAudioRecordStartError
+errorMessage type:String dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createJavaAudioDevice/audioRecordErrorCallback/AudioRecordErrorCallback/onWebRtcAudioRecordStartError/errorMessage
+range:(line 540,col 70)-(line 540,col 88)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 523,col 3)-(line 580,col 3), (line 531,col 57)-(line 550,col 5), (line 538,col 7)-(line 543,col 7)]
+errorCode type:JavaAudioDeviceModule.AudioRecordStartErrorCode dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createJavaAudioDevice/audioRecordErrorCallback/AudioRecordErrorCallback/onWebRtcAudioRecordStartError/errorCode
+range:(line 540,col 11)-(line 540,col 67)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 523,col 3)-(line 580,col 3), (line 531,col 57)-(line 550,col 5), (line 538,col 7)-(line 543,col 7)]
+name:onWebRtcAudioRecordError kind:Method isStatic:false range:(line 545,col 7)-(line 549,col 7)
+definition:/PeerConnectionClient/createJavaAudioDevice/audioRecordErrorCallback/AudioRecordErrorCallback/onWebRtcAudioRecordError
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 523,col 3)-(line 580,col 3), (line 531,col 57)-(line 550,col 5)]
+variable information:onWebRtcAudioRecordError
+errorMessage type:String dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createJavaAudioDevice/audioRecordErrorCallback/AudioRecordErrorCallback/onWebRtcAudioRecordError/errorMessage
+range:(line 546,col 44)-(line 546,col 62)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 523,col 3)-(line 580,col 3), (line 531,col 57)-(line 550,col 5), (line 545,col 7)-(line 549,col 7)]
+name:AudioTrackErrorCallback kind:AnonymousClass isStatic:false range:(line 552,col 55)-(line 571,col 5)
+definition:/PeerConnectionClient/createJavaAudioDevice/audioTrackErrorCallback/AudioTrackErrorCallback
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 523,col 3)-(line 580,col 3)]
+variable information:AudioTrackErrorCallback
+name:onWebRtcAudioTrackInitError kind:Method isStatic:false range:(line 553,col 7)-(line 557,col 7)
+definition:/PeerConnectionClient/createJavaAudioDevice/audioTrackErrorCallback/AudioTrackErrorCallback/onWebRtcAudioTrackInitError
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 523,col 3)-(line 580,col 3), (line 552,col 55)-(line 571,col 5)]
+variable information:onWebRtcAudioTrackInitError
+errorMessage type:String dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createJavaAudioDevice/audioTrackErrorCallback/AudioTrackErrorCallback/onWebRtcAudioTrackInitError/errorMessage
+range:(line 554,col 47)-(line 554,col 65)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 523,col 3)-(line 580,col 3), (line 552,col 55)-(line 571,col 5), (line 553,col 7)-(line 557,col 7)]
+name:onWebRtcAudioTrackStartError kind:Method isStatic:false range:(line 559,col 7)-(line 564,col 7)
+definition:/PeerConnectionClient/createJavaAudioDevice/audioTrackErrorCallback/AudioTrackErrorCallback/onWebRtcAudioTrackStartError
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 523,col 3)-(line 580,col 3), (line 552,col 55)-(line 571,col 5)]
+variable information:onWebRtcAudioTrackStartError
+errorMessage type:String dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createJavaAudioDevice/audioTrackErrorCallback/AudioTrackErrorCallback/onWebRtcAudioTrackStartError/errorMessage
+range:(line 561,col 69)-(line 561,col 87)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 523,col 3)-(line 580,col 3), (line 552,col 55)-(line 571,col 5), (line 559,col 7)-(line 564,col 7)]
+errorCode type:JavaAudioDeviceModule.AudioTrackStartErrorCode dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createJavaAudioDevice/audioTrackErrorCallback/AudioTrackErrorCallback/onWebRtcAudioTrackStartError/errorCode
+range:(line 561,col 11)-(line 561,col 66)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 523,col 3)-(line 580,col 3), (line 552,col 55)-(line 571,col 5), (line 559,col 7)-(line 564,col 7)]
+name:onWebRtcAudioTrackError kind:Method isStatic:false range:(line 566,col 7)-(line 570,col 7)
+definition:/PeerConnectionClient/createJavaAudioDevice/audioTrackErrorCallback/AudioTrackErrorCallback/onWebRtcAudioTrackError
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 523,col 3)-(line 580,col 3), (line 552,col 55)-(line 571,col 5)]
+variable information:onWebRtcAudioTrackError
+errorMessage type:String dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createJavaAudioDevice/audioTrackErrorCallback/AudioTrackErrorCallback/onWebRtcAudioTrackError/errorMessage
+range:(line 567,col 43)-(line 567,col 61)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 523,col 3)-(line 580,col 3), (line 552,col 55)-(line 571,col 5), (line 566,col 7)-(line 570,col 7)]
+name:createMediaConstraintsInternal kind:Method isStatic:false range:(line 582,col 3)-(line 622,col 3)
+definition:/PeerConnectionClient/createMediaConstraintsInternal
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:createMediaConstraintsInternal
+name:If kind:If isStatic:false range:(line 584,col 31)-(line 600,col 5)
+definition:/PeerConnectionClient/createMediaConstraintsInternal/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 582,col 3)-(line 622,col 3)]
+variable information:If
+name:If kind:If isStatic:false range:(line 590,col 48)-(line 593,col 7)
+definition:/PeerConnectionClient/createMediaConstraintsInternal/if/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 582,col 3)-(line 622,col 3), (line 584,col 31)-(line 600,col 5)]
+variable information:If
+name:If kind:If isStatic:false range:(line 596,col 26)-(line 598,col 7)
+definition:/PeerConnectionClient/createMediaConstraintsInternal/if/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 582,col 3)-(line 622,col 3), (line 584,col 31)-(line 600,col 5)]
+variable information:If
+name:If kind:If isStatic:false range:(line 605,col 53)-(line 615,col 5)
+definition:/PeerConnectionClient/createMediaConstraintsInternal/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 582,col 3)-(line 622,col 3)]
+variable information:If
+name:createPeerConnectionInternal kind:Method isStatic:false range:(line 624,col 3)-(line 700,col 3)
+definition:/PeerConnectionClient/createPeerConnectionInternal
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:createPeerConnectionInternal
+rtcConfig type:PeerConnection.RTCConfiguration dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createPeerConnectionInternal/rtcConfig
+range:(line 633,col 37)-(line 634,col 75)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 624,col 3)-(line 700,col 3)]
+mediaStreamLabels type:List<String> dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createPeerConnectionInternal/mediaStreamLabels
+range:(line 665,col 18)-(line 665,col 72)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 624,col 3)-(line 700,col 3)]
+name:If kind:If isStatic:false range:(line 625,col 37)-(line 628,col 5)
+definition:/PeerConnectionClient/createPeerConnectionInternal/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 624,col 3)-(line 700,col 3)]
+variable information:If
+name:If kind:If isStatic:false range:(line 649,col 29)-(line 658,col 5)
+definition:/PeerConnectionClient/createPeerConnectionInternal/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 624,col 3)-(line 700,col 3)]
+variable information:If
+init type:DataChannel.Init dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createPeerConnectionInternal/if/init
+range:(line 650,col 24)-(line 650,col 52)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 624,col 3)-(line 700,col 3), (line 649,col 29)-(line 658,col 5)]
+name:If kind:If isStatic:false range:(line 666,col 31)-(line 675,col 5)
+definition:/PeerConnectionClient/createPeerConnectionInternal/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 624,col 3)-(line 700,col 3)]
+variable information:If
+name:ForEach kind:ForEach isStatic:false range:(line 672,col 7)-(line 674,col 7)
+definition:/PeerConnectionClient/createPeerConnectionInternal/if/ForEach
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 624,col 3)-(line 700,col 3), (line 666,col 31)-(line 675,col 5)]
+variable information:ForEach
+remoteSink type:VideoSink dim:0 assign:true nullable:true static:false initializable:false formerRW:R
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createPeerConnectionInternal/if/ForEach/remoteSink
+range:(line 672,col 22)-(line 672,col 31)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 624,col 3)-(line 700,col 3), (line 666,col 31)-(line 675,col 5), (line 672,col 7)-(line 674,col 7)]
+name:If kind:If isStatic:false range:(line 677,col 31)-(line 679,col 5)
+definition:/PeerConnectionClient/createPeerConnectionInternal/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 624,col 3)-(line 700,col 3)]
+variable information:If
+name:If kind:If isStatic:false range:(line 681,col 43)-(line 692,col 5)
+definition:/PeerConnectionClient/createPeerConnectionInternal/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 624,col 3)-(line 700,col 3)]
+variable information:If
+name:Try kind:Try isStatic:false range:(line 682,col 11)-(line 689,col 7)
+definition:/PeerConnectionClient/createPeerConnectionInternal/if/Try
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 624,col 3)-(line 700,col 3), (line 681,col 43)-(line 692,col 5)]
+variable information:Try
+aecDumpFileDescriptor type:ParcelFileDescriptor dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createPeerConnectionInternal/if/Try/aecDumpFileDescriptor
+range:(line 683,col 30)-(line 687,col 57)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 624,col 3)-(line 700,col 3), (line 681,col 43)-(line 692,col 5), (line 682,col 11)-(line 689,col 7)]
+name:Catch kind:Catch isStatic:false range:(line 689,col 9)-(line 691,col 7)
+definition:/PeerConnectionClient/createPeerConnectionInternal/if/Catch
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 624,col 3)-(line 700,col 3), (line 681,col 43)-(line 692,col 5)]
+variable information:Catch
+e type:IOException dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createPeerConnectionInternal/if/Catch/e
+range:(line 689,col 16)-(line 689,col 28)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 624,col 3)-(line 700,col 3), (line 681,col 43)-(line 692,col 5), (line 689,col 9)-(line 691,col 7)]
+name:If kind:If isStatic:false range:(line 694,col 42)-(line 698,col 5)
+definition:/PeerConnectionClient/createPeerConnectionInternal/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 624,col 3)-(line 700,col 3)]
+variable information:If
+name:If kind:If isStatic:false range:(line 695,col 44)-(line 697,col 7)
+definition:/PeerConnectionClient/createPeerConnectionInternal/if/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 624,col 3)-(line 700,col 3), (line 694,col 42)-(line 698,col 5)]
+variable information:If
+name:createRtcEventLogOutputFile kind:Method isStatic:false range:(line 702,col 3)-(line 708,col 3)
+definition:/PeerConnectionClient/createRtcEventLogOutputFile
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:createRtcEventLogOutputFile
+date type:Date dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createRtcEventLogOutputFile/date
+range:(line 704,col 10)-(line 704,col 26)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 702,col 3)-(line 708,col 3)]
+outputFileName type:String dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createRtcEventLogOutputFile/outputFileName
+range:(line 705,col 18)-(line 705,col 81)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 702,col 3)-(line 708,col 3)]
+dateFormat type:DateFormat dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createRtcEventLogOutputFile/dateFormat
+range:(line 703,col 16)-(line 703,col 89)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 702,col 3)-(line 708,col 3)]
+name:maybeCreateAndStartRtcEventLog kind:Method isStatic:false range:(line 710,col 3)-(line 720,col 3)
+definition:/PeerConnectionClient/maybeCreateAndStartRtcEventLog
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:maybeCreateAndStartRtcEventLog
+name:If kind:If isStatic:false range:(line 711,col 55)-(line 713,col 5)
+definition:/PeerConnectionClient/maybeCreateAndStartRtcEventLog/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 710,col 3)-(line 720,col 3)]
+variable information:If
+name:If kind:If isStatic:false range:(line 714,col 54)-(line 717,col 5)
+definition:/PeerConnectionClient/maybeCreateAndStartRtcEventLog/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 710,col 3)-(line 720,col 3)]
+variable information:If
+name:closeInternal kind:Method isStatic:false range:(line 722,col 3)-(line 783,col 3)
+definition:/PeerConnectionClient/closeInternal
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:closeInternal
+name:If kind:If isStatic:false range:(line 723,col 62)-(line 725,col 5)
+definition:/PeerConnectionClient/closeInternal/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 722,col 3)-(line 783,col 3)]
+variable information:If
+name:If kind:If isStatic:false range:(line 728,col 30)-(line 731,col 5)
+definition:/PeerConnectionClient/closeInternal/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 722,col 3)-(line 783,col 3)]
+variable information:If
+name:If kind:If isStatic:false range:(line 732,col 30)-(line 736,col 5)
+definition:/PeerConnectionClient/closeInternal/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 722,col 3)-(line 783,col 3)]
+variable information:If
+name:If kind:If isStatic:false range:(line 737,col 33)-(line 740,col 5)
+definition:/PeerConnectionClient/closeInternal/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 722,col 3)-(line 783,col 3)]
+variable information:If
+name:If kind:If isStatic:false range:(line 742,col 30)-(line 745,col 5)
+definition:/PeerConnectionClient/closeInternal/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 722,col 3)-(line 783,col 3)]
+variable information:If
+name:If kind:If isStatic:false range:(line 747,col 32)-(line 756,col 5)
+definition:/PeerConnectionClient/closeInternal/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 722,col 3)-(line 783,col 3)]
+variable information:If
+name:Try kind:Try isStatic:false range:(line 748,col 11)-(line 750,col 7)
+definition:/PeerConnectionClient/closeInternal/if/Try
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 722,col 3)-(line 783,col 3), (line 747,col 32)-(line 756,col 5)]
+variable information:Try
+name:Catch kind:Catch isStatic:false range:(line 750,col 9)-(line 752,col 7)
+definition:/PeerConnectionClient/closeInternal/if/Catch
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 722,col 3)-(line 783,col 3), (line 747,col 32)-(line 756,col 5)]
+variable information:Catch
+e type:InterruptedException dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/closeInternal/if/Catch/e
+range:(line 750,col 16)-(line 750,col 37)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 722,col 3)-(line 783,col 3), (line 747,col 32)-(line 756,col 5), (line 750,col 9)-(line 752,col 7)]
+name:If kind:If isStatic:false range:(line 758,col 30)-(line 761,col 5)
+definition:/PeerConnectionClient/closeInternal/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 722,col 3)-(line 783,col 3)]
+variable information:If
+name:If kind:If isStatic:false range:(line 762,col 39)-(line 765,col 5)
+definition:/PeerConnectionClient/closeInternal/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 722,col 3)-(line 783,col 3)]
+variable information:If
+name:If kind:If isStatic:false range:(line 766,col 42)-(line 770,col 5)
+definition:/PeerConnectionClient/closeInternal/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 722,col 3)-(line 783,col 3)]
+variable information:If
+name:If kind:If isStatic:false range:(line 774,col 26)-(line 777,col 5)
+definition:/PeerConnectionClient/closeInternal/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 722,col 3)-(line 783,col 3)]
+variable information:If
+name:isHDVideo kind:Method isStatic:false range:(line 785,col 3)-(line 787,col 3)
+definition:/PeerConnectionClient/isHDVideo
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:isHDVideo
+name:getStats kind:Method isStatic:false range:(line 789,col 3)-(line 803,col 3)
+definition:/PeerConnectionClient/getStats
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:getStats
+success type:boolean dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/getStats/success
+range:(line 794,col 13)-(line 799,col 12)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 789,col 3)-(line 803,col 3)]
+name:If kind:If isStatic:false range:(line 791,col 44)-(line 793,col 5)
+definition:/PeerConnectionClient/getStats/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 789,col 3)-(line 803,col 3)]
+variable information:If
+name:StatsObserver kind:AnonymousClass isStatic:false range:(line 794,col 47)-(line 799,col 5)
+definition:/PeerConnectionClient/getStats/success/getStats/StatsObserver
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 789,col 3)-(line 803,col 3)]
+variable information:StatsObserver
+name:onComplete kind:Method isStatic:false range:(line 795,col 7)-(line 798,col 7)
+definition:/PeerConnectionClient/getStats/success/getStats/StatsObserver/onComplete
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 789,col 3)-(line 803,col 3), (line 794,col 47)-(line 799,col 5)]
+variable information:onComplete
+reports type:StatsReport[] dim:1 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/getStats/success/getStats/StatsObserver/onComplete/reports
+range:(line 796,col 30)-(line 796,col 56)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 789,col 3)-(line 803,col 3), (line 794,col 47)-(line 799,col 5), (line 795,col 7)-(line 798,col 7)]
+name:If kind:If isStatic:false range:(line 800,col 19)-(line 802,col 5)
+definition:/PeerConnectionClient/getStats/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 789,col 3)-(line 803,col 3)]
+variable information:If
+name:enableStatsEvents kind:Method isStatic:false range:(line 805,col 3)-(line 820,col 3)
+definition:/PeerConnectionClient/enableStatsEvents
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:enableStatsEvents
+enable type:boolean dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/enableStatsEvents/enable
+range:(line 805,col 33)-(line 805,col 46)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 805,col 3)-(line 820,col 3)]
+periodMs type:int dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/enableStatsEvents/periodMs
+range:(line 805,col 49)-(line 805,col 60)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 805,col 3)-(line 820,col 3)]
+name:If kind:If isStatic:false range:(line 806,col 17)-(line 817,col 5)
+definition:/PeerConnectionClient/enableStatsEvents/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 805,col 3)-(line 820,col 3)]
+variable information:If
+name:Try kind:Try isStatic:false range:(line 807,col 11)-(line 814,col 7)
+definition:/PeerConnectionClient/enableStatsEvents/if/Try
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 805,col 3)-(line 820,col 3), (line 806,col 17)-(line 817,col 5)]
+variable information:Try
+name:TimerTask kind:AnonymousClass isStatic:false range:(line 808,col 29)-(line 813,col 9)
+definition:/PeerConnectionClient/enableStatsEvents/if/Try/schedule/TimerTask
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 805,col 3)-(line 820,col 3), (line 806,col 17)-(line 817,col 5), (line 807,col 11)-(line 814,col 7)]
+variable information:TimerTask
+name:run kind:Method isStatic:false range:(line 809,col 11)-(line 812,col 11)
+definition:/PeerConnectionClient/enableStatsEvents/if/Try/schedule/TimerTask/run
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 805,col 3)-(line 820,col 3), (line 806,col 17)-(line 817,col 5), (line 807,col 11)-(line 814,col 7), (line 808,col 29)-(line 813,col 9)]
+variable information:run
+name:execute kind:Lambda isStatic:false range:(line 811,col 30)-(line 811,col 45)
+definition:/PeerConnectionClient/enableStatsEvents/if/Try/schedule/TimerTask/run/execute/execute
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 805,col 3)-(line 820,col 3), (line 806,col 17)-(line 817,col 5), (line 807,col 11)-(line 814,col 7), (line 808,col 29)-(line 813,col 9), (line 809,col 11)-(line 812,col 11)]
+variable information:execute
+name:Catch kind:Catch isStatic:false range:(line 814,col 9)-(line 816,col 7)
+definition:/PeerConnectionClient/enableStatsEvents/if/Catch
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 805,col 3)-(line 820,col 3), (line 806,col 17)-(line 817,col 5)]
+variable information:Catch
+e type:Exception dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/enableStatsEvents/if/Catch/e
+range:(line 814,col 16)-(line 814,col 26)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 805,col 3)-(line 820,col 3), (line 806,col 17)-(line 817,col 5), (line 814,col 9)-(line 816,col 7)]
+name:Else kind:Else isStatic:false range:(line 817,col 12)-(line 819,col 5)
+definition:/PeerConnectionClient/enableStatsEvents/Else
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 805,col 3)-(line 820,col 3)]
+variable information:Else
+name:setAudioEnabled kind:Method isStatic:false range:(line 822,col 3)-(line 829,col 3)
+definition:/PeerConnectionClient/setAudioEnabled
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:setAudioEnabled
+enable type:boolean dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/setAudioEnabled/enable
+range:(line 822,col 31)-(line 822,col 50)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 822,col 3)-(line 829,col 3)]
+name:execute kind:Lambda isStatic:false range:(line 823,col 22)-(line 828,col 5)
+definition:/PeerConnectionClient/setAudioEnabled/execute/execute
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 822,col 3)-(line 829,col 3)]
+variable information:execute
+name:If kind:If isStatic:false range:(line 825,col 36)-(line 827,col 7)
+definition:/PeerConnectionClient/setAudioEnabled/execute/execute/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 822,col 3)-(line 829,col 3), (line 823,col 22)-(line 828,col 5)]
+variable information:If
+name:setVideoEnabled kind:Method isStatic:false range:(line 831,col 3)-(line 841,col 3)
+definition:/PeerConnectionClient/setVideoEnabled
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:setVideoEnabled
+enable type:boolean dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/setVideoEnabled/enable
+range:(line 831,col 31)-(line 831,col 50)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 831,col 3)-(line 841,col 3)]
+name:execute kind:Lambda isStatic:false range:(line 832,col 22)-(line 840,col 5)
+definition:/PeerConnectionClient/setVideoEnabled/execute/execute
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 831,col 3)-(line 841,col 3)]
+variable information:execute
+name:If kind:If isStatic:false range:(line 834,col 36)-(line 836,col 7)
+definition:/PeerConnectionClient/setVideoEnabled/execute/execute/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 831,col 3)-(line 841,col 3), (line 832,col 22)-(line 840,col 5)]
+variable information:If
+name:If kind:If isStatic:false range:(line 837,col 37)-(line 839,col 7)
+definition:/PeerConnectionClient/setVideoEnabled/execute/execute/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 831,col 3)-(line 841,col 3), (line 832,col 22)-(line 840,col 5)]
+variable information:If
+name:createOffer kind:Method isStatic:false range:(line 843,col 3)-(line 851,col 3)
+definition:/PeerConnectionClient/createOffer
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:createOffer
+name:execute kind:Lambda isStatic:false range:(line 844,col 22)-(line 850,col 5)
+definition:/PeerConnectionClient/createOffer/execute/execute
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 843,col 3)-(line 851,col 3)]
+variable information:execute
+name:If kind:If isStatic:false range:(line 845,col 47)-(line 849,col 7)
+definition:/PeerConnectionClient/createOffer/execute/execute/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 843,col 3)-(line 851,col 3), (line 844,col 22)-(line 850,col 5)]
+variable information:If
+name:createAnswer kind:Method isStatic:false range:(line 853,col 3)-(line 861,col 3)
+definition:/PeerConnectionClient/createAnswer
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:createAnswer
+name:execute kind:Lambda isStatic:false range:(line 854,col 22)-(line 860,col 5)
+definition:/PeerConnectionClient/createAnswer/execute/execute
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 853,col 3)-(line 861,col 3)]
+variable information:execute
+name:If kind:If isStatic:false range:(line 855,col 47)-(line 859,col 7)
+definition:/PeerConnectionClient/createAnswer/execute/execute/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 853,col 3)-(line 861,col 3), (line 854,col 22)-(line 860,col 5)]
+variable information:If
+name:addRemoteIceCandidate kind:Method isStatic:false range:(line 863,col 3)-(line 873,col 3)
+definition:/PeerConnectionClient/addRemoteIceCandidate
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:addRemoteIceCandidate
+candidate type:IceCandidate dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/addRemoteIceCandidate/candidate
+range:(line 863,col 37)-(line 863,col 64)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 863,col 3)-(line 873,col 3)]
+name:execute kind:Lambda isStatic:false range:(line 864,col 22)-(line 872,col 5)
+definition:/PeerConnectionClient/addRemoteIceCandidate/execute/execute
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 863,col 3)-(line 873,col 3)]
+variable information:execute
+name:If kind:If isStatic:false range:(line 865,col 47)-(line 871,col 7)
+definition:/PeerConnectionClient/addRemoteIceCandidate/execute/execute/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 863,col 3)-(line 873,col 3), (line 864,col 22)-(line 872,col 5)]
+variable information:If
+name:If kind:If isStatic:false range:(line 866,col 45)-(line 868,col 9)
+definition:/PeerConnectionClient/addRemoteIceCandidate/execute/execute/if/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 863,col 3)-(line 873,col 3), (line 864,col 22)-(line 872,col 5), (line 865,col 47)-(line 871,col 7)]
+variable information:If
+name:Else kind:Else isStatic:false range:(line 868,col 16)-(line 870,col 9)
+definition:/PeerConnectionClient/addRemoteIceCandidate/execute/execute/if/Else
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 863,col 3)-(line 873,col 3), (line 864,col 22)-(line 872,col 5), (line 865,col 47)-(line 871,col 7)]
+variable information:Else
+name:removeRemoteIceCandidates kind:Method isStatic:false range:(line 875,col 3)-(line 885,col 3)
+definition:/PeerConnectionClient/removeRemoteIceCandidates
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:removeRemoteIceCandidates
+candidates type:IceCandidate[] dim:1 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/removeRemoteIceCandidates/candidates
+range:(line 875,col 41)-(line 875,col 71)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 875,col 3)-(line 885,col 3)]
+name:execute kind:Lambda isStatic:false range:(line 876,col 22)-(line 884,col 5)
+definition:/PeerConnectionClient/removeRemoteIceCandidates/execute/execute
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 875,col 3)-(line 885,col 3)]
+variable information:execute
+name:If kind:If isStatic:false range:(line 877,col 46)-(line 879,col 7)
+definition:/PeerConnectionClient/removeRemoteIceCandidates/execute/execute/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 875,col 3)-(line 885,col 3), (line 876,col 22)-(line 884,col 5)]
+variable information:If
+name:setRemoteDescription kind:Method isStatic:false range:(line 887,col 3)-(line 908,col 3)
+definition:/PeerConnectionClient/setRemoteDescription
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:setRemoteDescription
+sdp type:SessionDescription dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/setRemoteDescription/sdp
+range:(line 887,col 36)-(line 887,col 63)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 887,col 3)-(line 908,col 3)]
+name:execute kind:Lambda isStatic:false range:(line 888,col 22)-(line 907,col 5)
+definition:/PeerConnectionClient/setRemoteDescription/execute/execute
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 887,col 3)-(line 908,col 3)]
+variable information:execute
+sdpRemote type:SessionDescription dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/setRemoteDescription/execute/execute/sdpRemote
+range:(line 905,col 26)-(line 905,col 85)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 887,col 3)-(line 908,col 3), (line 888,col 22)-(line 907,col 5)]
+sdpDescription type:String dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/setRemoteDescription/execute/execute/sdpDescription
+range:(line 892,col 14)-(line 892,col 45)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 887,col 3)-(line 908,col 3), (line 888,col 22)-(line 907,col 5)]
+name:If kind:If isStatic:false range:(line 889,col 46)-(line 891,col 7)
+definition:/PeerConnectionClient/setRemoteDescription/execute/execute/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 887,col 3)-(line 908,col 3), (line 888,col 22)-(line 907,col 5)]
+variable information:If
+name:If kind:If isStatic:false range:(line 893,col 23)-(line 895,col 7)
+definition:/PeerConnectionClient/setRemoteDescription/execute/execute/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 887,col 3)-(line 908,col 3), (line 888,col 22)-(line 907,col 5)]
+variable information:If
+name:If kind:If isStatic:false range:(line 896,col 33)-(line 899,col 7)
+definition:/PeerConnectionClient/setRemoteDescription/execute/execute/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 887,col 3)-(line 908,col 3), (line 888,col 22)-(line 907,col 5)]
+variable information:If
+name:If kind:If isStatic:false range:(line 900,col 59)-(line 903,col 7)
+definition:/PeerConnectionClient/setRemoteDescription/execute/execute/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 887,col 3)-(line 908,col 3), (line 888,col 22)-(line 907,col 5)]
+variable information:If
+name:stopVideoSource kind:Method isStatic:false range:(line 910,col 3)-(line 921,col 3)
+definition:/PeerConnectionClient/stopVideoSource
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:stopVideoSource
+name:execute kind:Lambda isStatic:false range:(line 911,col 22)-(line 920,col 5)
+definition:/PeerConnectionClient/stopVideoSource/execute/execute
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 910,col 3)-(line 921,col 3)]
+variable information:execute
+name:If kind:If isStatic:false range:(line 912,col 59)-(line 919,col 7)
+definition:/PeerConnectionClient/stopVideoSource/execute/execute/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 910,col 3)-(line 921,col 3), (line 911,col 22)-(line 920,col 5)]
+variable information:If
+name:Try kind:Try isStatic:false range:(line 914,col 13)-(line 916,col 9)
+definition:/PeerConnectionClient/stopVideoSource/execute/execute/if/Try
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 910,col 3)-(line 921,col 3), (line 911,col 22)-(line 920,col 5), (line 912,col 59)-(line 919,col 7)]
+variable information:Try
+name:Catch kind:Catch isStatic:false range:(line 916,col 11)-(line 917,col 9)
+definition:/PeerConnectionClient/stopVideoSource/execute/execute/if/Catch
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 910,col 3)-(line 921,col 3), (line 911,col 22)-(line 920,col 5), (line 912,col 59)-(line 919,col 7)]
+variable information:Catch
+e type:InterruptedException dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/stopVideoSource/execute/execute/if/Catch/e
+range:(line 916,col 18)-(line 916,col 39)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 910,col 3)-(line 921,col 3), (line 911,col 22)-(line 920,col 5), (line 912,col 59)-(line 919,col 7), (line 916,col 11)-(line 917,col 9)]
+name:startVideoSource kind:Method isStatic:false range:(line 923,col 3)-(line 931,col 3)
+definition:/PeerConnectionClient/startVideoSource
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:startVideoSource
+name:execute kind:Lambda isStatic:false range:(line 924,col 22)-(line 930,col 5)
+definition:/PeerConnectionClient/startVideoSource/execute/execute
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 923,col 3)-(line 931,col 3)]
+variable information:execute
+name:If kind:If isStatic:false range:(line 925,col 58)-(line 929,col 7)
+definition:/PeerConnectionClient/startVideoSource/execute/execute/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 923,col 3)-(line 931,col 3), (line 924,col 22)-(line 930,col 5)]
+variable information:If
+name:setVideoMaxBitrate kind:Method isStatic:false range:(line 933,col 3)-(line 959,col 3)
+definition:/PeerConnectionClient/setVideoMaxBitrate
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:setVideoMaxBitrate
+maxBitrateKbps type:Integer dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/setVideoMaxBitrate/maxBitrateKbps
+range:(line 933,col 34)-(line 933,col 71)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 933,col 3)-(line 959,col 3)]
+name:execute kind:Lambda isStatic:false range:(line 934,col 22)-(line 958,col 5)
+definition:/PeerConnectionClient/setVideoMaxBitrate/execute/execute
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 933,col 3)-(line 959,col 3)]
+variable information:execute
+parameters type:RtpParameters dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/setVideoMaxBitrate/execute/execute/parameters
+range:(line 944,col 21)-(line 944,col 65)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 933,col 3)-(line 959,col 3), (line 934,col 22)-(line 958,col 5)]
+name:If kind:If isStatic:false range:(line 935,col 74)-(line 937,col 7)
+definition:/PeerConnectionClient/setVideoMaxBitrate/execute/execute/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 933,col 3)-(line 959,col 3), (line 934,col 22)-(line 958,col 5)]
+variable information:If
+name:If kind:If isStatic:false range:(line 939,col 37)-(line 942,col 7)
+definition:/PeerConnectionClient/setVideoMaxBitrate/execute/execute/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 933,col 3)-(line 959,col 3), (line 934,col 22)-(line 958,col 5)]
+variable information:If
+name:If kind:If isStatic:false range:(line 945,col 45)-(line 948,col 7)
+definition:/PeerConnectionClient/setVideoMaxBitrate/execute/execute/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 933,col 3)-(line 959,col 3), (line 934,col 22)-(line 958,col 5)]
+variable information:If
+name:ForEach kind:ForEach isStatic:false range:(line 950,col 7)-(line 953,col 7)
+definition:/PeerConnectionClient/setVideoMaxBitrate/execute/execute/ForEach
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 933,col 3)-(line 959,col 3), (line 934,col 22)-(line 958,col 5)]
+variable information:ForEach
+encoding type:RtpParameters.Encoding dim:0 assign:true nullable:true static:false initializable:false formerRW:R
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/setVideoMaxBitrate/execute/execute/ForEach/encoding
+range:(line 950,col 35)-(line 950,col 42)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 933,col 3)-(line 959,col 3), (line 934,col 22)-(line 958,col 5), (line 950,col 7)-(line 953,col 7)]
+name:If kind:If isStatic:false range:(line 954,col 56)-(line 956,col 7)
+definition:/PeerConnectionClient/setVideoMaxBitrate/execute/execute/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 933,col 3)-(line 959,col 3), (line 934,col 22)-(line 958,col 5)]
+variable information:If
+name:reportError kind:Method isStatic:false range:(line 961,col 3)-(line 969,col 3)
+definition:/PeerConnectionClient/reportError
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:reportError
+errorMessage type:String dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/reportError/errorMessage
+range:(line 961,col 28)-(line 961,col 52)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 961,col 3)-(line 969,col 3)]
+name:execute kind:Lambda isStatic:false range:(line 963,col 22)-(line 968,col 5)
+definition:/PeerConnectionClient/reportError/execute/execute
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 961,col 3)-(line 969,col 3)]
+variable information:execute
+name:If kind:If isStatic:false range:(line 964,col 21)-(line 967,col 7)
+definition:/PeerConnectionClient/reportError/execute/execute/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 961,col 3)-(line 969,col 3), (line 963,col 22)-(line 968,col 5)]
+variable information:If
+name:createAudioTrack kind:Method isStatic:false range:(line 971,col 3)-(line 977,col 3)
+definition:/PeerConnectionClient/createAudioTrack
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:createAudioTrack
+name:createVideoTrack kind:Method isStatic:false range:(line 979,col 3)-(line 991,col 3)
+definition:/PeerConnectionClient/createVideoTrack
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:createVideoTrack
+capturer type:VideoCapturer dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/createVideoTrack/capturer
+range:(line 980,col 39)-(line 980,col 60)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 979,col 3)-(line 991,col 3)]
+name:findVideoSender kind:Method isStatic:false range:(line 993,col 3)-(line 1003,col 3)
+definition:/PeerConnectionClient/findVideoSender
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:findVideoSender
+name:ForEach kind:ForEach isStatic:false range:(line 994,col 5)-(line 1002,col 5)
+definition:/PeerConnectionClient/findVideoSender/ForEach
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 993,col 3)-(line 1003,col 3)]
+variable information:ForEach
+sender type:RtpSender dim:0 assign:true nullable:true static:false initializable:false formerRW:R
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/findVideoSender/ForEach/sender
+range:(line 994,col 20)-(line 994,col 25)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 993,col 3)-(line 1003,col 3), (line 994,col 5)-(line 1002,col 5)]
+name:If kind:If isStatic:false range:(line 995,col 35)-(line 1001,col 7)
+definition:/PeerConnectionClient/findVideoSender/ForEach/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 993,col 3)-(line 1003,col 3), (line 994,col 5)-(line 1002,col 5)]
+variable information:If
+trackType type:String dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/findVideoSender/ForEach/if/trackType
+range:(line 996,col 16)-(line 996,col 48)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 993,col 3)-(line 1003,col 3), (line 994,col 5)-(line 1002,col 5), (line 995,col 35)-(line 1001,col 7)]
+name:If kind:If isStatic:false range:(line 997,col 49)-(line 1000,col 9)
+definition:/PeerConnectionClient/findVideoSender/ForEach/if/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 993,col 3)-(line 1003,col 3), (line 994,col 5)-(line 1002,col 5), (line 995,col 35)-(line 1001,col 7)]
+variable information:If
+name:getRemoteVideoTrack kind:Method isStatic:false range:(line 1006,col 3)-(line 1014,col 3)
+definition:/PeerConnectionClient/getRemoteVideoTrack
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:getRemoteVideoTrack
+name:ForEach kind:ForEach isStatic:false range:(line 1007,col 5)-(line 1012,col 5)
+definition:/PeerConnectionClient/getRemoteVideoTrack/ForEach
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1006,col 3)-(line 1014,col 3)]
+variable information:ForEach
+transceiver type:RtpTransceiver dim:0 assign:true nullable:true static:false initializable:false formerRW:R
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/getRemoteVideoTrack/ForEach/transceiver
+range:(line 1007,col 25)-(line 1007,col 35)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1006,col 3)-(line 1014,col 3), (line 1007,col 5)-(line 1012,col 5)]
+track type:MediaStreamTrack dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/getRemoteVideoTrack/ForEach/track
+range:(line 1008,col 24)-(line 1008,col 64)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1006,col 3)-(line 1014,col 3), (line 1007,col 5)-(line 1012,col 5)]
+name:If kind:If isStatic:false range:(line 1009,col 40)-(line 1011,col 7)
+definition:/PeerConnectionClient/getRemoteVideoTrack/ForEach/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1006,col 3)-(line 1014,col 3), (line 1007,col 5)-(line 1012,col 5)]
+variable information:If
+name:getSdpVideoCodecName kind:Method isStatic:true range:(line 1016,col 3)-(line 1028,col 3)
+definition:/PeerConnectionClient/getSdpVideoCodecName
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:getSdpVideoCodecName
+parameters type:PeerConnectionParameters dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/getSdpVideoCodecName/parameters
+range:(line 1016,col 46)-(line 1016,col 80)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1016,col 3)-(line 1028,col 3)]
+name:Switch kind:Switch isStatic:false range:(line 1017,col 5)-(line 1027,col 5)
+definition:/PeerConnectionClient/getSdpVideoCodecName/Switch
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1016,col 3)-(line 1028,col 3)]
+variable information:Switch
+name:SwitchEntry kind:SwitchEntry isStatic:false range:(line 1018,col 7)-(line 1019,col 31)
+definition:/PeerConnectionClient/getSdpVideoCodecName/Switch/VIDEO_CODEC_VP8
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1016,col 3)-(line 1028,col 3), (line 1017,col 5)-(line 1027,col 5)]
+variable information:SwitchEntry
+name:SwitchEntry kind:SwitchEntry isStatic:false range:(line 1020,col 7)-(line 1021,col 31)
+definition:/PeerConnectionClient/getSdpVideoCodecName/Switch/VIDEO_CODEC_VP9
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1016,col 3)-(line 1028,col 3), (line 1017,col 5)-(line 1027,col 5)]
+variable information:SwitchEntry
+name:SwitchEntry kind:SwitchEntry isStatic:false range:(line 1022,col 7)-(line 1022,col 33)
+definition:/PeerConnectionClient/getSdpVideoCodecName/Switch/VIDEO_CODEC_H264_HIGH
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1016,col 3)-(line 1028,col 3), (line 1017,col 5)-(line 1027,col 5)]
+variable information:SwitchEntry
+name:SwitchEntry kind:SwitchEntry isStatic:false range:(line 1023,col 7)-(line 1024,col 32)
+definition:/PeerConnectionClient/getSdpVideoCodecName/Switch/VIDEO_CODEC_H264_BASELINE
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1016,col 3)-(line 1028,col 3), (line 1017,col 5)-(line 1027,col 5)]
+variable information:SwitchEntry
+name:SwitchEntry kind:SwitchEntry isStatic:false range:(line 1025,col 7)-(line 1026,col 31)
+definition:/PeerConnectionClient/getSdpVideoCodecName/Switch/default
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1016,col 3)-(line 1028,col 3), (line 1017,col 5)-(line 1027,col 5)]
+variable information:SwitchEntry
+name:getFieldTrials kind:Method isStatic:true range:(line 1030,col 3)-(line 1042,col 3)
+definition:/PeerConnectionClient/getFieldTrials
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:getFieldTrials
+peerConnectionParameters type:PeerConnectionParameters dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/getFieldTrials/peerConnectionParameters
+range:(line 1030,col 40)-(line 1030,col 88)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1030,col 3)-(line 1042,col 3)]
+fieldTrials type:String dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/getFieldTrials/fieldTrials
+range:(line 1031,col 12)-(line 1031,col 27)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1030,col 3)-(line 1042,col 3)]
+name:If kind:If isStatic:false range:(line 1032,col 55)-(line 1035,col 5)
+definition:/PeerConnectionClient/getFieldTrials/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1030,col 3)-(line 1042,col 3)]
+variable information:If
+name:If kind:If isStatic:false range:(line 1037,col 58)-(line 1040,col 5)
+definition:/PeerConnectionClient/getFieldTrials/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1030,col 3)-(line 1042,col 3)]
+variable information:If
+name:setStartBitrate kind:Method isStatic:true range:(line 1044,col 3)-(line 1106,col 3)
+definition:/PeerConnectionClient/setStartBitrate
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:setStartBitrate
+codec type:String dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/setStartBitrate/codec
+range:(line 1046,col 7)-(line 1046,col 18)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1044,col 3)-(line 1106,col 3)]
+bitrateKbps type:int dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/setStartBitrate/bitrateKbps
+range:(line 1046,col 66)-(line 1046,col 80)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1044,col 3)-(line 1106,col 3)]
+regex type:String dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/setStartBitrate/regex
+range:(line 1053,col 12)-(line 1053,col 65)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1044,col 3)-(line 1106,col 3)]
+sdpFormatUpdated type:boolean dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/setStartBitrate/sdpFormatUpdated
+range:(line 1049,col 13)-(line 1049,col 36)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1044,col 3)-(line 1106,col 3)]
+codecPattern type:Pattern dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/setStartBitrate/codecPattern
+range:(line 1054,col 13)-(line 1054,col 49)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1044,col 3)-(line 1106,col 3)]
+isVideoCodec type:boolean dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/setStartBitrate/isVideoCodec
+range:(line 1046,col 21)-(line 1046,col 40)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1044,col 3)-(line 1106,col 3)]
+sdpDescription type:String dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/setStartBitrate/sdpDescription
+range:(line 1046,col 43)-(line 1046,col 63)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1044,col 3)-(line 1106,col 3)]
+newSdpDescription type:StringBuilder dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/setStartBitrate/newSdpDescription
+range:(line 1088,col 19)-(line 1088,col 57)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1044,col 3)-(line 1106,col 3)]
+lines type:String[] dim:1 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/setStartBitrate/lines
+range:(line 1047,col 14)-(line 1047,col 49)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1044,col 3)-(line 1106,col 3)]
+codecRtpMap type:String dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/setStartBitrate/codecRtpMap
+range:(line 1050,col 12)-(line 1050,col 29)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1044,col 3)-(line 1106,col 3)]
+rtpmapLineIndex type:int dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/setStartBitrate/rtpmapLineIndex
+range:(line 1048,col 9)-(line 1048,col 28)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1044,col 3)-(line 1106,col 3)]
+name:For kind:For isStatic:false range:(line 1055,col 5)-(line 1062,col 5)
+definition:/PeerConnectionClient/setStartBitrate/For
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1044,col 3)-(line 1106,col 3)]
+variable information:For
+i type:int dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/setStartBitrate/For/i
+range:(line 1055,col 14)-(line 1055,col 18)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1044,col 3)-(line 1106,col 3), (line 1055,col 5)-(line 1062,col 5)]
+codecMatcher type:Matcher dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/setStartBitrate/For/codecMatcher
+range:(line 1056,col 15)-(line 1056,col 59)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1044,col 3)-(line 1106,col 3), (line 1055,col 5)-(line 1062,col 5)]
+name:If kind:If isStatic:false range:(line 1057,col 35)-(line 1061,col 7)
+definition:/PeerConnectionClient/setStartBitrate/For/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1044,col 3)-(line 1106,col 3), (line 1055,col 5)-(line 1062,col 5)]
+variable information:If
+name:If kind:If isStatic:false range:(line 1063,col 30)-(line 1066,col 5)
+definition:/PeerConnectionClient/setStartBitrate/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1044,col 3)-(line 1106,col 3)]
+variable information:If
+name:For kind:For isStatic:false range:(line 1073,col 5)-(line 1086,col 5)
+definition:/PeerConnectionClient/setStartBitrate/For
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1044,col 3)-(line 1106,col 3)]
+variable information:For
+i type:int dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/setStartBitrate/For/i
+range:(line 1073,col 14)-(line 1073,col 18)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1044,col 3)-(line 1106,col 3), (line 1073,col 5)-(line 1086,col 5)]
+codecMatcher type:Matcher dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/setStartBitrate/For/codecMatcher
+range:(line 1074,col 15)-(line 1074,col 59)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1044,col 3)-(line 1106,col 3), (line 1073,col 5)-(line 1086,col 5)]
+name:If kind:If isStatic:false range:(line 1075,col 35)-(line 1085,col 7)
+definition:/PeerConnectionClient/setStartBitrate/For/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1044,col 3)-(line 1106,col 3), (line 1073,col 5)-(line 1086,col 5)]
+variable information:If
+name:If kind:If isStatic:false range:(line 1077,col 27)-(line 1079,col 9)
+definition:/PeerConnectionClient/setStartBitrate/For/if/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1044,col 3)-(line 1106,col 3), (line 1073,col 5)-(line 1086,col 5), (line 1075,col 35)-(line 1085,col 7)]
+variable information:If
+name:Else kind:Else isStatic:false range:(line 1079,col 16)-(line 1081,col 9)
+definition:/PeerConnectionClient/setStartBitrate/For/if/Else
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1044,col 3)-(line 1106,col 3), (line 1073,col 5)-(line 1086,col 5), (line 1075,col 35)-(line 1085,col 7)]
+variable information:Else
+name:For kind:For isStatic:false range:(line 1089,col 5)-(line 1104,col 5)
+definition:/PeerConnectionClient/setStartBitrate/For
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1044,col 3)-(line 1106,col 3)]
+variable information:For
+i type:int dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/setStartBitrate/For/i
+range:(line 1089,col 14)-(line 1089,col 18)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1044,col 3)-(line 1106,col 3), (line 1089,col 5)-(line 1104,col 5)]
+name:If kind:If isStatic:false range:(line 1092,col 54)-(line 1103,col 7)
+definition:/PeerConnectionClient/setStartBitrate/For/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1044,col 3)-(line 1106,col 3), (line 1089,col 5)-(line 1104,col 5)]
+variable information:If
+bitrateSet type:String dim:0 assign:true nullable:true static:false initializable:false formerRW:R
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/setStartBitrate/For/if/bitrateSet
+range:(line 1093,col 16)-(line 1093,col 25)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1044,col 3)-(line 1106,col 3), (line 1089,col 5)-(line 1104,col 5), (line 1092,col 54)-(line 1103,col 7)]
+name:If kind:If isStatic:false range:(line 1094,col 27)-(line 1097,col 9)
+definition:/PeerConnectionClient/setStartBitrate/For/if/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1044,col 3)-(line 1106,col 3), (line 1089,col 5)-(line 1104,col 5), (line 1092,col 54)-(line 1103,col 7)]
+variable information:If
+name:Else kind:Else isStatic:false range:(line 1097,col 16)-(line 1100,col 9)
+definition:/PeerConnectionClient/setStartBitrate/For/if/Else
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1044,col 3)-(line 1106,col 3), (line 1089,col 5)-(line 1104,col 5), (line 1092,col 54)-(line 1103,col 7)]
+variable information:Else
+name:findMediaDescriptionLine kind:Method isStatic:true range:(line 1109,col 3)-(line 1117,col 3)
+definition:/PeerConnectionClient/findMediaDescriptionLine
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:findMediaDescriptionLine
+mediaDescription type:String dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/findMediaDescriptionLine/mediaDescription
+range:(line 1110,col 18)-(line 1110,col 69)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1109,col 3)-(line 1117,col 3)]
+sdpLines type:String[] dim:1 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/findMediaDescriptionLine/sdpLines
+range:(line 1109,col 64)-(line 1109,col 80)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1109,col 3)-(line 1117,col 3)]
+isAudio type:boolean dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/findMediaDescriptionLine/isAudio
+range:(line 1109,col 47)-(line 1109,col 61)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1109,col 3)-(line 1117,col 3)]
+name:For kind:For isStatic:false range:(line 1111,col 5)-(line 1115,col 5)
+definition:/PeerConnectionClient/findMediaDescriptionLine/For
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1109,col 3)-(line 1117,col 3)]
+variable information:For
+i type:int dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/findMediaDescriptionLine/For/i
+range:(line 1111,col 14)-(line 1111,col 18)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1109,col 3)-(line 1117,col 3), (line 1111,col 5)-(line 1115,col 5)]
+name:If kind:If isStatic:false range:(line 1112,col 53)-(line 1114,col 7)
+definition:/PeerConnectionClient/findMediaDescriptionLine/For/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1109,col 3)-(line 1117,col 3), (line 1111,col 5)-(line 1115,col 5)]
+variable information:If
+name:joinString kind:Method isStatic:true range:(line 1119,col 3)-(line 1133,col 3)
+definition:/PeerConnectionClient/joinString
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:joinString
+s type:Iterable<? extends CharSequence> dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/joinString/s
+range:(line 1120,col 7)-(line 1120,col 40)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1119,col 3)-(line 1133,col 3)]
+delimiter type:String dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/joinString/delimiter
+range:(line 1120,col 43)-(line 1120,col 58)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1119,col 3)-(line 1133,col 3)]
+iter type:Iterator<? extends CharSequence> dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/joinString/iter
+range:(line 1121,col 38)-(line 1121,col 56)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1119,col 3)-(line 1133,col 3)]
+delimiterAtEnd type:boolean dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/joinString/delimiterAtEnd
+range:(line 1120,col 61)-(line 1120,col 82)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1119,col 3)-(line 1133,col 3)]
+buffer type:StringBuilder dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/joinString/buffer
+range:(line 1125,col 19)-(line 1125,col 57)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1119,col 3)-(line 1133,col 3)]
+name:If kind:If isStatic:false range:(line 1122,col 26)-(line 1124,col 5)
+definition:/PeerConnectionClient/joinString/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1119,col 3)-(line 1133,col 3)]
+variable information:If
+name:While kind:While isStatic:false range:(line 1126,col 5)-(line 1128,col 5)
+definition:/PeerConnectionClient/joinString/While
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1119,col 3)-(line 1133,col 3)]
+variable information:While
+name:If kind:If isStatic:false range:(line 1129,col 25)-(line 1131,col 5)
+definition:/PeerConnectionClient/joinString/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1119,col 3)-(line 1133,col 3)]
+variable information:If
+name:movePayloadTypesToFront kind:Method isStatic:true range:(line 1135,col 3)-(line 1154,col 3)
+definition:/PeerConnectionClient/movePayloadTypesToFront
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:movePayloadTypesToFront
+unpreferredPayloadTypes type:List<String> dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/movePayloadTypesToFront/unpreferredPayloadTypes
+range:(line 1144,col 24)-(line 1145,col 71)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1135,col 3)-(line 1154,col 3)]
+preferredPayloadTypes type:List<String> dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/movePayloadTypesToFront/preferredPayloadTypes
+range:(line 1136,col 7)-(line 1136,col 40)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1135,col 3)-(line 1154,col 3)]
+mLine type:String dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/movePayloadTypesToFront/mLine
+range:(line 1136,col 43)-(line 1136,col 54)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1135,col 3)-(line 1154,col 3)]
+origLineParts type:List<String> dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/movePayloadTypesToFront/origLineParts
+range:(line 1138,col 24)-(line 1138,col 70)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1135,col 3)-(line 1154,col 3)]
+newLineParts type:List<String> dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/movePayloadTypesToFront/newLineParts
+range:(line 1149,col 24)-(line 1149,col 55)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1135,col 3)-(line 1154,col 3)]
+header type:List<String> dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/movePayloadTypesToFront/header
+range:(line 1143,col 24)-(line 1143,col 59)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1135,col 3)-(line 1154,col 3)]
+name:If kind:If isStatic:false range:(line 1139,col 36)-(line 1142,col 5)
+definition:/PeerConnectionClient/movePayloadTypesToFront/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1135,col 3)-(line 1154,col 3)]
+variable information:If
+name:preferCodec kind:Method isStatic:true range:(line 1156,col 3)-(line 1186,col 3)
+definition:/PeerConnectionClient/preferCodec
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:preferCodec
+codec type:String dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/preferCodec/codec
+range:(line 1156,col 60)-(line 1156,col 71)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1156,col 3)-(line 1186,col 3)]
+mLineIndex type:int dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/preferCodec/mLineIndex
+range:(line 1158,col 15)-(line 1158,col 67)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1156,col 3)-(line 1186,col 3)]
+codecPattern type:Pattern dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/preferCodec/codecPattern
+range:(line 1167,col 19)-(line 1167,col 96)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1156,col 3)-(line 1186,col 3)]
+newMLine type:String dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/preferCodec/newMLine
+range:(line 1179,col 18)-(line 1179,col 89)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1156,col 3)-(line 1186,col 3)]
+sdpDescription type:String dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/preferCodec/sdpDescription
+range:(line 1156,col 37)-(line 1156,col 57)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1156,col 3)-(line 1186,col 3)]
+isAudio type:boolean dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/preferCodec/isAudio
+range:(line 1156,col 74)-(line 1156,col 88)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1156,col 3)-(line 1186,col 3)]
+lines type:String[] dim:1 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/preferCodec/lines
+range:(line 1157,col 20)-(line 1157,col 55)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1156,col 3)-(line 1186,col 3)]
+codecPayloadTypes type:List<String> dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/preferCodec/codecPayloadTypes
+range:(line 1165,col 24)-(line 1165,col 60)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1156,col 3)-(line 1186,col 3)]
+name:If kind:If isStatic:false range:(line 1159,col 27)-(line 1162,col 5)
+definition:/PeerConnectionClient/preferCodec/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1156,col 3)-(line 1186,col 3)]
+variable information:If
+name:ForEach kind:ForEach isStatic:false range:(line 1168,col 5)-(line 1173,col 5)
+definition:/PeerConnectionClient/preferCodec/ForEach
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1156,col 3)-(line 1186,col 3)]
+variable information:ForEach
+line type:String dim:0 assign:true nullable:true static:false initializable:false formerRW:R
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/preferCodec/ForEach/line
+range:(line 1168,col 17)-(line 1168,col 20)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1156,col 3)-(line 1186,col 3), (line 1168,col 5)-(line 1173,col 5)]
+codecMatcher type:Matcher dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/preferCodec/ForEach/codecMatcher
+range:(line 1169,col 15)-(line 1169,col 55)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1156,col 3)-(line 1186,col 3), (line 1168,col 5)-(line 1173,col 5)]
+name:If kind:If isStatic:false range:(line 1170,col 35)-(line 1172,col 7)
+definition:/PeerConnectionClient/preferCodec/ForEach/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1156,col 3)-(line 1186,col 3), (line 1168,col 5)-(line 1173,col 5)]
+variable information:If
+name:If kind:If isStatic:false range:(line 1174,col 38)-(line 1177,col 5)
+definition:/PeerConnectionClient/preferCodec/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1156,col 3)-(line 1186,col 3)]
+variable information:If
+name:If kind:If isStatic:false range:(line 1180,col 27)-(line 1182,col 5)
+definition:/PeerConnectionClient/preferCodec/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1156,col 3)-(line 1186,col 3)]
+variable information:If
+name:drainCandidates kind:Method isStatic:false range:(line 1188,col 3)-(line 1196,col 3)
+definition:/PeerConnectionClient/drainCandidates
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:drainCandidates
+name:If kind:If isStatic:false range:(line 1189,col 41)-(line 1195,col 5)
+definition:/PeerConnectionClient/drainCandidates/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1188,col 3)-(line 1196,col 3)]
+variable information:If
+name:ForEach kind:ForEach isStatic:false range:(line 1191,col 7)-(line 1193,col 7)
+definition:/PeerConnectionClient/drainCandidates/if/ForEach
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1188,col 3)-(line 1196,col 3), (line 1189,col 41)-(line 1195,col 5)]
+variable information:ForEach
+candidate type:IceCandidate dim:0 assign:true nullable:true static:false initializable:false formerRW:R
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/drainCandidates/if/ForEach/candidate
+range:(line 1191,col 25)-(line 1191,col 33)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1188,col 3)-(line 1196,col 3), (line 1189,col 41)-(line 1195,col 5), (line 1191,col 7)-(line 1193,col 7)]
+name:switchCameraInternal kind:Method isStatic:false range:(line 1198,col 3)-(line 1211,col 3)
+definition:/PeerConnectionClient/switchCameraInternal
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:switchCameraInternal
+name:If kind:If isStatic:false range:(line 1199,col 55)-(line 1208,col 5)
+definition:/PeerConnectionClient/switchCameraInternal/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1198,col 3)-(line 1211,col 3)]
+variable information:If
+cameraVideoCapturer type:CameraVideoCapturer dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/switchCameraInternal/if/cameraVideoCapturer
+range:(line 1206,col 27)-(line 1206,col 83)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1198,col 3)-(line 1211,col 3), (line 1199,col 55)-(line 1208,col 5)]
+name:If kind:If isStatic:false range:(line 1200,col 45)-(line 1204,col 7)
+definition:/PeerConnectionClient/switchCameraInternal/if/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1198,col 3)-(line 1211,col 3), (line 1199,col 55)-(line 1208,col 5)]
+variable information:If
+name:Else kind:Else isStatic:false range:(line 1208,col 12)-(line 1210,col 5)
+definition:/PeerConnectionClient/switchCameraInternal/Else
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1198,col 3)-(line 1211,col 3)]
+variable information:Else
+name:switchCamera kind:Method isStatic:false range:(line 1213,col 3)-(line 1215,col 3)
+definition:/PeerConnectionClient/switchCamera
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:switchCamera
+name:changeCaptureFormat kind:Method isStatic:false range:(line 1217,col 3)-(line 1219,col 3)
+definition:/PeerConnectionClient/changeCaptureFormat
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:changeCaptureFormat
+framerate type:int dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/changeCaptureFormat/framerate
+range:(line 1217,col 70)-(line 1217,col 88)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1217,col 3)-(line 1219,col 3)]
+width type:int dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/changeCaptureFormat/width
+range:(line 1217,col 35)-(line 1217,col 49)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1217,col 3)-(line 1219,col 3)]
+height type:int dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/changeCaptureFormat/height
+range:(line 1217,col 52)-(line 1217,col 67)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1217,col 3)-(line 1219,col 3)]
+name:execute kind:Lambda isStatic:false range:(line 1218,col 22)-(line 1218,col 80)
+definition:/PeerConnectionClient/changeCaptureFormat/execute/execute
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1217,col 3)-(line 1219,col 3)]
+variable information:execute
+name:changeCaptureFormatInternal kind:Method isStatic:false range:(line 1221,col 3)-(line 1230,col 3)
+definition:/PeerConnectionClient/changeCaptureFormatInternal
+rangeIN:[(line 89,col 1)-(line 1396,col 1)]
+variable information:changeCaptureFormatInternal
+framerate type:int dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/changeCaptureFormatInternal/framerate
+range:(line 1221,col 67)-(line 1221,col 79)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1221,col 3)-(line 1230,col 3)]
+width type:int dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/changeCaptureFormatInternal/width
+range:(line 1221,col 44)-(line 1221,col 52)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1221,col 3)-(line 1230,col 3)]
+height type:int dim:0 assign:false nullable:true static:false initializable:true formerRW:W
+KotlinPrivate:false
+isTypeValue:false
+isOpen:false
+isOverride:false
+definition:/PeerConnectionClient/changeCaptureFormatInternal/height
+range:(line 1221,col 55)-(line 1221,col 64)
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1221,col 3)-(line 1230,col 3)]
+name:If kind:If isStatic:false range:(line 1222,col 68)-(line 1227,col 5)
+definition:/PeerConnectionClient/changeCaptureFormatInternal/if
+rangeIN:[(line 89,col 1)-(line 1396,col 1), (line 1221,col 3)-(line 1230,col 3)]
+variable information:If
+
+0107debug 2PeerConnectionClient (line 584,col 31)-(line 600,col 5)
+If st:/PeerConnectionClient/createMediaConstraintsInternal/if true
+0107debug 2PeerConnectionClient (line 590,col 48)-(line 593,col 7)
+If st:/PeerConnectionClient/createMediaConstraintsInternal/if/if false
+Finish Convert Kotlin:/Users/kzm0308/Desktop/workspace/glass-enterprise-samples-master/WebRTCSample/app/src/org/appspot/apprtcstandalone

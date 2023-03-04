@@ -12,6 +12,22 @@ public class Class17 {
         code = path;
     }
 
+    private int num = 0;
+    private String mStr = "";
+    public int getNum(){
+        return this.num;
+    }
+    public void setNum(int num){
+        this.num = num;
+    }
+    public String getStr(){
+        return this.mStr + "/";
+    }
+    public void setStr(String str){
+        this.mStr = this.mStr + "str";
+    }
+
+
     public String getPath() {
         return this.path;
     }

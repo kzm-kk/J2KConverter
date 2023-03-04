@@ -1,0 +1,92 @@
+& プロジェクト名 & Javaファイル数 & Javaファイル総行数\\
+
+P-1 & SafetyNetSample & 9 & 1034 \\
+
+12/28　コンバート成功、コンパイルは失敗
+LogView fun appendIfNotNull　引数delimiterへの代入
+LogWrapper fun println 引数msgへの代入
+
+P-2 & Sceneformpolybrowser & 8 & 1476 \\
+12/28　コンバート成功、コンパイル失敗
+
+GalleryAdapter fun parseListResults 返り値変更システム
+
+P-3 & GestureLibrary & 1 & 335 \\
+
+12/28　コンバート成功、コンパイル失敗
+
+全て型の違い(Int, Float, Double)
+
+P-4 & QRCodeScannerSample & 6 & 490 \\
+
+12/28　コンバート成功、コンパイル失敗
+CameraActivit　別クラスの定数参照
+
+P-5 & VoiceRecognitionSample & 1 & 99 \\
+
+12/28　コンバート出力成功、コンパイルエラー
+
+P-6 & WebRTCSample & 35 & 8300 \\
+
+12/29　コンバート成功、コンパイル失敗
+
+P-7 & BabyProfessorAndroid & 37 & 2612 \\
+
+12/29　コンバート成功、コンパイル失敗
+
+P-8 & Camera2Sample & 12 & 1738 \\
+
+12/28　コンバート成功、コンパイル失敗
+signum関数、Longにはなく、Mathのやつ使おうとするとDouble or Floatなのでエラー
+
+P-9 & CardSample & 9 & 770 \\
+
+12/28　コンバート成功、コンパイル失敗
+GlassMenuItem toString return id!! + " " + icon!! + " " + text!! 最初の+演算子がエラー
+
+P-10 & GallerySample & 14 & 1405 \\
+
+12/28　コンバート成功、コンパイル失敗
+onCreateView⇨引数１つ目だけnon-null
+onViewCreated⇨上記と同じ
+
+P-11 & identityappfliptesterandroid & 1 & 230 \\
+
+12/28　コンバート成功、コンパイル失敗
+全てシグネチャの衝突
+
+P-12 & identityappflipandroid & 2 & 262 \\
+
+12/28 コンバート成功、コンパイル成功
+
+P-13 & barcodereader & 8 & 2416 \\
+
+12/28　コンバート成功、コンパイル失敗
+Companion出力がうまく行けば出来そう
+
+P-14 & FaceTracker & 4 & 820 \\
+
+12/22　コンバート成功、コンパイル失敗
+型の違いとライブラリ参照のエラー
+
+P-15 & googlyeyes & 6 & 1314 \\
+
+12/28　コンバート成功、コンパイル失敗
+EyePhysics.kt 引数への代入
+
+P-16 & multitracker & 7 & 1004 \\
+
+12/28　コンバート成功、コンパイル失敗
+
+P-17 & ocrreadercomplete & 6 & 2250 \\
+
+12/28　コンバート成功、コンパイルエラー
+CameraSource内のDouble型キャスト
+
+P-18 & ocrreader & 7 & 2337 \\
+
+12/28 コンバート成功、コンパイルエラー
+
+P-19 & meet-live-sharing & 12 & 1633\\
+
+12/30　コンバート成功、コンパイルエラー

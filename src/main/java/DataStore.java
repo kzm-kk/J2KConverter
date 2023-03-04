@@ -1,6 +1,5 @@
 import com.github.javaparser.Range;
 import com.github.javaparser.ast.ImportDeclaration;
-import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.Expression;
@@ -9,10 +8,11 @@ import com.github.javaparser.ast.type.Type;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class DataStore {
     public static String sourceRootPathName;
-    public static HashMap<String, String> memoryClassLibrary;
+    public static HashMap<String, String> memoryImportToFile;
 
     //key:pathAbs, value:ArrayList<ImportDeclaration>
     public static HashMap<String, ArrayList<ImportDeclaration>> memoryImport;
@@ -20,9 +20,12 @@ public class DataStore {
     public static void initMemoryAlreadyOutput(String pathAbs){
         memoryImportAlreadyOutput.putIfAbsent(pathAbs, false);
     }
+    //key:pathAbs
+    public static HashSet<String> memoryImportAlreadyAnalysis;
 
     //key:pathDir, value:ArrayList<pathAbs>
     public static HashMap<String, ArrayList<String>> memoryPathAbs;
+    public static HashMap<String, ArrayList<String>> memoryPathAbsLibrary;
     //key1:pathAbs, key2:classname
     public static TwinKeyDataList<String, String, ClassInformation> memoryClass;
 
@@ -84,10 +87,12 @@ public class DataStore {
 
     public static void init(){
         sourceRootPathName = "";
-        memoryClassLibrary = new HashMap<>();
+        memoryImportToFile = new HashMap<>();
         memoryImport = new HashMap<>();
         memoryImportAlreadyOutput = new HashMap<>();
+        memoryImportAlreadyAnalysis = new HashSet<>();
         memoryPathAbs = new HashMap<>();
+        memoryPathAbsLibrary = new HashMap<>();
         memoryClass = new TwinKeyDataList<>();
         memoryBeforeCheck = new TwinKeyDataList<>();
         memoryStatic = new HashMap<>();

@@ -10,6 +10,7 @@ public class ClassInformation extends BlockInformation {
     ArrayList<Type> classIm;
     boolean isEnum;
     boolean isContainStatic = false;
+    boolean isInner = false;
 
 
     public ClassInformation(String name, String kind, String structure, String pathDir,
